@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="b028c4556d724cdba4d863c853e92018" Name="Diagram1" ZoomLevel="71">
+        <EntityTypeShape EntityType="AdministratoroModel.CashBooks" Width="1.5" PointX="9.75" PointY="6.625" />
+        <EntityTypeShape EntityType="AdministratoroModel.ErrorLogs" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.EstateExpenses" Width="1.5" PointX="7.5" PointY="9.25" />
+        <EntityTypeShape EntityType="AdministratoroModel.EstateExpensesRedistributionTypes" Width="1.5" PointX="7.5" PointY="6.25" />
+        <EntityTypeShape EntityType="AdministratoroModel.Estates" Width="1.5" PointX="5.25" PointY="9.625" />
+        <EntityTypeShape EntityType="AdministratoroModel.Expenses" Width="1.5" PointX="5.25" PointY="14.125" />
+        <EntityTypeShape EntityType="AdministratoroModel.ExpenseTypes" Width="1.5" PointX="5.25" PointY="16.375" />
+        <EntityTypeShape EntityType="AdministratoroModel.Functionalities" Width="1.5" PointX="3" PointY="3.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.Localities" Width="1.5" PointX="0.75" PointY="4.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.PartnerRights" Width="1.5" PointX="5.25" PointY="6.375" />
+        <EntityTypeShape EntityType="AdministratoroModel.Partners" Width="1.5" PointX="3" PointY="6.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.PartnerTypes" Width="1.5" PointX="0.75" PointY="7.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.Persons" Width="1.5" PointX="9.75" PointY="16.625" />
+        <EntityTypeShape EntityType="AdministratoroModel.StairCases" Width="1.5" PointX="7.5" PointY="14.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.sysdiagrams" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.TenantExpenses" Width="1.5" PointX="12" PointY="10.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.TenantPersons" Width="1.5" PointX="12" PointY="15" />
+        <EntityTypeShape EntityType="AdministratoroModel.Tenants" Width="1.5" PointX="9.75" PointY="11" />
+        <AssociationConnector Association="AdministratoroModel.FK__CashBooks__Id_Es__2A164134" />
+        <AssociationConnector Association="AdministratoroModel.FK__CashBooks__Redis__65370702" />
+        <AssociationConnector Association="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E" />
+        <AssociationConnector Association="AdministratoroModel.FK__EstateExt__Id_Ex__778AC167" />
+        <AssociationConnector Association="AdministratoroModel.FK__EstateExt__Id_Ex__787EE5A0" />
+        <AssociationConnector Association="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" />
+        <AssociationConnector Association="AdministratoroModel.FK__Estates__Id_Part__5CD6CB2B" />
+        <AssociationConnector Association="AdministratoroModel.FK__StairCase__Id_Es__4F47C5E3" />
+        <AssociationConnector Association="AdministratoroModel.FK__Tenants__id_Esta__5DCAEF64" />
+        <AssociationConnector Association="AdministratoroModel.FK__UserRight__Id_fu__5629CD9C" />
+        <AssociationConnector Association="AdministratoroModel.FK__UserSet__Id_Loca__29572725" />
+        <AssociationConnector Association="AdministratoroModel.FK__UserRight__Id_us__5535A963" />
+        <AssociationConnector Association="AdministratoroModel.FK__UserSet__Id_User__2A4B4B5E" />
+        <AssociationConnector Association="AdministratoroModel.FK__TenantPer__Id_Pe__4BAC3F29" />
+        <AssociationConnector Association="AdministratoroModel.FK__Tenants__Id_Stai__51300E55" />
+        <AssociationConnector Association="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" />
+        <AssociationConnector Association="AdministratoroModel.FK__TenantPer__Id_Te__4CA06362" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

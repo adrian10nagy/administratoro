@@ -1,0 +1,503 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="AdministratoroModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="CashBooks">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
+    <Property Name="Value" Type="decimal" Precision="12" Scale="2" />
+    <Property Name="ExtraInfo" Type="nvarchar(max)" />
+    <Property Name="AddedOn" Type="datetime" />
+    <Property Name="LastModifiedOn" Type="datetime" />
+    <Property Name="RedistributeType" Type="int" />
+  </EntityType>
+  <EntityType Name="ErrorLogs">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Created" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="EstateExpenses">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_Estate" Type="int" Nullable="false" />
+    <Property Name="Id_Expense" Type="int" Nullable="false" />
+    <Property Name="Id_ExpenseType" Type="int" Nullable="false" />
+    <Property Name="isDefault" Type="bit" Nullable="false" />
+    <Property Name="Month" Type="int" Nullable="false" />
+    <Property Name="Year" Type="int" Nullable="false" />
+    <Property Name="WasDisabled" Type="bit" Nullable="false" />
+    <Property Name="PricePerExpenseUnit" Type="decimal" Precision="18" Scale="0" />
+  </EntityType>
+  <EntityType Name="EstateExpensesRedistributionTypes">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Value" Type="nvarchar" MaxLength="200" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Estates">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Address" Type="nvarchar(max)" />
+    <Property Name="Id_Partner" Type="int" Nullable="false" />
+    <Property Name="Indiviza" Type="decimal" Precision="6" Scale="2" />
+    <Property Name="HasStaircase" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Expenses">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ExpenseTypes">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Functionalities">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Localities">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="25" Nullable="false" />
+  </EntityType>
+  <EntityType Name="PartnerRights">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_user" Type="int" Nullable="false" />
+    <Property Name="Id_functionality" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Partners">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Address" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Telephone" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+    <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Id_Locality" Type="int" Nullable="false" />
+    <Property Name="Id_PartnerType" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="SeenTutorial" Type="bit" />
+  </EntityType>
+  <EntityType Name="PartnerTypes">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Persons">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Address" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Telephone" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+    <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Id_Locality" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="StairCases">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Value" Type="nvarchar" MaxLength="510" Nullable="false" />
+    <Property Name="Id_Estate" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="principal_id" Type="int" Nullable="false" />
+    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="version" Type="int" />
+    <Property Name="definition" Type="varbinary(max)" />
+  </EntityType>
+  <EntityType Name="TenantExpenses">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Value" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="Id_Tenant" Type="int" Nullable="false" />
+    <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
+    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="0" />
+  </EntityType>
+  <EntityType Name="TenantPersons">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_Person" Type="int" Nullable="false" />
+    <Property Name="Id_Tenent" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Tenants">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ExtraInfo" Type="nvarchar(max)" />
+    <Property Name="Email" Type="nvarchar(max)" />
+    <Property Name="Telephone" Type="nvarchar(max)" />
+    <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+    <Property Name="Password" Type="nvarchar(max)" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Dependents" Type="int" Nullable="false" />
+    <Property Name="id_Estate" Type="int" Nullable="false" />
+    <Property Name="CotaIndiviza" Type="decimal" Precision="6" Scale="2" Nullable="false" />
+    <Property Name="Number" Type="int" Nullable="false" />
+    <Property Name="Id_StairCase" Type="int" />
+  </EntityType>
+  <Association Name="FK__CashBooks__Id_Es__2A164134">
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="1" />
+    <End Role="CashBooks" Type="Self.CashBooks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpenses">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CashBooks">
+        <PropertyRef Name="Id_EstateExpense" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__CashBooks__Redis__65370702">
+    <End Role="EstateExpensesRedistributionTypes" Type="Self.EstateExpensesRedistributionTypes" Multiplicity="0..1" />
+    <End Role="CashBooks" Type="Self.CashBooks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpensesRedistributionTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CashBooks">
+        <PropertyRef Name="RedistributeType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__EstateExt__Id_Es__76969D2E">
+    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Estates">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="EstateExpenses">
+        <PropertyRef Name="Id_Estate" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__EstateExt__Id_Ex__778AC167">
+    <End Role="Expenses" Type="Self.Expenses" Multiplicity="1" />
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Expenses">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="EstateExpenses">
+        <PropertyRef Name="Id_Expense" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__EstateExt__Id_Ex__787EE5A0">
+    <End Role="ExpenseTypes" Type="Self.ExpenseTypes" Multiplicity="1" />
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ExpenseTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="EstateExpenses">
+        <PropertyRef Name="Id_ExpenseType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Estates__Id_Part__5CD6CB2B">
+    <End Role="Partners" Type="Self.Partners" Multiplicity="1" />
+    <End Role="Estates" Type="Self.Estates" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Partners">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Estates">
+        <PropertyRef Name="Id_Partner" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__StairCase__Id_Es__4F47C5E3">
+    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
+    <End Role="StairCases" Type="Self.StairCases" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Estates">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StairCases">
+        <PropertyRef Name="Id_Estate" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TenantExp__Id_Es__0F624AF8">
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="1" />
+    <End Role="TenantExpenses" Type="Self.TenantExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpenses">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TenantExpenses">
+        <PropertyRef Name="Id_EstateExpense" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TenantExp__Id_Te__0E6E26BF">
+    <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
+    <End Role="TenantExpenses" Type="Self.TenantExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tenants">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TenantExpenses">
+        <PropertyRef Name="Id_Tenant" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TenantPer__Id_Pe__4BAC3F29">
+    <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+    <End Role="TenantPersons" Type="Self.TenantPersons" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Persons">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TenantPersons">
+        <PropertyRef Name="Id_Person" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__TenantPer__Id_Te__4CA06362">
+    <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
+    <End Role="TenantPersons" Type="Self.TenantPersons" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tenants">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TenantPersons">
+        <PropertyRef Name="Id_Tenent" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Tenants__id_Esta__5DCAEF64">
+    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
+    <End Role="Tenants" Type="Self.Tenants" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Estates">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Tenants">
+        <PropertyRef Name="id_Estate" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Tenants__Id_Stai__51300E55">
+    <End Role="StairCases" Type="Self.StairCases" Multiplicity="0..1" />
+    <End Role="Tenants" Type="Self.Tenants" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="StairCases">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Tenants">
+        <PropertyRef Name="Id_StairCase" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__UserRight__Id_fu__5629CD9C">
+    <End Role="Functionalities" Type="Self.Functionalities" Multiplicity="1" />
+    <End Role="PartnerRights" Type="Self.PartnerRights" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Functionalities">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="PartnerRights">
+        <PropertyRef Name="Id_functionality" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__UserRight__Id_us__5535A963">
+    <End Role="Partners" Type="Self.Partners" Multiplicity="1" />
+    <End Role="PartnerRights" Type="Self.PartnerRights" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Partners">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="PartnerRights">
+        <PropertyRef Name="Id_user" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__UserSet__Id_Loca__29572725">
+    <End Role="Localities" Type="Self.Localities" Multiplicity="1" />
+    <End Role="Partners" Type="Self.Partners" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Localities">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Partners">
+        <PropertyRef Name="Id_Locality" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__UserSet__Id_User__2A4B4B5E">
+    <End Role="PartnerTypes" Type="Self.PartnerTypes" Multiplicity="1" />
+    <End Role="Partners" Type="Self.Partners" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PartnerTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Partners">
+        <PropertyRef Name="Id_PartnerType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
+  <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="version" Type="int" Mode="In" />
+    <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_creatediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="version" Type="int" Mode="In" />
+    <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_dropdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_helpdiagramdefinition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_helpdiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_renamediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <EntityContainer Name="AdministratoroModelStoreContainer">
+    <EntitySet Name="CashBooks" EntityType="Self.CashBooks" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ErrorLogs" EntityType="Self.ErrorLogs" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="EstateExpenses" EntityType="Self.EstateExpenses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="EstateExpensesRedistributionTypes" EntityType="Self.EstateExpensesRedistributionTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Estates" EntityType="Self.Estates" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Expenses" EntityType="Self.Expenses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ExpenseTypes" EntityType="Self.ExpenseTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Functionalities" EntityType="Self.Functionalities" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Localities" EntityType="Self.Localities" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="PartnerRights" EntityType="Self.PartnerRights" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Partners" EntityType="Self.Partners" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="PartnerTypes" EntityType="Self.PartnerTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="StairCases" EntityType="Self.StairCases" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="TenantExpenses" EntityType="Self.TenantExpenses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="TenantPersons" EntityType="Self.TenantPersons" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Tenants" EntityType="Self.Tenants" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK__CashBooks__Id_Es__2A164134" Association="Self.FK__CashBooks__Id_Es__2A164134">
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="CashBooks" EntitySet="CashBooks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__CashBooks__Redis__65370702" Association="Self.FK__CashBooks__Redis__65370702">
+      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
+      <End Role="CashBooks" EntitySet="CashBooks" />
+    </AssociationSet>
+    <AssociationSet Name="FK__EstateExt__Id_Es__76969D2E" Association="Self.FK__EstateExt__Id_Es__76969D2E">
+      <End Role="Estates" EntitySet="Estates" />
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__EstateExt__Id_Ex__778AC167" Association="Self.FK__EstateExt__Id_Ex__778AC167">
+      <End Role="Expenses" EntitySet="Expenses" />
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__EstateExt__Id_Ex__787EE5A0" Association="Self.FK__EstateExt__Id_Ex__787EE5A0">
+      <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Estates__Id_Part__5CD6CB2B" Association="Self.FK__Estates__Id_Part__5CD6CB2B">
+      <End Role="Partners" EntitySet="Partners" />
+      <End Role="Estates" EntitySet="Estates" />
+    </AssociationSet>
+    <AssociationSet Name="FK__StairCase__Id_Es__4F47C5E3" Association="Self.FK__StairCase__Id_Es__4F47C5E3">
+      <End Role="Estates" EntitySet="Estates" />
+      <End Role="StairCases" EntitySet="StairCases" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TenantExp__Id_Es__0F624AF8" Association="Self.FK__TenantExp__Id_Es__0F624AF8">
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="TenantExpenses" EntitySet="TenantExpenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TenantExp__Id_Te__0E6E26BF" Association="Self.FK__TenantExp__Id_Te__0E6E26BF">
+      <End Role="Tenants" EntitySet="Tenants" />
+      <End Role="TenantExpenses" EntitySet="TenantExpenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TenantPer__Id_Pe__4BAC3F29" Association="Self.FK__TenantPer__Id_Pe__4BAC3F29">
+      <End Role="Persons" EntitySet="Persons" />
+      <End Role="TenantPersons" EntitySet="TenantPersons" />
+    </AssociationSet>
+    <AssociationSet Name="FK__TenantPer__Id_Te__4CA06362" Association="Self.FK__TenantPer__Id_Te__4CA06362">
+      <End Role="Tenants" EntitySet="Tenants" />
+      <End Role="TenantPersons" EntitySet="TenantPersons" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Tenants__id_Esta__5DCAEF64" Association="Self.FK__Tenants__id_Esta__5DCAEF64">
+      <End Role="Estates" EntitySet="Estates" />
+      <End Role="Tenants" EntitySet="Tenants" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Tenants__Id_Stai__51300E55" Association="Self.FK__Tenants__Id_Stai__51300E55">
+      <End Role="StairCases" EntitySet="StairCases" />
+      <End Role="Tenants" EntitySet="Tenants" />
+    </AssociationSet>
+    <AssociationSet Name="FK__UserRight__Id_fu__5629CD9C" Association="Self.FK__UserRight__Id_fu__5629CD9C">
+      <End Role="Functionalities" EntitySet="Functionalities" />
+      <End Role="PartnerRights" EntitySet="PartnerRights" />
+    </AssociationSet>
+    <AssociationSet Name="FK__UserRight__Id_us__5535A963" Association="Self.FK__UserRight__Id_us__5535A963">
+      <End Role="Partners" EntitySet="Partners" />
+      <End Role="PartnerRights" EntitySet="PartnerRights" />
+    </AssociationSet>
+    <AssociationSet Name="FK__UserSet__Id_Loca__29572725" Association="Self.FK__UserSet__Id_Loca__29572725">
+      <End Role="Localities" EntitySet="Localities" />
+      <End Role="Partners" EntitySet="Partners" />
+    </AssociationSet>
+    <AssociationSet Name="FK__UserSet__Id_User__2A4B4B5E" Association="Self.FK__UserSet__Id_User__2A4B4B5E">
+      <End Role="PartnerTypes" EntitySet="PartnerTypes" />
+      <End Role="Partners" EntitySet="Partners" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

@@ -1,0 +1,215 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="Admin.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title%> Administratoro</title>
+
+    <webopt:BundleReference runat="server" Path="~/Content/css" />
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+    <asp:ContentPlaceHolder ID="MainStyle" runat="server">
+    </asp:ContentPlaceHolder>
+    <meta name="description" content="Administrare" />
+</head>
+<body class="nav-md">
+    <form runat="server" defaultbutton="">
+
+        <div class="container body">
+            <div class="main_container">
+                <div class="col-md-3 left_col">
+                    <div class="left_col scroll-view">
+                        <!-- menu profile quick info -->
+                        <div class="profile clearfix">
+                            <div class="profile_pic">
+                                <asp:Image ImageUrl="/Content/Images/img.png" AlternateText="Ultilizator" CssClass="img-circle profile_img" runat="server" />
+                            </div>
+                            <div class="profile_info">
+                                <span>Bun venit,</span>
+                                <h2>
+                                    <asp:Label ID="txtWelcomeUserName" runat="server"></asp:Label>
+                                </h2>
+                            </div>
+                        </div>
+                        <!-- /menu profile quick info -->
+
+                        <br />
+
+                        <!-- sidebar menu -->
+                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <h3>General</h3>
+                                <ul class="nav side-menu">
+                                    <li runat="server" id="mainMenuDashboard"><a href="Dashboard.aspx" runat="server"><i class="fa fa-home"></i>Acasă</a></li>
+                                    <li runat="server" id="mainMenuTenants"><a><i class="fa fa-address-book"></i>Gestionează <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="~/Apartments/Manage.aspx" runat="server">Apartamente</a></li>
+                                            <li><a href="~/Expenses/Dashboard.aspx" runat="server">Cheltuieli</a></li>
+                                        </ul>
+                                    </li>
+                                    <li runat="server" id="mainMenuExpenses"><a><i class="fa fa-bar-chart"></i>Raportare  <span class="label label-success pull-right">În curând</span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="~/Reports/Monthly.aspx" runat="server" id="mainMenuExpensesCurrentMonth">Lunară</a></li>
+                                        </ul>
+                                    </li>
+                                     <%-- <li runat="server" id="mainMenuRaports"><a><i class="fa fa-bar-chart"></i>Rapoartare <span class="label label-success pull-right">În curând</span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="~/Reports/Loans.aspx" runat="server">Împrumuturi</a></li>
+                                            <li><a href="~/Reports/Books.aspx" runat="server">Cărți</a></li>
+                                        </ul>
+                                    </li>
+                                    <li runat="server" id="mainMenuConfigurator"><a><i class="fa fa-wrench"></i>Configurator<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="~/Config/MonthlyExpenses.aspx" runat="server">Cheltuieli lunare</a></li>
+                                        </ul>
+                                    </li>--%>
+                                    <!-- <li runat="server" id="mainMenuAdmin"><a><i class="fa fa-tachometer"></i>Admin <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="~/Admin/InternalAdmin.aspx" runat="server">Admin</a></li>
+                                            <li><a href="~/Admin/UserRights.aspx" runat="server">Drepturi</a></li>
+                                        </ul>
+                                    </li> -->
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /sidebar menu -->
+
+                    </div>
+                </div>
+
+                <!-- top navigation -->
+                <div class="top_nav">
+                    <div class="nav_menu">
+                        <nav>
+                            <div class="nav toggle">
+                                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                            </div>
+                            <asp:DropDownList ID="drpMainEstate" runat="server" CssClass="drpMainEstate"></asp:DropDownList>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="">
+                                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        <asp:Image ImageUrl="/Content/Images/img.png" AlternateText="Ultilizator" runat="server" /><asp:Label ID="txtMenuTopUserName" runat="server"></asp:Label>
+                                        <span class=" fa fa-angle-down"></span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                        <li><a href="~/Contact.aspx" runat="server"><i class="fa fa-info pull-right"></i>Date contact administrator</a></li>
+                                        <li><a href="~/Account/Settings.aspx" runat="server"><i class="fa fa-wrench pull-right"></i>Setări</a></li>
+                                        <li><a href="~/Account/Logout.aspx" runat="server"><i class="fa fa-sign-out pull-right"></i>Delogare</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <!-- /top navigation -->
+
+                <asp:ScriptManager runat="server" ID="scriptManager">
+                    <Scripts>
+                        <%--To learn more about bundling scripts in ScriptManager see http://go.microsoft.com/fwlink/?LinkID=301884 --%>
+                        <%--Framework Scripts--%>
+                        <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                        <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                        <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                        <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                        <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                        <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                        <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                        <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+
+                        <asp:ScriptReference Name="WebFormsBundle" />
+                        <%--Site Scripts--%>
+                    </Scripts>
+                </asp:ScriptManager>
+
+                <!-- page content -->
+                <div class="right_col" role="main">
+                    <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+                <!-- /page content -->
+
+                <!-- footer content -->
+                <footer>
+                    <div class="pull-right">
+                        <asp:Label ID="txtWelcomeLibraryFooter" runat="server"></asp:Label>
+                        - Site 
+                    </div>
+                    <div class="clearfix"></div>
+                </footer>
+                <!-- /footer content -->
+            </div>
+        </div>
+
+        <script src='<%= ResolveUrl("~/Scripts/jquery.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/jquery.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/bootstrap.min.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/fastclick.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/nprogress.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/Chart.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/gauge.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/bootstrap-progressbar.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/icheck.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/skycons.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/Flot/jquery.flot.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/Flot/jquery.flot.pie.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/Flot/jquery.flot.time.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/Flot/jquery.flot.stack.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/Flot/jquery.flot.resize.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/jquery.flot.orderBars.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/jquery.flot.spline.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/curvedLines.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/date.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/jqvmap/jquery.vmap.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/jqvmap/jquery.vmap.sampledata.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/jqvmap/jquery.vmap.world.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/moment.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/daterangepicker.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/jquery-ui.min.js")%>'></script>
+
+        <script src='<%= ResolveUrl("~/Scripts/custom.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/general.js")%>'></script>
+
+        <script>
+            function setHeartbeat() {
+                setTimeout("heartbeat()", 300000); // every 5 min
+            }
+
+            function heartbeat() {
+                $.ajax({
+                    type: "POST",
+                    url: "/SessionHeartbeat.ashx",
+                    success: function () {
+                        setHeartbeat();
+                    }
+                });
+            }
+
+            setHeartbeat();
+
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', 'UA-63899600-4', 'auto');
+            ga('send', 'pageview');
+
+        </script>
+
+        <asp:ContentPlaceHolder ID="MainScript" runat="server">
+        </asp:ContentPlaceHolder>
+
+    </form>
+</body>
+</html>

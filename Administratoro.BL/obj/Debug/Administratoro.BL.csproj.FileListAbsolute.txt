@@ -1,0 +1,12 @@
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\Administratoro.BL.dll.config
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\Administratoro.BL.dll
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\Administratoro.BL.pdb
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\Administratoro.DAL.dll
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\EntityFramework.dll
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\EntityFramework.SqlServer.dll
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\Administratoro.DAL.pdb
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\EntityFramework.xml
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\bin\Debug\EntityFramework.SqlServer.xml
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.csprojResolveAssemblyReference.cache
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.dll
+C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.pdb
