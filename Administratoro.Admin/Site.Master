@@ -47,12 +47,12 @@
                                     <li runat="server" id="mainMenuTenants"><a><i class="fa fa-address-book"></i>Gestionează <span class="fa fa-chevron-down"></span></a>
                                         <ul class="nav child_menu">
                                             <li><a href="~/Apartments/Manage.aspx" runat="server">Apartamente</a></li>
-                                            <li><a href="~/Expenses/Dashboard.aspx" runat="server">Cheltuieli</a></li>
+                                            <li><a href="~/Expenses/Dashboard.aspx" runat="server">Facturi lunare</a></li>
                                         </ul>
                                     </li>
                                     <li runat="server" id="mainMenuExpenses"><a><i class="fa fa-bar-chart"></i>Raportare  <span class="label label-success pull-right">În curând</span></a>
                                         <ul class="nav child_menu">
-                                            <li><a href="~/Reports/Monthly.aspx" runat="server" id="mainMenuExpensesCurrentMonth">Lunară</a></li>
+                                            <li><a href="~/Reports/Index.aspx" runat="server" id="mainMenuExpensesCurrentMonth">Liste de cheltuieli</a></li>
                                         </ul>
                                     </li>
                                      <%-- <li runat="server" id="mainMenuRaports"><a><i class="fa fa-bar-chart"></i>Rapoartare <span class="label label-success pull-right">În curând</span></a>
@@ -87,7 +87,7 @@
                             <div class="nav toggle">
                                 <a id="menu_toggle"><i class="fa fa-bars"></i></a>
                             </div>
-                            <asp:DropDownList ID="drpMainEstate" runat="server" CssClass="drpMainEstate"></asp:DropDownList>
+                            <asp:DropDownList ID="drpMainEstate" runat="server" CssClass="drpMainEstate" AutoPostBack="true" OnSelectedIndexChanged="drpMainEstate_SelectedIndexChanged"></asp:DropDownList>
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="">
                                     <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

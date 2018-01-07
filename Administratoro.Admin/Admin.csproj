@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,11 +42,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.90.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.90.0\lib\net452\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FastMember.Signed, Version=1.0.0.9, Culture=neutral, PublicKeyToken=9e8f22703bef9a29, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.Signed.1.1.0\lib\net40\FastMember.Signed.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.1\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.4.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -95,6 +116,7 @@
     <Reference Include="Microsoft.AspNet.FriendlyUrls">
       <HintPath>..\packages\Microsoft.AspNet.FriendlyUrls.Core.1.0.2\lib\net45\Microsoft.AspNet.FriendlyUrls.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -105,6 +127,7 @@
     <Content Include="Account\Settings.aspx" />
     <Content Include="Admin\UserRights.aspx" />
     <Content Include="Associations\Index.aspx" />
+    <Content Include="Associations\New.aspx" />
     <Content Include="Config\MonthlyExpenses.aspx" />
     <Content Include="Config\NewMonthOpening.aspx" />
     <Content Include="Contact.aspx" />
@@ -126,7 +149,8 @@
     <Content Include="Content\select2.min.css" />
     <Content Include="Error.aspx" />
     <Content Include="Expenses\AddEditExpense.aspx" />
-    <Content Include="Expenses\CashBook.aspx" />
+    <Content Include="Expenses\Invoices.aspx" />
+    <Content Include="Reports\Index.aspx" />
     <Content Include="Reports\Monthly.aspx" />
     <Content Include="Expenses\Dashboard.aspx" />
     <Content Include="Fonts\fontawesome-webfont.svg" />
@@ -161,7 +185,6 @@
     <Content Include="Scripts\gauge.min.js" />
     <Content Include="Scripts\general.js" />
     <Content Include="Scripts\icheck.min.js" />
-    <None Include="Properties\PublishProfiles\biblioSofia.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
@@ -229,7 +252,6 @@
     <Content Include="Site.Mobile.Master" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
     <Content Include="SessionHeartbeat.ashx" />
-    <None Include="Properties\PublishProfiles\Profile1.pubxml" />
     <Content Include="Scripts\jquery.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -269,12 +291,23 @@
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Associations\DymanicCounter.cs" />
     <Compile Include="Associations\Index.aspx.cs">
       <DependentUpon>Index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Associations\Index.aspx.designer.cs">
       <DependentUpon>Index.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Associations\New.aspx.cs">
+      <DependentUpon>New.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Associations\New.aspx.designer.cs">
+      <DependentUpon>New.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="BasePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Config\MonthlyExpenses.aspx.cs">
       <DependentUpon>MonthlyExpenses.aspx</DependentUpon>
@@ -318,12 +351,19 @@
     <Compile Include="Expenses\AddEditExpense.aspx.designer.cs">
       <DependentUpon>AddEditExpense.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Expenses\CashBook.aspx.cs">
-      <DependentUpon>CashBook.aspx</DependentUpon>
+    <Compile Include="Expenses\Invoices.aspx.cs">
+      <DependentUpon>Invoices.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Expenses\CashBook.aspx.designer.cs">
-      <DependentUpon>CashBook.aspx</DependentUpon>
+    <Compile Include="Expenses\Invoices.aspx.designer.cs">
+      <DependentUpon>Invoices.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\Index.aspx.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\Index.aspx.designer.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
     </Compile>
     <Compile Include="Reports\Monthly.aspx.cs">
       <DependentUpon>Monthly.aspx</DependentUpon>

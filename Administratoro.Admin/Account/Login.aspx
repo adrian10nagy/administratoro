@@ -10,7 +10,7 @@
     <link href="/Content/animate.min.css" rel="stylesheet" type="text/css" />
     <link href="/Content/custom.min.css" rel="stylesheet" type="text/css" />
 
-    <title>Biblioteca- Logare</title>
+    <title>Administratoro- Logare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body class="login">
@@ -45,7 +45,7 @@
                                 <div class="clearfix"></div>
                                 <br />
                                 <div>
-                                    <h1><i class="fa fa-paw"></i>BiblioSofia</h1>
+                                    <h1><i class="fa fa-paw"></i> Administratorul</h1>
                                     <p>©<%= DateTime.Now.Year.ToString() %>. Toate drepturile rezervate.</p>
                                 </div>
                             </div>

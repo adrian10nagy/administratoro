@@ -5037,7 +5037,8 @@ ul.notifications {
     margin-bottom: 10px;
     padding: 10px 17px;
     display: inline-block;
-    background: #fff;
+    background: #337ab7;
+    color: white;
     border: 1px solid #E6E9ED;
     -webkit-column-break-inside: avoid;
     opacity: 1;
@@ -5056,11 +5057,10 @@ ul.notifications {
 .cashBokItemsRow {
     padding-top: 10px;
 }
+
 /*
     Dshboard page
 */
-
-
 .row #dashboardItemMain {
     height: 210px;
     background-color: #1175ae;
@@ -5092,24 +5092,49 @@ ul.notifications {
 
 /* Estates page */
 input#MainContent_estateStairs_0,
-input#MainContent_estateStairs_1
-{
-    margin-left:7px;
+input#MainContent_estateStairs_1 {
+    /*margin-left: 7px;*/
 }
 
 
 /* cashbook */
-.cashbookItemTextbox{
-    width:85px;
+.cashbookItemTextbox {
+    width: 85px;
 }
 
 .evenRow {
     background-color: white;
 }
 
-.headerRow{
-    background-color:rgb(115, 135, 156);
+.headerRow {
+    background-color: rgb(115, 135, 156);
+    color: white;
+    padding-left: 20px;
+    font-weight: 700;
+}
+
+.associationsLabels{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.associationsIndexStairs th{
+    background-color:#2a3f54;
     color:white;
-    padding-left:20px; 
-    font-weight:700;
- }
+}
+
+.sectionDivider{
+    border-bottom:2px solid #e6e9ed;
+    padding-bottom:15px;
+    padding-top:5px;
+}
+
+.associationsNewCounters
+{
+    display: flex;
+    padding: 5px;
+}
+
+.textAlignCenter{
+    text-align:center;
+}

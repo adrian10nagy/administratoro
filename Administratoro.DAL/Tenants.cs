@@ -16,6 +16,7 @@ namespace Administratoro.DAL
     {
         public Tenants()
         {
+            this.ApartmentCounters = new HashSet<ApartmentCounters>();
             this.TenantExpenses = new HashSet<TenantExpenses>();
             this.TenantPersons = new HashSet<TenantPersons>();
         }
@@ -33,6 +34,7 @@ namespace Administratoro.DAL
         public int Number { get; set; }
         public Nullable<int> Id_StairCase { get; set; }
     
+        public virtual ICollection<ApartmentCounters> ApartmentCounters { get; set; }
         public virtual Estates Estates { get; set; }
         public virtual StairCases StairCases { get; set; }
         public virtual ICollection<TenantExpenses> TenantExpenses { get; set; }

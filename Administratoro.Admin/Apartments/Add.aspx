@@ -13,8 +13,9 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content form-horizontal form-label-left">
+            <small>1.Setări generale</small>
             <br />
-
+            <br />
             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Număr apartament</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
@@ -25,7 +26,7 @@
             </div>
 
             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12">Nume</label>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Nume proprietar</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
                     <input type="text" class="form-control has-feedback-left" id="userName" runat="server" autocomplete="off" />
                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
@@ -43,11 +44,11 @@
             </div>
 
             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12">Cota indiviza de proprietate</label>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Cota indiviza</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
-                    <input type="text" class="form-control has-feedback-left" id="usercota" runat="server" autocomplete="off">
+                    <input type="text" class="form-control has-feedback-left" id="apartmentCota" runat="server" autocomplete="off">
                     <span class="fa fa-percent form-control-feedback left" aria-hidden="true"></span>
-                    <asp:RequiredFieldValidator ControlToValidate="usercota" runat="server" ErrorMessage="Cota indiviza de proprietate este obligatorie" CssClass="requiredField"></asp:RequiredFieldValidator>
+                    <asp:RequiredFieldValidator ControlToValidate="apartmentCota" runat="server" ErrorMessage="Cota indiviza este obligatorie" CssClass="requiredField"></asp:RequiredFieldValidator>
                 </div>
             </div>
 
@@ -75,14 +76,18 @@
                 </div>
             </div>
 
-            <div class="item form-group col-md-12">
+            <div class="item form-group col-md-12 sectionDivider">
                 <label class="control-label col-md-2 col-sm-2 col-xs-12">Extra informații (opțional)</label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <textarea class="form-control" id="userExtraInfo" runat="server" autocomplete="off"></textarea>
                 </div>
             </div>
 
-
+            <asp:Panel runat="server" ID="estateCounters" class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                <small>2.Configurare contoare alocate</small>
+                <br />
+                <br />
+            </asp:Panel>
             <div class="form-group">
                 <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
                     <asp:Button ID="btnSave" runat="server" Text="Salvează" class="btn btn-success" OnClick="btnSave_Click" CausesValidation="true" />
@@ -91,8 +96,6 @@
             </div>
         </div>
     </div>
-
-
 </asp:Content>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="MainScript" runat="server">

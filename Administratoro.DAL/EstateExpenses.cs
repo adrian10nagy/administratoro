@@ -29,6 +29,7 @@ namespace Administratoro.DAL
         public int Year { get; set; }
         public bool WasDisabled { get; set; }
         public Nullable<decimal> PricePerExpenseUnit { get; set; }
+        public Nullable<bool> SplitPerStairCase { get; set; }
     
         public virtual ICollection<CashBooks> CashBooks { get; set; }
         public virtual Estates Estates { get; set; }

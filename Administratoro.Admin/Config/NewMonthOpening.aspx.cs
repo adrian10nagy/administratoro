@@ -125,7 +125,14 @@ namespace Admin.Config
                 if (estate != null)
                 {
                     var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
-                    var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultEE.FirstOrDefault().Year, defaultEE.FirstOrDefault().Month);
+                    int defaultYear = 2017;
+                    int defaultMonth = 1;
+                    if(defaultEE.Count > 0)
+                    {
+                        defaultYear = defaultEE.FirstOrDefault().Year;
+                        defaultMonth = defaultEE.FirstOrDefault().Month;
+                    }
+                    var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
 
                     var expenses = ExpensesManager.GetAllExpensesAsList();
 
@@ -245,13 +252,16 @@ namespace Admin.Config
                         if (int.TryParse(cbId, out expenseId))
                         {
                             //dpExpenseType.SelectedValue
+                            List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
                             EstateExpenses newEe = EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, year, dropDown.SelectedValue);
+                            EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
                             CashBookManager.AddDefault(newEe.Id);
                         }
                     }
                 }
             }
-        }
 
+            Response.Redirect("~/Expenses/Invoices.aspx?year=" + year + "&month=" + month);
+        }
     }
 }

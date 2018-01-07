@@ -39,10 +39,23 @@ namespace Administratoro.BL.Managers
         public static List<EstateExpenses> GetFromLastesOpenedMonth(int estateId)
         {
             int maxYear = GetContext().EstateExpenses.Max(i => i.Year);
-            var fromMaxYear = GetContext().EstateExpenses.Where(c => c.Year == maxYear && c.Id_Estate == estateId);
-            int maxMonth = fromMaxYear.Max(i => i.Month);
+            var fromMaxYear = GetContext().EstateExpenses.Where(c => c.Year == maxYear && c.Id_Estate == estateId).ToList();
 
-            return GetContext().EstateExpenses.Where(c => c.Month == maxMonth && c.Id_Estate == estateId && !c.WasDisabled).ToList();
+            if (fromMaxYear != null && fromMaxYear.Count > 0)
+            {
+                int maxMonth = fromMaxYear.Max(i => i.Month);
+
+                return GetContext().EstateExpenses.Where(c => c.Month == maxMonth && c.Id_Estate == estateId && !c.WasDisabled).ToList();
+            }
+            else
+            {
+                return GetDefault(estateId);
+            }
+        }
+
+        public static List<EstateExpenses> GetDefault(int estateId)
+        {
+            return GetContext().EstateExpenses.Where(c => c.Id_Estate == estateId && c.isDefault && !c.WasDisabled).ToList();
         }
 
         public static List<EstateExpenses> GetAllEstateExpensesByMonthAndYearIncludingDisabled(int estateId, int year, int month)
@@ -71,7 +84,7 @@ namespace Administratoro.BL.Managers
 
         public static EstateExpenses GetById(int idExpenseEstate)
         {
-            return GetContext().EstateExpenses.Where(
+            return GetContext(true).EstateExpenses.Where(
                 ee => ee.Id == idExpenseEstate).First();
         }
 
@@ -100,6 +113,29 @@ namespace Administratoro.BL.Managers
             return ee;
         }
 
+        public static void AddEstateExpensesByTenantAndMonth(int estateId, Dictionary<int, int> expenses)
+        {
+
+            foreach (var expense in expenses)
+            {
+                EstateExpenses ee = null;
+                ee = new EstateExpenses
+                {
+                    Id_Expense = expense.Key,
+                    Id_ExpenseType = expense.Value,
+                    Id_Estate = estateId,
+                    Year = -1,
+                    Month = -1,
+                    isDefault = true,
+                    WasDisabled = false
+                };
+
+                GetContext().EstateExpenses.Add(ee);
+            }
+
+            GetContext().SaveChanges();
+        }
+
         public static void RemoveEstateExpensesByTenantAndMonth(int expenseId, int estateId, int month, int year)
         {
             var exEstate = GetContext().EstateExpenses.Where(ee => ee.Id_Expense == expenseId && ee.Id_Estate == estateId).First();
@@ -110,15 +146,12 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void MarkEstateExpensesDisableProperty(EstateExpenses ee, bool isDisabled)
+        public static void MarkEstateExpensesDisableProperty(EstateExpenses ee, bool isDisabled, bool? isStairCaseSplit)
         {
-            //EstateExpenses result = new EstateExpenses();
-            //result = GetContext().EstateExpenses.Where(e1 => e1.Id_Expense == e1.Id_Expense && e1.Id_Expense == ee.Id_Estate
-            //    && e1.isDefault == ee.isDefault && e1.Year == ee.Year && e1.Month == ee.Month).First();
-
             if (ee != null)
             {
                 ee.WasDisabled = isDisabled;
+                ee.SplitPerStairCase = isStairCaseSplit;
                 GetContext().SaveChanges();
             }
         }
@@ -147,6 +180,31 @@ namespace Administratoro.BL.Managers
         {
             return GetContext().EstateExpenses.Where(ee => ee.Id_Estate == p && ee.Year != -1 && ee.Month != -1)
                 .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().ToList();
+        }
+
+        public static void UpdatePricePerUnitDefaultPrevieousMonth(EstateExpenses newEE, List<EstateExpenses> oldEEs)
+        {
+            if (newEE != null)
+            {
+                EstateExpenses oldEE = oldEEs.FirstOrDefault(ee => ee.Id_Expense == newEE.Id_Expense);
+                if (oldEE != null)
+                {
+                    UpdatePricePerUnit(newEE.Id, oldEE.PricePerExpenseUnit);
+                }
+            }
+        }
+
+        public static string CalculatePertenantPrice(EstateExpenses estateExpense)
+        {
+            var result = "";
+            int dependents = estateExpense.Estates.Tenants.Sum(s => s.Dependents);
+            CashBooks cashbook = estateExpense.CashBooks.FirstOrDefault();
+
+            if (dependents != 0 && cashbook!= null && cashbook.Value.HasValue)
+            {
+                result = Math.Round(cashbook.Value.Value / dependents, 2).ToString();
+            }
+            return result;
         }
     }
 }

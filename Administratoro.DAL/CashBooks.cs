@@ -14,6 +14,11 @@ namespace Administratoro.DAL
     
     public partial class CashBooks
     {
+        public CashBooks()
+        {
+            this.Invoices = new HashSet<Invoices>();
+        }
+    
         public int Id { get; set; }
         public int Id_EstateExpense { get; set; }
         public Nullable<decimal> Value { get; set; }
@@ -24,5 +29,6 @@ namespace Administratoro.DAL
     
         public virtual EstateExpenses EstateExpenses { get; set; }
         public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
+        public virtual ICollection<Invoices> Invoices { get; set; }
     }
 }

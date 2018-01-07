@@ -58,13 +58,13 @@ namespace Admin.Tenants {
         protected global::System.Web.UI.HtmlControls.HtmlInputGenericControl userDependents;
         
         /// <summary>
-        /// usercota control.
+        /// apartmentCota control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText usercota;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText apartmentCota;
         
         /// <summary>
         /// divStaircase control.
@@ -110,6 +110,15 @@ namespace Admin.Tenants {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTextArea userExtraInfo;
+        
+        /// <summary>
+        /// estateCounters control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel estateCounters;
         
         /// <summary>
         /// btnSave control.

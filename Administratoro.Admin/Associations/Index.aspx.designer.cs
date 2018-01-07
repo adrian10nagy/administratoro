@@ -22,6 +22,24 @@ namespace Admin.Associations {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl estateName;
         
         /// <summary>
+        /// estateAddress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl estateAddress;
+        
+        /// <summary>
+        /// estateFiscalCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl estateFiscalCode;
+        
+        /// <summary>
         /// estateStairs control.
         /// </summary>
         /// <remarks>
@@ -31,31 +49,112 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.RadioButtonList estateStairs;
         
         /// <summary>
-        /// estateStairsAdded control.
+        /// gvStaircasesMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel estateStairsAdded;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl gvStaircasesMessage;
         
         /// <summary>
-        /// txtEstateStairsNew control.
+        /// gvStaircases control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateStairsNew;
+        protected global::System.Web.UI.WebControls.GridView gvStaircases;
         
         /// <summary>
-        /// btnEstateStairsNew control.
+        /// newStairCasePanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEstateStairsNew;
+        protected global::System.Web.UI.WebControls.Panel newStairCasePanel;
+        
+        /// <summary>
+        /// txtEstateStairCaseName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtEstateStairCaseName;
+        
+        /// <summary>
+        /// txtEstateStairCaseIndiviza control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtEstateStairCaseIndiviza;
+        
+        /// <summary>
+        /// btneStatestairCasesNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btneStatestairCasesNew;
+        
+        /// <summary>
+        /// gvCounters control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvCounters;
+        
+        /// <summary>
+        /// newCounter control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel newCounter;
+        
+        /// <summary>
+        /// drpEstateCounterTypeNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList drpEstateCounterTypeNew;
+        
+        /// <summary>
+        /// txtEstateCounterValueNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtEstateCounterValueNew;
+        
+        /// <summary>
+        /// btnEstateCountersNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnEstateCountersNew;
+        
+        /// <summary>
+        /// associationIndex control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel associationIndex;
         
         /// <summary>
         /// estateIndiviza control.

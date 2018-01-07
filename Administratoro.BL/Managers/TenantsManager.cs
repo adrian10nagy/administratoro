@@ -8,7 +8,7 @@ namespace Administratoro.BL.Managers
     using System.Linq;
     using System;
 
-    public static class TenantsManager
+    public static class ApartmentsManager
     {
         private static AdministratoroEntities _administratoroEntities;
 
@@ -25,7 +25,7 @@ namespace Administratoro.BL.Managers
 
         public static List<Tenants> GetAllByEstateId(int estateId)
         {
-            return GetContext().Tenants.Where(t=>t.Estates.Id == estateId).ToList();
+            return GetContext().Tenants.Where(t => t.Estates.Id == estateId).ToList();
         }
 
         public static DbSet<Tenants> GetAllAsDbSet(int estateId)
@@ -46,13 +46,13 @@ namespace Administratoro.BL.Managers
             //x.Property(e => e.Email).IsModified = true;
             //GetContext().SaveChanges();
 
-            if(result != null)
+            if (result != null)
             {
                 result.Email = tenant.Email;
                 result.ExtraInfo = tenant.ExtraInfo;
                 result.Telephone = tenant.Telephone;
                 result.Dependents = tenant.Dependents;
-                result.Name= tenant.Name;
+                result.Name = tenant.Name;
                 result.Password = tenant.Password;
                 result.TenantPersons = null;
                 GetContext().Entry(result).CurrentValues.SetValues(tenant);
@@ -61,21 +61,14 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static bool Add(Tenants tenant)
+        public static Tenants Add(Tenants tenant)
         {
-            bool wasAdded = true;
+            Tenants result = null;
 
-            try
-            {
-                GetContext().Tenants.Add(tenant);
-                GetContext().SaveChanges();
-            }
-            catch
-            {
-                wasAdded = false;
-            }
+            result = GetContext().Tenants.Add(tenant);
+            GetContext().SaveChanges();
 
-            return wasAdded;
+            return result;
         }
     }
 }

@@ -16,12 +16,14 @@ namespace Administratoro.DAL
     {
         public Expenses()
         {
+            this.Counters = new HashSet<Counters>();
             this.EstateExpenses = new HashSet<EstateExpenses>();
         }
     
         public int Id { get; set; }
         public string Name { get; set; }
     
+        public virtual ICollection<Counters> Counters { get; set; }
         public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
     }
 }

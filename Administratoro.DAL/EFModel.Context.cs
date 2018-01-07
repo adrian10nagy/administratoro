@@ -27,7 +27,9 @@ namespace Administratoro.DAL
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<ApartmentCounters> ApartmentCounters { get; set; }
         public virtual DbSet<CashBooks> CashBooks { get; set; }
+        public virtual DbSet<Counters> Counters { get; set; }
         public virtual DbSet<ErrorLogs> ErrorLogs { get; set; }
         public virtual DbSet<EstateExpenses> EstateExpenses { get; set; }
         public virtual DbSet<EstateExpensesRedistributionTypes> EstateExpensesRedistributionTypes { get; set; }
@@ -35,6 +37,7 @@ namespace Administratoro.DAL
         public virtual DbSet<Expenses> Expenses { get; set; }
         public virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
         public virtual DbSet<Functionalities> Functionalities { get; set; }
+        public virtual DbSet<Invoices> Invoices { get; set; }
         public virtual DbSet<Localities> Localities { get; set; }
         public virtual DbSet<PartnerRights> PartnerRights { get; set; }
         public virtual DbSet<Partners> Partners { get; set; }

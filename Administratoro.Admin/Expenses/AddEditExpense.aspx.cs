@@ -25,7 +25,7 @@ namespace Admin.Expenses
                 EstateExpenses ee = EstateExpensesManager.GetById(idExpenseEstate);
                 if (ee != null)
                 {
-                    btnRedirect.PostBackUrl = "CashBook.aspx?year=" + ee.Year + "&month=" + ee.Month;
+                    btnRedirect.PostBackUrl = "Invoices.aspx?year=" + ee.Year + "&month=" + ee.Month;
                     btnRedirect.Visible = true;
 
                     lblExpenseMeessage.Text = "Modifică <b>" + ee.Expenses.Name + "</b> pe luna <b>"
@@ -72,7 +72,8 @@ namespace Admin.Expenses
 
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
-            var tenants = TenantsManager.GetAllByEstateId(1);
+            var estate = Session[SessionConstants.SelectedEstate] as Estates;
+            var tenants = ApartmentsManager.GetAllByEstateId(estate.Id);
             EstateExpenses ee = EstateExpensesManager.GetById(esexId);
             foreach (var tenant in tenants)
             {
@@ -88,7 +89,8 @@ namespace Admin.Expenses
                     from TenantExpenses TE
                     Inner join Tenants T
                     ON TE.Id_Tenant = T.Id
-                    where Id_EstateExpense = " + esexId + " and Id_Tenant = " + tenant.Id;
+                    where Id_EstateExpense = " + esexId + " and Id_Tenant = " + tenant.Id +
+                                               " and T.Id_Estate = " + estate.Id;
 
                 SqlConnection cnn = new SqlConnection("data source=HOME\\SQLEXPRESS;initial catalog=Administratoro;integrated security=True;MultipleActiveResultSets=True;");
                 SqlCommand cmd = new SqlCommand(query, cnn);
@@ -103,7 +105,7 @@ namespace Admin.Expenses
 
         private void InitializeGridViewPerConsumption(DataTable dt, int esexId)
         {
-            var tenants = TenantsManager.GetAllByEstateId(1);
+            var tenants = ApartmentsManager.GetAllByEstateId(1);
 
             foreach (var tenant in tenants)
             {
@@ -204,7 +206,7 @@ namespace Admin.Expenses
                     var ee = EstateExpensesManager.GetById(idExpenseEstate);
                     if (ee != null)
                     {
-                        var tenants = TenantsManager.GetAllByEstateId(ee.Id_Estate);
+                        var tenants = ApartmentsManager.GetAllByEstateId(ee.Id_Estate);
                         var allTenantDependents = tenants.Select(t => t.Dependents).Sum();
                         var valuePerTenant = Math.Round(allvalue / allTenantDependents, 2).ToString();
                         txtExpensePerTenantEach.Text = valuePerTenant;
@@ -311,8 +313,8 @@ namespace Admin.Expenses
             if (int.TryParse(id_exes, out idExpenseEstate))
             {
                 var row = gvExpenses.Rows[e.RowIndex];
-                int tenantId;
-                if (int.TryParse(gvExpenses.DataKeys[e.RowIndex].Value.ToString(), out tenantId))
+                int apartmentid;
+                if (int.TryParse(gvExpenses.DataKeys[e.RowIndex].Value.ToString(), out apartmentid))
                 {
                     foreach (TableCell cell in row.Cells)
                     {
@@ -321,22 +323,22 @@ namespace Admin.Expenses
                             var theCell = (TextBox)cell.Controls[0];
                             if (string.IsNullOrEmpty(theCell.Text))
                             {
-                                TenantExpensesManager.RemoveTenantExpense(tenantId, idExpenseEstate);
+                                TenantExpensesManager.RemoveTenantExpense(apartmentid, idExpenseEstate);
                             }
                             else
                             {
                                 decimal expenseValue;
                                 if (decimal.TryParse(theCell.Text, NumberStyles.Any, new CultureInfo("ro-RO"), out expenseValue))
                                 {
-                                    var te = TenantExpensesManager.GetByExpenseEstateIdAndTenantId(idExpenseEstate, tenantId);
+                                    var te = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(idExpenseEstate, apartmentid);
 
                                     if (te != null)
                                     {
-                                        TenantExpensesManager.UpdateTenantExpense(idExpenseEstate, tenantId, expenseValue);
+                                        TenantExpensesManager.UpdateTenantExpense(idExpenseEstate, apartmentid, expenseValue);
                                     }
                                     else
                                     {
-                                        TenantExpensesManager.AddTenantExpense(tenantId, idExpenseEstate, expenseValue);
+                                        TenantExpensesManager.AddTenantExpense(apartmentid, idExpenseEstate, expenseValue);
                                     }
                                 }
                                 else
@@ -380,6 +382,7 @@ namespace Admin.Expenses
                 {
                     txtExpensesPerIndexValue.Enabled = false;
                     EstateExpensesManager.UpdatePricePerUnit(idExpenseEstate, newPricePerUnit);
+                    Response.Redirect(Request.RawUrl);
                 }
                 else
                 {

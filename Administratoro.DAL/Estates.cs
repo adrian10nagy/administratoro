@@ -16,6 +16,7 @@ namespace Administratoro.DAL
     {
         public Estates()
         {
+            this.Counters = new HashSet<Counters>();
             this.EstateExpenses = new HashSet<EstateExpenses>();
             this.StairCases = new HashSet<StairCases>();
             this.Tenants = new HashSet<Tenants>();
@@ -27,7 +28,11 @@ namespace Administratoro.DAL
         public int Id_Partner { get; set; }
         public Nullable<decimal> Indiviza { get; set; }
         public bool HasStaircase { get; set; }
+        public string BanckAccont { get; set; }
+        public string FiscalCode { get; set; }
+        public Nullable<int> CotaIndivizaAparments { get; set; }
     
+        public virtual ICollection<Counters> Counters { get; set; }
         public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
         public virtual Partners Partners { get; set; }
         public virtual ICollection<StairCases> StairCases { get; set; }

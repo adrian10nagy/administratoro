@@ -33,14 +33,14 @@ namespace Administratoro.BL.Managers
                     e.isDefault == ee.isDefault && e.Year == ee.Year && e.WasDisabled == ee.WasDisabled);
                 if (lastMonthEE != null)
                 {
-                    result = GetByExpenseEstateIdAndTenantId(lastMonthEE.Id, idTenant);
+                    result = GetByExpenseEstateIdAndapartmentid(lastMonthEE.Id, idTenant);
                 }
             }
 
             return result;
         }
 
-        public static TenantExpenses GetByExpenseEstateIdAndTenantId(int idExpenseEstate, int idTenant)
+        public static TenantExpenses GetByExpenseEstateIdAndapartmentid(int idExpenseEstate, int idTenant)
         {
             return GetContext().TenantExpenses.FirstOrDefault(te => te.Id_EstateExpense == idExpenseEstate && te.Id_Tenant == idTenant);
         }
@@ -52,20 +52,29 @@ namespace Administratoro.BL.Managers
 
         public static decimal? GetSumOfIndexesForexpense(int estateExpenseId)
         {
-            return GetContext().TenantExpenses.Where(te=>te.Id_EstateExpense == estateExpenseId).Sum(s=>s.IndexNew - s.IndexOld);
+            return GetContext().TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId).Sum(s => s.IndexNew - s.IndexOld);
         }
 
         public static decimal? GetSumOfIndivizaForExpense(EstateExpenses estateExpense)
         {
-            return GetContext().Tenants.Where(t => t.id_Estate == estateExpense.Id_Estate).Sum(s => s.CotaIndiviza);
+            decimal? result = null;
+
+            var tenants = GetContext().Tenants.Where(t => t.id_Estate == estateExpense.Id_Estate).ToList();
+
+            if (tenants != null && tenants.Count > 0)
+            {
+                result = tenants.Sum(s => s.CotaIndiviza);
+            }
+
+            return result;
         }
 
-        public static void AddTenantExpense(int tenantId, int expenseEstateId, decimal expenseValue)
+        public static void AddTenantExpense(int apartmentid, int expenseEstateId, decimal expenseValue)
         {
             TenantExpenses te = new TenantExpenses
             {
                 Value = expenseValue,
-                Id_Tenant = tenantId,
+                Id_Tenant = apartmentid,
                 Id_EstateExpense = expenseEstateId,
 
             };
@@ -73,10 +82,10 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
-        public static void UpdateTenantExpense(int idExpenseEstate, int tenantId, decimal value)
+        public static void UpdateTenantExpense(int idExpenseEstate, int apartmentid, decimal value)
         {
             TenantExpenses result = new TenantExpenses();
-            result = GetContext().TenantExpenses.First(b => b.Id_EstateExpense == idExpenseEstate && b.Id_Tenant == tenantId);
+            result = GetContext().TenantExpenses.First(b => b.Id_EstateExpense == idExpenseEstate && b.Id_Tenant == apartmentid);
 
             if (result != null)
             {
@@ -87,12 +96,12 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void RemoveTenantExpense(int tenantId, int year, int month, object expense)
+        public static void RemoveTenantExpense(int apartmentid, int year, int month, object expense)
         {
             if (expense != null && expense is Expenses)
             {
                 var e = (Expenses)expense;
-                Tenants tenant = GetContext().Tenants.First(t => t.Id == tenantId);
+                Tenants tenant = GetContext().Tenants.First(t => t.Id == apartmentid);
                 if (tenant != null)
                 {
                     EstateExpenses estateExpenses = GetContext().EstateExpenses.First(ee => ee.Id_Expense == e.Id
@@ -100,7 +109,7 @@ namespace Administratoro.BL.Managers
                     if (estateExpenses != null)
                     {
                         TenantExpenses tenantExpenses = GetContext().TenantExpenses.Where(tex => tex.Id_EstateExpense == estateExpenses.Id
-                            && tex.Id_Tenant == tenantId).FirstOrDefault();
+                            && tex.Id_Tenant == apartmentid).FirstOrDefault();
                         if (tenantExpenses != null && tenantExpenses.Value != null)
                         {
                             GetContext().TenantExpenses.Remove(tenantExpenses);
@@ -111,10 +120,10 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void RemoveTenantExpense(int tenantId, int estateExpenseId)
+        public static void RemoveTenantExpense(int apartmentid, int estateExpenseId)
         {
             TenantExpenses tenantExpenses = GetContext().TenantExpenses.Where(tex => tex.Id_EstateExpense == estateExpenseId
-                           && tex.Id_Tenant == tenantId).FirstOrDefault();
+                           && tex.Id_Tenant == apartmentid).FirstOrDefault();
             if (tenantExpenses != null && tenantExpenses.Value != null)
             {
                 GetContext().TenantExpenses.Remove(tenantExpenses);
@@ -132,25 +141,30 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddCotaIndivizaTenantExpenses(EstateExpenses expenseEstate, decimal totalValue)
+        public static void AddCotaIndivizaTenantExpenses(EstateExpenses expenseEstate, decimal? totalValue)
         {
             List<Tenants> tenants = GetContext().Tenants.Where(tt => tt.id_Estate == expenseEstate.Id_Estate).ToList();
-            decimal totalCota = tenants.Select(te => te.CotaIndiviza).Sum();
-            decimal valuePerCotaUnit = totalValue / totalCota;
+            decimal totalCota = tenants.Sum(te => te.CotaIndiviza);
 
             foreach (var tenant in tenants)
             {
                 TenantExpenses tte = GetContext().TenantExpenses.FirstOrDefault(tee => tee.Id_EstateExpense == expenseEstate.Id && tee.Id_Tenant == tenant.Id);
+                decimal? valuePerCotaUnit = null;
+                if (totalValue.HasValue && totalCota != 0)
+                {
+                    valuePerCotaUnit = totalValue.Value / totalCota;
+                }
+
                 if (tte != null)
                 {
-                    tte.Value = tenant.CotaIndiviza * valuePerCotaUnit;
+                    tte.Value = valuePerCotaUnit.HasValue ? tenant.CotaIndiviza * valuePerCotaUnit : null;
                     GetContext().Entry(tte).CurrentValues.SetValues(tte);
                 }
                 else
                 {
                     TenantExpenses te = new TenantExpenses
                     {
-                        Value = tenant.CotaIndiviza * valuePerCotaUnit,
+                        Value = valuePerCotaUnit.HasValue ? tenant.CotaIndiviza * valuePerCotaUnit : null,
                         Id_Tenant = tenant.Id,
                         Id_EstateExpense = expenseEstate.Id,
 
@@ -162,27 +176,27 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddPerTenantExpenses(int idExpenseEstate, decimal valuePerTenant)
+        public static void AddPerTenantExpenses(int idExpenseEstate, decimal? valuePerTenant)
         {
             var ee = EstateExpensesManager.GetById(idExpenseEstate);
             if (ee != null)
             {
-                List<Tenants> tenants2 = TenantsManager.GetAllByEstateId(ee.Id_Estate);
-                foreach (var tenant in tenants2)
+                List<Tenants> allTenants = ApartmentsManager.GetAllByEstateId(ee.Id_Estate);
+                foreach (var tenant in allTenants)
                 {
                     if (tenant != null)
                     {
-                        TenantExpenses tte = TenantExpensesManager.GetByExpenseEstateIdAndTenantId(idExpenseEstate, tenant.Id);
+                        TenantExpenses tte = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(idExpenseEstate, tenant.Id);
                         if (tte != null)
                         {
-                            tte.Value = valuePerTenant * tenant.Dependents;
+                            tte.Value = (valuePerTenant.HasValue) ? valuePerTenant * tenant.Dependents : null;
                             GetContext().Entry(tte).CurrentValues.SetValues(tte);
                         }
                         else
                         {
                             TenantExpenses te = new TenantExpenses
                             {
-                                Value = valuePerTenant * tenant.Dependents,
+                                Value = valuePerTenant.HasValue ? valuePerTenant * tenant.Dependents : null,
                                 Id_Tenant = tenant.Id,
                                 Id_EstateExpense = ee.Id,
                             };
@@ -241,12 +255,12 @@ namespace Administratoro.BL.Managers
 
         public static void ConfigurePerIndex(int esexId, EstateExpenses ee, Administratoro.DAL.Tenants tenant)
         {
-            var tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndTenantId(esexId, tenant.Id);
+            var tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(esexId, tenant.Id);
 
             if (tenantExpense == null)
             {
-                ExpensesManager.AddDefaultTenantExpense(tenant.Id, 2017, 8, esexId);
-                tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndTenantId(esexId, tenant.Id);
+                ExpensesManager.AddDefaultTenantExpense(tenant.Id, ee.Year, ee.Month, esexId);
+                tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(esexId, tenant.Id);
             }
 
             if (ee != null && ee.Id_ExpenseType == (int)ExpenseType.PerIndex)

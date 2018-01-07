@@ -21,6 +21,14 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
+        public static Estates AddNewEstate(Estates estate)
+        {
+            GetContext(true).Estates.Add(estate);
+            GetContext().SaveChanges();
+
+            return estate;
+        }
+
         public static List<Estates> GetAllEstates()
         {
             return GetContext(true).Estates.ToList();

@@ -26,13 +26,14 @@ namespace Administratoro.BL.Managers
             return GetContext().StairCases.Where(c => c.Id_Estate == estateId);
         }
 
-        public static void AddNew(string name, Estates estate)
+        public static void AddNew(Estates estate, string name, decimal? indiviza)
         {
 
             StairCases stairCase = new StairCases
             {
-               Id_Estate = estate.Id,
-               Value = name
+                Id_Estate = estate.Id,
+                Nume = name,
+                Indiviza = indiviza
             };
 
             GetContext().StairCases.Add(stairCase);
@@ -41,7 +42,7 @@ namespace Administratoro.BL.Managers
 
         public static void Remove(int stairCaseId, int estate)
         {
-            var staircase = GetContext().StairCases.FirstOrDefault(s => s.Id == stairCaseId && s.Id_Estate == estate);
+            var staircase = GetContext(true).StairCases.FirstOrDefault(s => s.Id == stairCaseId && s.Id_Estate == estate);
 
             if (staircase != null)
             {
@@ -52,6 +53,25 @@ namespace Administratoro.BL.Managers
                 GetContext().StairCases.Remove(staircase);
                 GetContext().SaveChanges();
             }
+        }
+
+        public static void Update(StairCases newStairCase, int stairId)
+        {
+            var staircase = GetContext(true).StairCases.FirstOrDefault(s => s.Id == stairId);
+
+            if (staircase != null)
+            {
+                staircase.Indiviza = newStairCase.Indiviza;
+                staircase.Nume = newStairCase.Nume;
+                GetContext().Entry(staircase).CurrentValues.SetValues(staircase);
+
+                GetContext().SaveChanges();
+            }
+        }
+
+        public static StairCases GetById(int stairId)
+        {
+            return GetContext().StairCases.FirstOrDefault(s => s.Id == stairId);
         }
     }
 }

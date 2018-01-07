@@ -16,14 +16,19 @@ namespace Administratoro.DAL
     {
         public StairCases()
         {
+            this.Counters = new HashSet<Counters>();
+            this.Invoices = new HashSet<Invoices>();
             this.Tenants = new HashSet<Tenants>();
         }
     
         public int Id { get; set; }
-        public string Value { get; set; }
+        public string Nume { get; set; }
         public int Id_Estate { get; set; }
+        public Nullable<decimal> Indiviza { get; set; }
     
+        public virtual ICollection<Counters> Counters { get; set; }
         public virtual Estates Estates { get; set; }
+        public virtual ICollection<Invoices> Invoices { get; set; }
         public virtual ICollection<Tenants> Tenants { get; set; }
     }
 }

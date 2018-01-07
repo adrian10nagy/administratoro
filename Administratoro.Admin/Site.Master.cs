@@ -3,6 +3,7 @@ namespace Admin
 {
     using Administratoro.BL.Constants;
     using Administratoro.BL.Managers;
+    using Administratoro.DAL;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -10,47 +11,88 @@ namespace Admin
     using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
+    using Administratoro.BL.Extensions;
 
     public partial class SiteMaster : MasterPage
     {
         protected void Page_Init(object sender, EventArgs e)
         {
-            //var user = Session["LoginUser"] as User;
-            //if (user == null || user.Id == 0)
-            //{
-            //    Response.Redirect("~/Account/Login.aspx");
-            //}
-            //else
-            //{
-            //    txtWelcomeUserName.Text = user.LastName + " " + user.FirstName;
-            //    txtMenuTopUserName.Text = user.LastName + " " + user.FirstName;
-            //    txtWelcomeLibrary.Text = "Biblioteca " + user.Library.Name;
-            //    txtWelcomeLibraryFooter.Text = "Biblioteca " + user.Library.Name;
-            //}
+            var partner = Session[SessionConstants.LoggedPartner] as Partners;
+            if (partner != null)
+            {
+                InitializeEsates(partner);
+                txtWelcomeUserName.Text = partner.Name;
+            }
+            else
+            {
+                Response.Redirect("~/Account/Login.aspx");
+            }
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            InitializeEsates();
         }
 
-        private void InitializeEsates()
+        private void InitializeEsates(Partners partner)
         {
-            int partnerId = 4;
-            var estates = EstatesManager.GetAllEstatesByPartner(partnerId);
-            if(estates != null && estates.Count > 0)
+            var estate = Session[SessionConstants.SelectedEstate] as Estates;
+            var estates = Session[SessionConstants.AllEsates] as List<Estates>;
+
+            if (estate == null || estates == null)
             {
-                Session[SessionConstants.SelectedEstate] = estates.First();
+                estates = EstatesManager.GetAllEstatesByPartner(partner.Id);
+                if (estates != null && estates.Count > 0)
+                {
+                    estate = estates.First();
+                    Session[SessionConstants.SelectedEstate] = estate;
+                    Session[SessionConstants.AllEsates] = estates;
+                }
             }
 
+            drpMainEstate.Items.Clear();
             foreach (var item in estates)
             {
                 drpMainEstate.Items.Add(new ListItem
                 {
                     Text = item.Name,
-                    Value = item.Id.ToString()
+                    Value = item.Id.ToString(),
+                    Selected = (item.Id == estate.Id)
                 });
             }
+
+            
+            drpMainEstate.Items.Add(new ListItem
+            {
+                Text = "Adaugă o nouă asociație",
+                Value = "-1"
+            });
+        }
+
+        protected void drpMainEstate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int? selectedEstate = drpMainEstate.SelectedValue.ToNullableInt();
+            var partner = Session[SessionConstants.LoggedPartner] as Partners;
+
+            if (selectedEstate.HasValue && selectedEstate.Value != -1)
+            {
+                var estates = EstatesManager.GetAllEstatesByPartner(partner.Id);
+                var existingEstate = estates.FirstOrDefault(es => es.Id == selectedEstate.Value);
+                if (existingEstate != null)
+                {
+                    Session[SessionConstants.SelectedEstate] = existingEstate;
+                }
+                else
+                {
+                    // to do- redirect
+                }
+            }
+            else
+            {
+                //Response.Redirect("~/Account/Login.aspx");
+                Response.Redirect("~/Associations/New.aspx");
+            }
+
+            Response.Redirect(Request.RawUrl);
         }
     }
 }

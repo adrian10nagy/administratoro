@@ -28,15 +28,15 @@ namespace Administratoro.BL.Managers
 
         public static CashBooks GetAllLatestByEstateId(int estateId)
         {
-            int maxYear =  GetContext().CashBooks.Max(i => i.EstateExpenses.Year);
+            int maxYear = GetContext().CashBooks.Max(i => i.EstateExpenses.Year);
 
-            var fromMaxYear =  GetContext().CashBooks.Where(c => c.EstateExpenses.Year == maxYear && c.EstateExpenses.Id_Estate == estateId);
+            var fromMaxYear = GetContext().CashBooks.Where(c => c.EstateExpenses.Year == maxYear && c.EstateExpenses.Id_Estate == estateId);
 
             int maxMonth = fromMaxYear.Max(i => i.EstateExpenses.Month);
 
             return GetContext().CashBooks.FirstOrDefault(c => c.EstateExpenses.Month == maxMonth);
         }
-        
+
         public static void AddDefault(int estateExpenseId)
         {
             CashBooks cashBooks = new CashBooks
@@ -48,7 +48,7 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
-        public static void Update(EstateExpenses estateExpense, decimal value)
+        public static void Update(EstateExpenses estateExpense, decimal? value)
         {
             CashBooks result = new CashBooks();
             result = GetContext(true).CashBooks.FirstOrDefault(c => c.Id_EstateExpense == estateExpense.Id);
@@ -73,21 +73,25 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
-        private static void UpdateTenantExpenses(EstateExpenses estateExpense, decimal value)
+        private static void UpdateTenantExpenses(EstateExpenses estateExpense, decimal? value)
         {
             if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
             {
                 // no update needed
             }
-            else if(estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+            else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
             {
                 TenantExpensesManager.AddCotaIndivizaTenantExpenses(estateExpense, value);
             }
-            else if(estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants)
+            else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants)
             {
-                var tenants = TenantsManager.GetAllByEstateId(estateExpense.Id_Estate);
-                var allTenantDependents = tenants.Select(t => t.Dependents).Sum();
-                var valuePerTenant = Math.Round(value / allTenantDependents, 2);
+                var tenants = ApartmentsManager.GetAllByEstateId(estateExpense.Id_Estate);
+                var allTenantDependents = tenants.Sum(t => t.Dependents);
+                decimal? valuePerTenant = null;
+                if (value.HasValue && allTenantDependents != 0)
+                {
+                    valuePerTenant = Math.Round(value.Value / allTenantDependents, 2);
+                }
                 TenantExpensesManager.AddPerTenantExpenses(estateExpense.Id, valuePerTenant);
             }
         }
@@ -96,12 +100,50 @@ namespace Administratoro.BL.Managers
         {
             CashBooks result = new CashBooks();
             result = GetContext(true).CashBooks.FirstOrDefault(c => c.Id_EstateExpense == estateExpenseId);
-            if(result!=null)
+            if (result != null)
             {
                 result.RedistributeType = type;
                 GetContext().Entry(result).CurrentValues.SetValues(result);
                 GetContext().SaveChanges();
             }
+        }
+
+        public static void Update(EstateExpenses estateExpense, decimal? value, int stairCaseId)
+        {
+            CashBooks cashbook = new CashBooks();
+            Invoices invoice = new Invoices();
+            cashbook = GetContext(true).CashBooks.FirstOrDefault(c => c.Id_EstateExpense == estateExpense.Id);
+
+            if (cashbook == null)
+            {
+                cashbook = new CashBooks
+                {
+                    Id_EstateExpense = estateExpense.Id
+                };
+                GetContext().CashBooks.Add(cashbook);
+            }
+
+            invoice = GetContext(true).Invoices.FirstOrDefault(c => c.Id_StairCase.ToString() == stairCaseId.ToString() && c.Id_CashBook == cashbook.Id);
+
+            if (invoice != null)
+            {
+                invoice.Value = value;
+                GetContext().Entry(invoice).CurrentValues.SetValues(invoice);
+            }
+            else
+            {
+                invoice = new Invoices
+                {
+                    Id_StairCase = stairCaseId,
+                    Value = value,
+                    Id_CashBook = cashbook.Id
+                };
+                GetContext().Invoices.Add(invoice);
+            }
+
+            UpdateTenantExpenses(estateExpense, value);
+
+            GetContext().SaveChanges();
         }
     }
 }

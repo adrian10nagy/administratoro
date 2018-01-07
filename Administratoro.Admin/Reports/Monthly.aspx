@@ -8,6 +8,8 @@
     
     <asp:Label ID="lblExpenseMeessage" runat="server"></asp:Label>
     <asp:LinkButton ID="lblExpenseMeessageDownload" CssClass="expenseMeessageConfigure" OnClick="lblExpenseMeessageDownload_Click" runat="server">Salvează raportul(<i class="fa fa-book"></i>)</asp:LinkButton>
+    <br /><br />
+    <small>* Sumele sunt calculate la momentul adăugării facturilor, modificările/adăugările ulterioare de  apartamente/persoane în întreținere etc nu vor fi considerate</small>
 
     <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="true" AutoGenerateEditButton="true"
         OnRowEditing="GridView1_RowEditing" OnRowUpdating="GridView1_RowUpdating1"

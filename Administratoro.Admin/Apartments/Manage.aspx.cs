@@ -34,7 +34,9 @@ namespace Admin.Tenants
         private void InitializeUsersTable()
         {
             var sessionUser = Session[SessionConstants.LoginUser] as Tenants;
-            var tentants = TenantsManager.GetAllByEstateId(1);
+            var estate = Session[SessionConstants.SelectedEstate] as Estates;
+
+            var tentants = ApartmentsManager.GetAllByEstateId(estate.Id);
 
             foreach (Tenants user in tentants)
             {
@@ -42,7 +44,7 @@ namespace Admin.Tenants
 
                 HyperLink linkEditUser = new HyperLink
                 {
-                    NavigateUrl = "~/Apartments/Add.aspx?tenantid=" + user.Id,
+                    NavigateUrl = "~/Apartments/Add.aspx?apartmentid=" + user.Id,
                     CssClass = "toClickOn",
                     Text = "Editează"
                 };

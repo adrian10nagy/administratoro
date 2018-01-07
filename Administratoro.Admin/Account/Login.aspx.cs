@@ -1,6 +1,9 @@
 ﻿
 namespace Admin.Account
 {
+    using Administratoro.BL.Constants;
+    using Administratoro.BL.Managers;
+    using Administratoro.DAL;
     using System;
     using System.Web.UI;
 
@@ -24,21 +27,21 @@ namespace Admin.Account
         {
             if (this.ValidateLogin())
             {
-                //User user = UsersManager.GetUserForLogin(txtUserName.Value, txtUserPassword.Value);
-                //if (user == null || !UserRightsManager.CanLogin(user.Id))
-                //{
-                //    txtUserName.Style.Add("border", "1px solid red");
-                //    txtUserPassword.Style.Add("border", "1px solid red");
-                //    lblMessageLogin.Visible = true;
-                //    lblMessageLogin.Text = "Logare nereușită<br> Combinație utilizator - parolă incorectă, acces restricționat";
-                //    lblMessageLogin.Style.Add("color", "red");
-                //}
-                //else
-                //{
-                //    Session[SessionConstants.LoginUser] = user;
-                //    //add to cookie
-                //    Response.Redirect("~/");
-                //}
+                Partners partner = PartnersManager.Login(txtUserName.Value, txtUserPassword.Value);
+                if (partner == null)
+                {
+                    txtUserName.Style.Add("border", "1px solid red");
+                    txtUserPassword.Style.Add("border", "1px solid red");
+                    lblMessageLogin.Visible = true;
+                    lblMessageLogin.Text = "Logare nereușită<br> Combinație email - parolă incorectă";
+                    lblMessageLogin.Style.Add("color", "red");
+                }
+                else
+                {
+                    Session[SessionConstants.LoggedPartner] = partner;
+                    //add to cookie
+                    Response.Redirect("~/");
+                }
             }
         }
 

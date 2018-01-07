@@ -6,7 +6,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <asp:Label ID="lblExpenseMeessage" runat="server"></asp:Label><br />
     <asp:Label ID="lblExpenseMeessageInfo" runat="server"></asp:Label><br />
-    <asp:Button runat="server" ID="btnRedirect" Text="Revino la Registru de casă" />
+    <asp:Button runat="server" ID="btnRedirect" Text="Revino la Facturi" />
     <br />
     <br />
 
