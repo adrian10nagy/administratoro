@@ -95,6 +95,8 @@ namespace Admin.Tenants
 
         private void PopulateCountersData(Estates estate, EstateExpenses esEx, Tenants apartment)
         {
+            Panel mainPanel = new Panel();
+
             Label lb = new Label
             {
                 Text = esEx.Expenses.Name,
@@ -113,45 +115,50 @@ namespace Admin.Tenants
             drp.Items.Add(defaultNull);
 
             var counters = estate.Counters.Where(c => c.Id_Expense == esEx.Id_Expense).ToList();
+            ApartmentCounters ac = null;
+
             if (apartment != null)
             {
-                List<int> apCounters = apartment.ApartmentCounters.Where(ac=>ac.;
-                //List<int> apCounters = counters.Select(c => c.Id).Union(apartment.ApartmentCounters.Where(ac => ac.Id_Counters == esEx.Id_Expense).ToList().Select(ac => ac.Id_Counters)).ToList();
-            }
-
-            if (counters.Count == 1)
-            {
-                ListItem li = new ListItem
+                foreach (var counter in counters)
                 {
-                    Text = counters[0].Value,
-                    Value = counters[0].Id.ToString(),
-                    Selected = true
-                };
-                drp.Items.Add(li);
-
-                estateCounters.Controls.Add(lb);
-                estateCounters.Controls.Add(drp);
-                estateCounters.Visible = true;
-                estateCounters.Controls.Add(new LiteralControl("<br />"));
-                estateCounters.Controls.Add(new LiteralControl("<br />"));
+                    var apCounter = apartment.ApartmentCounters.FirstOrDefault(a => a.Id_Counters == counter.Id);
+                    if (apCounter != null)
+                    {
+                        ac = apCounter;
+                    }
+                }
             }
-            else if (counters.Count != 0)
+
+            if (counters.Count != 0)
             {
+                Label lbApCounter = new Label
+                {
+                    Text = (ac != null) ? ac.Id.ToString() : string.Empty,
+                    CssClass = "col-md-6 col-xs-6",
+                    Visible = false
+                };
+
+                int i = 0;
                 foreach (var counter in counters)
                 {
                     ListItem li = new ListItem
                     {
                         Text = counter.Value,
-                        Value = counter.Id.ToString()
+                        Value = counter.Id.ToString(),
+                        Selected = (ac != null && ac.Id_Counters == counter.Id) || (apartment == null && i == 0)
                     };
                     drp.Items.Add(li);
 
-                    estateCounters.Controls.Add(lb);
-                    estateCounters.Controls.Add(drp);
+                    i++;
                 }
+
+                mainPanel.Controls.Add(lbApCounter);
+                mainPanel.Controls.Add(lb);
+                mainPanel.Controls.Add(drp);
+                mainPanel.Controls.Add(new LiteralControl("<br />"));
+                mainPanel.Controls.Add(new LiteralControl("<br />"));
                 estateCounters.Visible = true;
-                estateCounters.Controls.Add(new LiteralControl("<br />"));
-                estateCounters.Controls.Add(new LiteralControl("<br />"));
+                estateCounters.Controls.Add(mainPanel);
             }
         }
 
@@ -220,7 +227,7 @@ namespace Admin.Tenants
                 tenant = ApartmentsManager.Add(tenant);
                 lblStatus.Text = FlowMessages.TenantAddSuccess;
                 lblStatus.CssClass = "SuccessBox";
-                CleanFields();
+                //CleanFields();
             }
 
             ProcessSaveCounters(tenant);
@@ -241,24 +248,45 @@ namespace Admin.Tenants
         {
             var result = new List<ApartmentCounters>();
 
-            foreach (var control in estateCounters.Controls)
+            for (int i = 0; i < estateCounters.Controls.Count; i++)
             {
-                if (control is DropDownList)
+                if(estateCounters.Controls[i] is Panel)
                 {
-                    var drp = (DropDownList)control;
+                    var mainPanel = (Panel)estateCounters.Controls[i];
 
-                    int counterId;
-                    if (int.TryParse(drp.SelectedValue, out counterId))
+                    if (mainPanel.Controls.Count > 2 && mainPanel.Controls[0] is Label
+                        && mainPanel.Controls[2] is DropDownList)
                     {
-                        var counter = new ApartmentCounters
+                        var apCounterId = (Label)mainPanel.Controls[0];
+                        var counterId = (DropDownList)mainPanel.Controls[2];
+                        
+                        if (apCounterId != null  && counterId != null )
                         {
-                            Id_Counters = counterId,
-                            Id_Apartment = tenant.Id,
-                        };
+                            int apCntId;
+                            int apCntIdResult = -1;
+                            if(int.TryParse(apCounterId.Text, out apCntId))
+                            {
+                                apCntIdResult = apCntId;
+                            }
 
-                        result.Add(counter);
+                            int cntId;
+                            int cntIdResult = -1;
+                            if(int.TryParse(counterId.Text, out cntId))
+                            {
+                                cntIdResult = cntId;
+                            }
+
+                            var counter = new ApartmentCounters
+                            {
+                                Id = apCntIdResult,
+                                Id_Counters = cntIdResult,
+                                Id_Apartment = tenant.Id,
+                            };
+
+                            result.Add(counter);
+                        }
+
                     }
-
                 }
             }
 

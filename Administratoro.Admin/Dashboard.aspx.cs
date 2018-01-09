@@ -50,7 +50,12 @@ namespace Admin
 
                 if (sum != 100.0m)
                 {
-                    sb.Append("- Suma cotelor de indiviză a scărilor este de <b>" + sum.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
+                    //sb.Append("- Suma cotelor de indiviză a scărilor este de <b>" + sum.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
+                }
+
+                if(string.IsNullOrEmpty(sb.ToString()))
+                {
+                    sb.Append("- nici o notă/atenționare");
                 }
             }
         }

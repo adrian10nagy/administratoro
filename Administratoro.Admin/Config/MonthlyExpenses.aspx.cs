@@ -15,12 +15,39 @@ namespace Admin.Config
 
     public partial class MonthlyExpenses : System.Web.UI.Page
     {
+        private int? year()
+        {
+            var yearId = Request.QueryString["year"];
+            int year;
+            if (!int.TryParse(yearId, out year))
+            {
+                return null;
+            }
+
+            return year;
+        }
+
+        private int? month()
+        {
+            var monthId = Request.QueryString["month"];
+            int month;
+            if (!int.TryParse(monthId, out month) || month > 13 || month < 0)
+            {
+                return null;
+            }
+
+            return month;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+
+            
+
             if (!Page.IsPostBack)
             {
                 InitializeExpenses();
-                InitializeMonths();
+                InitializeMonths(year(), month());
             }
             else if (Page.IsPostBack && step22.Visible)
             {
@@ -33,6 +60,11 @@ namespace Admin.Config
             expenseListHref2.Attributes["isdone"] = "0";
             expenseListHref3.Attributes["class"] = "disabled";
             expenseListHref3.Attributes["isdone"] = "0";
+           
+            if (year() != null && month() != null && step11.Visible)
+            {
+                ConfigureStep1();
+            }
         }
 
         private void InitializeExpenses()
@@ -155,7 +187,7 @@ namespace Admin.Config
             return result;
         }
 
-        private void InitializeMonths()
+        private void InitializeMonths(int? year, int? month)
         {
             drpExpenseMonth.Items.Clear();
             var estate = (Estates)Session[SessionConstants.SelectedEstate];
@@ -167,13 +199,19 @@ namespace Admin.Config
                     drpExpenseMonth.Items.Add(new ListItem
                     {
                         Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(ym.Month) + " " + ym.Year,
-                        Value = ym.Month.ToString()
+                        Value = ym.Month.ToString(),
+                        Selected = (year != null && ym.Month == month.Value)
                     });
                 }
             }
         }
 
         protected void btnStep1_Click(object sender, EventArgs e)
+        {
+            ConfigureStep1();
+        }
+
+        private void ConfigureStep1()
         {
             step22Message.Text = "Bifează cheltuielile de afișat pentru luna " + drpExpenseMonth.SelectedItem.Text;
             step11.Visible = false;
@@ -271,7 +309,7 @@ namespace Admin.Config
                                             EstateExpensesManager.UpdateEstateExpenseType(ee, selectedExpenseType);
                                         }
 
-                                        if(ee!= null && (!ee.SplitPerStairCase.HasValue || ee.SplitPerStairCase.Value != cbExpensePerStaircase))
+                                        if (ee != null && (!ee.SplitPerStairCase.HasValue || ee.SplitPerStairCase.Value != cbExpensePerStaircase))
                                         {
                                             EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, false, cbExpensePerStaircase);
                                         }
@@ -296,15 +334,8 @@ namespace Admin.Config
 
         protected void btnStep3Next2_Click(object sender, EventArgs e)
         {
-            step11.Visible = true;
-            step22.Visible = false;
-            step33.Visible = false;
-            expenseListHref1.Attributes["class"] = "selected";
-            expenseListHref1.Attributes["isdone"] = "0";
-            expenseListHref2.Attributes["class"] = "disabled";
-            expenseListHref2.Attributes["isdone"] = "0";
-            expenseListHref3.Attributes["class"] = "disabled";
-            expenseListHref3.Attributes["isdone"] = "0";
+            Response.Redirect("~/Config/MonthlyExpenses.aspx");
+
         }
     }
 }

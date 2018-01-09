@@ -31,20 +31,34 @@ namespace Administratoro.BL.Managers
 
         public static void AddOrUpdateApartmentCounters(List<ApartmentCounters> counters)
         {
+            // if id = -1 -> add id
+            // if counterid = -1 remove id
+            // else update it
             foreach (ApartmentCounters apCounter in counters)
             {
-                var ap = GetContext(true).ApartmentCounters.FirstOrDefault(a=>a.Id == apCounter.Id);
-                if(ap!=null)
+                if (apCounter.Id == -1 && apCounter.Id_Counters != -1)
                 {
-                    UpdateApartmentCounters(ap.Id, apCounter);
+                    GetContext().ApartmentCounters.Add(apCounter);
+                    GetContext().SaveChanges();
                 }
                 else
                 {
-                    GetContext().ApartmentCounters.Add(apCounter);
+                    var ap = GetContext(true).ApartmentCounters.FirstOrDefault(a => a.Id == apCounter.Id);
+
+                    if (ap != null && apCounter.Id_Counters == -1)
+                    {
+                        var apRemove = GetContext(true).ApartmentCounters.FirstOrDefault(a => a.Id == apCounter.Id);
+                        GetContext().ApartmentCounters.Remove(apRemove);
+                        GetContext().SaveChanges();
+
+                    }
+                    else if (ap != null)
+                    {
+                        UpdateApartmentCounters(ap.Id, apCounter);
+                    }
                 }
             }
 
-            GetContext().SaveChanges();
         }
 
         private static void UpdateApartmentCounters(int apCounterId, ApartmentCounters newApCounter)
@@ -53,7 +67,6 @@ namespace Administratoro.BL.Managers
 
             if (oldApCounter != null)
             {
-                oldApCounter.Id_Apartment = newApCounter.Id_Apartment;
                 oldApCounter.Id_Counters = newApCounter.Id_Counters;
                 GetContext().Entry(oldApCounter).CurrentValues.SetValues(oldApCounter);
 

@@ -118,7 +118,6 @@ namespace Admin.Config
 
             int month = 0;
             int year = 0;
-            var i = 1;
             if (int.TryParse(drpOpeningMonth.SelectedValue, out month) && int.TryParse(drpOpeningYear.SelectedValue, out year))
             {
                 var estate = (Estates)Session[SessionConstants.SelectedEstate];
@@ -127,7 +126,7 @@ namespace Admin.Config
                     var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
                     int defaultYear = 2017;
                     int defaultMonth = 1;
-                    if(defaultEE.Count > 0)
+                    if (defaultEE.Count > 0)
                     {
                         defaultYear = defaultEE.FirstOrDefault().Year;
                         defaultMonth = defaultEE.FirstOrDefault().Month;
@@ -135,6 +134,7 @@ namespace Admin.Config
                     var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
 
                     var expenses = ExpensesManager.GetAllExpensesAsList();
+                    var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
 
                     foreach (var item in expenses)
                     {
@@ -187,12 +187,34 @@ namespace Admin.Config
 
                         expenseType.Controls.Add(dp);
                         row.Cells.Add(expenseType);
-                        i++;
+
+                        if (estate.HasStaircase)
+                        {
+                            TableCell tcStairCase = new TableCell();
+                            CheckBox stairCaseSplit = new CheckBox();
+                            stairCaseSplit.AutoPostBack = false;
+                            stairCaseSplit.Checked = isStairCaseSplitSelected(item, ee, defaultMonth);
+                            tcStairCase.Controls.Add(stairCaseSplit);
+                            row.Cells.Add(tcStairCase);
+                        }
 
                         tblMonthlyExpenses.Rows.Add(row);
                     }
                 }
             }
+        }
+
+        private bool isStairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int month)
+        {
+
+            bool result = false;
+            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == 2017 &&
+                !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value).Any())
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         private static bool isDplExpenseTypesSelected(Administratoro.DAL.EstateExpenses expense, ExpenseType expenseType)

@@ -175,6 +175,10 @@
     visibility: hidden;
 }
 
+.right_col {
+    height: 100%;
+}
+
 .nav-sm .container.body .right_col {
     padding: 10px 20px;
     margin-left: 70px;
@@ -5113,28 +5117,27 @@ input#MainContent_estateStairs_1 {
     font-weight: 700;
 }
 
-.associationsLabels{
-    font-size:20px;
-    font-weight:bold;
+.associationsLabels {
+    font-size: 20px;
+    font-weight: bold;
 }
 
-.associationsIndexStairs th{
-    background-color:#2a3f54;
-    color:white;
+.associationsIndexStairs th {
+    background-color: #2a3f54;
+    color: white;
 }
 
-.sectionDivider{
-    border-bottom:2px solid #e6e9ed;
-    padding-bottom:15px;
-    padding-top:5px;
+.sectionDivider {
+    border-bottom: 2px solid #e6e9ed;
+    padding-bottom: 15px;
+    padding-top: 5px;
 }
 
-.associationsNewCounters
-{
+.associationsNewCounters {
     display: flex;
     padding: 5px;
 }
 
-.textAlignCenter{
-    text-align:center;
+.textAlignCenter {
+    text-align: center;
 }

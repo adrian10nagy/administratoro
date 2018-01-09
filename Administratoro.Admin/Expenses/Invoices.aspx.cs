@@ -11,12 +11,8 @@ namespace Admin.Expenses
     using System.Globalization;
     using System.Web.UI;
 
-    public partial class CashBook : System.Web.UI.Page
+    public partial class CashBook : BasePage
     {
-        public int Month { get { return month(); } }
-        public int Estate { get { return estateId(); } }
-        public int Year { get { return year(); } }
-
         private int estateId()
         {
             var estate = (Estates)Session[SessionConstants.SelectedEstate];
@@ -27,18 +23,6 @@ namespace Admin.Expenses
             }
 
             return estate.Id;
-        }
-
-        private Estates estate()
-        {
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
-
-            if (estate == null)
-            {
-                Response.Redirect("..\\Expenses\\Dashboard.aspx", true);
-            }
-
-            return estate;
         }
 
         private int month()
@@ -253,7 +237,7 @@ namespace Admin.Expenses
             }
             else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants && estateExpense.TenantExpenses.Count > 0)
             {
-                var col3Literal = new Literal { Text = estate().Tenants.Sum(s => s.Dependents) + " locatari, <b>" + EstateExpensesManager.CalculatePertenantPrice(estateExpense) + "</b> alocat fiecăruia " };
+                var col3Literal = new Literal { Text = Estate.Tenants.Sum(s => s.Dependents) + " locatari, <b>" + EstateExpensesManager.CalculatePertenantPrice(estateExpense) + "</b> alocat fiecăruia " };
                 col3.Controls.Add(col3Literal);
             }
 
@@ -270,9 +254,9 @@ namespace Admin.Expenses
 
             tb1 = new TextBox { Enabled = false, CssClass = "cashbookItemTextbox" };
 
-            if (estate().HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+            if (Estate.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
             {
-                foreach (StairCases stairCase in estate().StairCases)
+                foreach (StairCases stairCase in Estate.StairCases)
                 {
                     var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_CashBook == cashBook.Id);
                     var lit = new Literal
@@ -324,7 +308,7 @@ namespace Admin.Expenses
             var col0 = new Panel();
             Literal literal0 = new Literal
             {
-                Text = statusOfCashBook(cashBook, estateExpense, isExpensePerIndex)               
+                Text = statusOfCashBook(cashBook, estateExpense, isExpensePerIndex)
             };
             col0.Controls.Add(literal0);
             col0.CssClass = "col-md-1 col-sm-2 col-xs-6";
@@ -342,7 +326,7 @@ namespace Admin.Expenses
             var headerCol1Literal1 = new Literal { Text = "Cheltuială" };
             headerCol1.Controls.Add(headerCol1Literal1);
 
-            var headerCol2 = new Panel { CssClass = "col-md-2 col-sm-1 col-xs-6" };
+            var headerCol2 = new Panel { CssClass = "col-md-2 col-sm-2 col-xs-6" };
             var headerCol2Literal2 = new Literal { Text = "Valoare factură" };
             headerCol2.Controls.Add(headerCol2Literal2);
 
@@ -353,9 +337,10 @@ namespace Admin.Expenses
             var headerCol4 = new Panel { CssClass = "col-md-2 col-sm-3 col-xs-6" };
 
             var headerCol5 = new Panel { CssClass = "col-md-2 col-sm-2 col-xs-6" };
-            var headerCol5Literal = new Literal { Text = "Cheltuieli" };
-            headerCol5.Controls.Add(headerCol5Literal);
-            var headerCol6 = new Panel { CssClass = "col-md-3 col-sm-3 col-xs-6" };
+            var headerCol6 = new Panel { CssClass = "col-md-2 col-sm-2 col-xs-6" };
+            var headerCol7 = new Panel { CssClass = "col-md-3 col-sm-3 col-xs-6" };
+            var headerCol7Literal = new Literal { Text = "Cheltuielile apartamentelor" };
+            headerCol7.Controls.Add(headerCol7Literal);
 
             var headerPanel = new Panel() { CssClass = "headerRow row" };
             headerPanel.Controls.Add(headerCol0);
@@ -364,6 +349,7 @@ namespace Admin.Expenses
             headerPanel.Controls.Add(headerCol3);
             headerPanel.Controls.Add(headerCol5);
             headerPanel.Controls.Add(headerCol6);
+            headerPanel.Controls.Add(headerCol7);
             cashBookMain.Controls.Add(headerPanel);
         }
 
@@ -380,7 +366,7 @@ namespace Admin.Expenses
             var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
             var allExpenses = estateExpense.TenantExpenses.Count();
 
-            return "<b>"+addedExpenses + "</b> cheltuieli adăugate din <b>" + allExpenses + "</b> ";
+            return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + allExpenses + "</b> ";
         }
 
         private string statusOfCashBook(CashBooks cashBook, EstateExpenses estateExpense, bool isExpensePerIndex)
@@ -389,11 +375,52 @@ namespace Admin.Expenses
             var redistributeValue = CalculateRedistributeValue(estateExpense.Id, cashBook);
             var percentage = string.Empty;
 
-            if (isExpensePerIndex && (decimal)estateExpense.TenantExpenses.Count() > 0)
+            if (isExpensePerIndex)
             {
-                percentage = ExpensePercentageFilledIn(estateExpense);
+                if ((decimal)estateExpense.TenantExpenses.Count() > 0)
+                {
+                    percentage = ExpensePercentageFilledIn(estateExpense);
+                }
+                else if(estateExpense.Estates.Tenants.Count > 0)
+                {
+                    percentage = "0";
+                }
             }
 
+            if(estateExpense.SplitPerStairCase.HasValue &&estateExpense.SplitPerStairCase.Value)
+            {
+                if (cashBook.Invoices.All(i => i.Value.HasValue) && string.IsNullOrEmpty(percentage) && string.IsNullOrEmpty(redistributeValue))
+                {
+                    result = "<i class='fa fa-check'></i> 100%";
+                }
+                else if((cashBook.Invoices.Any(i=>!i.Value.HasValue) || cashBook.Invoices.Count != estateExpense.Estates.StairCases.Count) &&
+                    (!string.IsNullOrEmpty(percentage)))
+                {
+                    result = "Adaugă facturile, cheltuielile individuale! 0%";
+                }
+                else if(cashBook.Invoices.Any(i=>!i.Value.HasValue) || cashBook.Invoices.Count != estateExpense.Estates.StairCases.Count)
+                {
+                    result = "Facturi neadăugate! 20%";
+                }
+                else if (!string.IsNullOrEmpty(percentage))
+                {
+                    result = "Cheltuieli neadăugate! 20%";
+                }
+                else if (!string.IsNullOrEmpty(redistributeValue))
+                {
+                    result = "Redistribuie cheltuiala! 80%";
+                }
+            }
+            else
+            {
+                result = statusOfCashBookForNoSplit(cashBook, result, redistributeValue, percentage);
+            }
+
+            return result;
+        }
+
+        private static string statusOfCashBookForNoSplit(CashBooks cashBook, string result, string redistributeValue, string percentage)
+        {
             if (cashBook.Value != null && string.IsNullOrEmpty(percentage) && string.IsNullOrEmpty(redistributeValue))
             {
                 result = "<i class='fa fa-check'></i> 100%";
@@ -402,6 +429,10 @@ namespace Admin.Expenses
             {
                 result = "Adaugă factura, cheltuielile! 0%";
             }
+            else if (!string.IsNullOrEmpty(percentage))
+            {
+                result = "Cheltuieli neadăugate! 20%";
+            }
             else if (!string.IsNullOrEmpty(redistributeValue))
             {
                 result = "Redistribuie cheltuiala! 80%";
@@ -409,10 +440,6 @@ namespace Admin.Expenses
             else if (cashBook.Value == null)
             {
                 result = "Lipsă factură! 60%";
-            }
-            else if (!string.IsNullOrEmpty(percentage))
-            {
-                result = "Cheltuieli neadăugate! 20%";
             }
 
             return result;
@@ -436,6 +463,7 @@ namespace Admin.Expenses
 
         public void ClickablePanel1_Click(object sender, EventArgs e)
         {
+            bool shouldRefresh = false;
             Button btn = (Button)sender;
             int estateExpenseId;
             bool found = false;
@@ -496,6 +524,7 @@ namespace Admin.Expenses
                                                     if (!(estateExpense.Estates.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value))
                                                     {
                                                         CashBookManager.Update(estateExpense, updatedValue);
+                                                        RefreshEstate();
                                                         Response.Redirect(Request.RawUrl);
                                                     }
                                                     else
@@ -511,8 +540,8 @@ namespace Admin.Expenses
 
                                                             }
 
-                                                            CashBookManager.Update(estateExpense, updatedValue,stairCaseId);
-
+                                                            CashBookManager.Update(estateExpense, updatedValue, stairCaseId);
+                                                            shouldRefresh = true;
                                                         }
                                                     }
 
@@ -539,11 +568,16 @@ namespace Admin.Expenses
                     }
                 }
             }
+
+            if (shouldRefresh)
+            {
+                RefreshEstate();
+            }
         }
 
         protected void lblExpenseMeessageConfigure_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Config/MonthlyExpenses.aspx");
+            Response.Redirect("~/Config/MonthlyExpenses.aspx?year=" + year() + "&month=" + month());
         }
 
         private void btnRedistibuteRemainingExpense_Click(object sender, EventArgs e)

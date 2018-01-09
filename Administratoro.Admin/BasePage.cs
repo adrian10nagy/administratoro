@@ -33,5 +33,10 @@ namespace Admin
             }
         }
 
+        public void RefreshEstate()
+        {
+            Session[SessionConstants.SelectedEstate] = EstatesManager.GetById(Estate.Id);
+        }
+
     }
 }
