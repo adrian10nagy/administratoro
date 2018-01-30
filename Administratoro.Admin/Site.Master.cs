@@ -35,17 +35,17 @@ namespace Admin
 
         private void InitializeEsates(Partners partner)
         {
-            var estate = Session[SessionConstants.SelectedEstate] as Estates;
-            var estates = Session[SessionConstants.AllEsates] as List<Estates>;
+            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
+            var estates = Session[SessionConstants.AllAssociations] as List<Estates>;
 
             if (estate == null || estates == null)
             {
-                estates = EstatesManager.GetAllEstatesByPartner(partner.Id);
+                estates = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
                 if (estates != null && estates.Count > 0)
                 {
                     estate = estates.First();
-                    Session[SessionConstants.SelectedEstate] = estate;
-                    Session[SessionConstants.AllEsates] = estates;
+                    Session[SessionConstants.SelectedAssociation] = estate;
+                    Session[SessionConstants.AllAssociations] = estates;
                 }
             }
 
@@ -75,11 +75,11 @@ namespace Admin
 
             if (selectedEstate.HasValue && selectedEstate.Value != -1)
             {
-                var estates = EstatesManager.GetAllEstatesByPartner(partner.Id);
+                var estates = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
                 var existingEstate = estates.FirstOrDefault(es => es.Id == selectedEstate.Value);
                 if (existingEstate != null)
                 {
-                    Session[SessionConstants.SelectedEstate] = existingEstate;
+                    Session[SessionConstants.SelectedAssociation] = existingEstate;
                 }
                 else
                 {

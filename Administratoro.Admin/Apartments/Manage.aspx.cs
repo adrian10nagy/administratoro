@@ -34,7 +34,7 @@ namespace Admin.Tenants
         private void InitializeUsersTable()
         {
             var sessionUser = Session[SessionConstants.LoginUser] as Tenants;
-            var estate = Session[SessionConstants.SelectedEstate] as Estates;
+            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
 
             var tentants = ApartmentsManager.GetAllByEstateId(estate.Id);
 

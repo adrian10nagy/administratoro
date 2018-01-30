@@ -16,12 +16,12 @@ namespace Administratoro.DAL
     {
         public EstateExpensesRedistributionTypes()
         {
-            this.CashBooks = new HashSet<CashBooks>();
+            this.EstateExpenses = new HashSet<EstateExpenses>();
         }
     
         public int Id { get; set; }
         public string Value { get; set; }
     
-        public virtual ICollection<CashBooks> CashBooks { get; set; }
+        public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
     }
 }

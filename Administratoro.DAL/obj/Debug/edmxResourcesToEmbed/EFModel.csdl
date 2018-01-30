@@ -32,7 +32,6 @@
     </FunctionImport>
     <FunctionImport Name="sp_upgraddiagrams" />
     <EntitySet Name="ApartmentCounters" EntityType="AdministratoroModel.ApartmentCounters" />
-    <EntitySet Name="CashBooks" EntityType="AdministratoroModel.CashBooks" />
     <EntitySet Name="Counters" EntityType="AdministratoroModel.Counters" />
     <EntitySet Name="ErrorLogs" EntityType="AdministratoroModel.ErrorLogs" />
     <EntitySet Name="EstateExpenses" EntityType="AdministratoroModel.EstateExpenses" />
@@ -60,18 +59,6 @@
       <End Role="Counters" EntitySet="Counters" />
       <End Role="ApartmentCounters" EntitySet="ApartmentCounters" />
     </AssociationSet>
-    <AssociationSet Name="FK__CashBooks__Id_Es__2A164134" Association="AdministratoroModel.FK__CashBooks__Id_Es__2A164134">
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
-      <End Role="CashBooks" EntitySet="CashBooks" />
-    </AssociationSet>
-    <AssociationSet Name="FK__CashBooks__Redis__65370702" Association="AdministratoroModel.FK__CashBooks__Redis__65370702">
-      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
-      <End Role="CashBooks" EntitySet="CashBooks" />
-    </AssociationSet>
-    <AssociationSet Name="FK__Invoices__Id_Cas__76619304" Association="AdministratoroModel.FK__Invoices__Id_Cas__76619304">
-      <End Role="CashBooks" EntitySet="CashBooks" />
-      <End Role="Invoices" EntitySet="Invoices" />
-    </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Est__0B5CAFEA" Association="AdministratoroModel.FK__Counters__Id_Est__0B5CAFEA">
       <End Role="Estates" EntitySet="Estates" />
       <End Role="Counters" EntitySet="Counters" />
@@ -84,6 +71,10 @@
       <End Role="StairCases" EntitySet="StairCases" />
       <End Role="Counters" EntitySet="Counters" />
     </AssociationSet>
+    <AssociationSet Name="FK__EstateExp__Redis__44952D46" Association="AdministratoroModel.FK__EstateExp__Redis__44952D46">
+      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+    </AssociationSet>
     <AssociationSet Name="FK__EstateExt__Id_Es__76969D2E" Association="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E">
       <End Role="Estates" EntitySet="Estates" />
       <End Role="EstateExpenses" EntitySet="EstateExpenses" />
@@ -95,6 +86,10 @@
     <AssociationSet Name="FK__EstateExt__Id_Ex__787EE5A0" Association="AdministratoroModel.FK__EstateExt__Id_Ex__787EE5A0">
       <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
       <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Invoices__Id_Est__3FD07829" Association="AdministratoroModel.FK__Invoices__Id_Est__3FD07829">
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
     <AssociationSet Name="FK__TenantExp__Id_Es__0F624AF8" Association="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8">
       <End Role="EstateExpenses" EntitySet="EstateExpenses" />
@@ -116,7 +111,7 @@
       <End Role="Functionalities" EntitySet="Functionalities" />
       <End Role="PartnerRights" EntitySet="PartnerRights" />
     </AssociationSet>
-    <AssociationSet Name="FK__Invoices__Id_Sta__756D6ECB" Association="AdministratoroModel.FK__Invoices__Id_Sta__756D6ECB">
+    <AssociationSet Name="FK__Invoices__Id_sta__42ACE4D4" Association="AdministratoroModel.FK__Invoices__Id_sta__42ACE4D4">
       <End Role="StairCases" EntitySet="StairCases" />
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
@@ -170,21 +165,6 @@
     <NavigationProperty Name="Tenants" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__1B9317B3" FromRole="ApartmentCounters" ToRole="Tenants" />
     <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__Apartment__Id_Co__1C873BEC" FromRole="ApartmentCounters" ToRole="Counters" />
   </EntityType>
-  <EntityType Name="CashBooks">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="Id_EstateExpense" Type="Int32" Nullable="false" />
-    <Property Name="Value" Type="Decimal" Precision="12" Scale="2" />
-    <Property Name="ExtraInfo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Name="AddedOn" Type="DateTime" Precision="3" />
-    <Property Name="LastModifiedOn" Type="DateTime" Precision="3" />
-    <Property Name="RedistributeType" Type="Int32" />
-    <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__CashBooks__Id_Es__2A164134" FromRole="CashBooks" ToRole="EstateExpenses" />
-    <NavigationProperty Name="EstateExpensesRedistributionTypes" Relationship="AdministratoroModel.FK__CashBooks__Redis__65370702" FromRole="CashBooks" ToRole="EstateExpensesRedistributionTypes" />
-    <NavigationProperty Name="Invoices" Relationship="AdministratoroModel.FK__Invoices__Id_Cas__76619304" FromRole="CashBooks" ToRole="Invoices" />
-  </EntityType>
   <EntityType Name="Counters">
     <Key>
       <PropertyRef Name="Id" />
@@ -221,10 +201,12 @@
     <Property Name="WasDisabled" Type="Boolean" Nullable="false" />
     <Property Name="PricePerExpenseUnit" Type="Decimal" Precision="20" Scale="2" />
     <Property Name="SplitPerStairCase" Type="Boolean" />
-    <NavigationProperty Name="CashBooks" Relationship="AdministratoroModel.FK__CashBooks__Id_Es__2A164134" FromRole="EstateExpenses" ToRole="CashBooks" />
+    <Property Name="RedistributeType" Type="Int32" />
+    <NavigationProperty Name="EstateExpensesRedistributionTypes" Relationship="AdministratoroModel.FK__EstateExp__Redis__44952D46" FromRole="EstateExpenses" ToRole="EstateExpensesRedistributionTypes" />
     <NavigationProperty Name="Estates" Relationship="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E" FromRole="EstateExpenses" ToRole="Estates" />
     <NavigationProperty Name="Expenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Ex__778AC167" FromRole="EstateExpenses" ToRole="Expenses" />
     <NavigationProperty Name="ExpenseTypes" Relationship="AdministratoroModel.FK__EstateExt__Id_Ex__787EE5A0" FromRole="EstateExpenses" ToRole="ExpenseTypes" />
+    <NavigationProperty Name="Invoices" Relationship="AdministratoroModel.FK__Invoices__Id_Est__3FD07829" FromRole="EstateExpenses" ToRole="Invoices" />
     <NavigationProperty Name="TenantExpenses" Relationship="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" FromRole="EstateExpenses" ToRole="TenantExpenses" />
   </EntityType>
   <EntityType Name="EstateExpensesRedistributionTypes">
@@ -233,7 +215,7 @@
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Value" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
-    <NavigationProperty Name="CashBooks" Relationship="AdministratoroModel.FK__CashBooks__Redis__65370702" FromRole="EstateExpensesRedistributionTypes" ToRole="CashBooks" />
+    <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__EstateExp__Redis__44952D46" FromRole="EstateExpensesRedistributionTypes" ToRole="EstateExpenses" />
   </EntityType>
   <EntityType Name="Estates">
     <Key>
@@ -247,7 +229,7 @@
     <Property Name="HasStaircase" Type="Boolean" Nullable="false" />
     <Property Name="BanckAccont" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
     <Property Name="FiscalCode" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
-    <Property Name="CotaIndivizaAparments" Type="Int32" />
+    <Property Name="CotaIndivizaAparments" Type="Decimal" Precision="14" Scale="4" />
     <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__Counters__Id_Est__0B5CAFEA" FromRole="Estates" ToRole="Counters" />
     <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E" FromRole="Estates" ToRole="EstateExpenses" />
     <NavigationProperty Name="Partners" Relationship="AdministratoroModel.FK__Estates__Id_Part__5CD6CB2B" FromRole="Estates" ToRole="Partners" />
@@ -260,6 +242,7 @@
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="specialType" Type="Boolean" />
     <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__Counters__Id_Exp__0D44F85C" FromRole="Expenses" ToRole="Counters" />
     <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Ex__778AC167" FromRole="Expenses" ToRole="EstateExpenses" />
   </EntityType>
@@ -285,10 +268,11 @@
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Value" Type="Decimal" Precision="20" Scale="2" />
-    <Property Name="Id_StairCase" Type="Int32" Nullable="false" />
-    <Property Name="Id_CashBook" Type="Int32" Nullable="false" />
-    <NavigationProperty Name="CashBooks" Relationship="AdministratoroModel.FK__Invoices__Id_Cas__76619304" FromRole="Invoices" ToRole="CashBooks" />
-    <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__Invoices__Id_Sta__756D6ECB" FromRole="Invoices" ToRole="StairCases" />
+    <Property Name="Id_EstateExpense" Type="Int32" />
+    <Property Name="Id_StairCase" Type="Int32" />
+    <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__Invoices__Id_Est__3FD07829" FromRole="Invoices" ToRole="EstateExpenses" />
+    <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__Invoices__Id_sta__42ACE4D4" FromRole="Invoices" ToRole="StairCases" />
   </EntityType>
   <EntityType Name="Localities">
     <Key>
@@ -359,7 +343,7 @@
     <Property Name="Indiviza" Type="Decimal" Precision="14" Scale="4" />
     <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__Counters__Id_Sta__0C50D423" FromRole="StairCases" ToRole="Counters" />
     <NavigationProperty Name="Estates" Relationship="AdministratoroModel.FK__StairCase__Id_Es__4F47C5E3" FromRole="StairCases" ToRole="Estates" />
-    <NavigationProperty Name="Invoices" Relationship="AdministratoroModel.FK__Invoices__Id_Sta__756D6ECB" FromRole="StairCases" ToRole="Invoices" />
+    <NavigationProperty Name="Invoices" Relationship="AdministratoroModel.FK__Invoices__Id_sta__42ACE4D4" FromRole="StairCases" ToRole="Invoices" />
     <NavigationProperty Name="Tenants" Relationship="AdministratoroModel.FK__Tenants__Id_Stai__51300E55" FromRole="StairCases" ToRole="Tenants" />
   </EntityType>
   <EntityType Name="sysdiagrams">
@@ -408,7 +392,7 @@
     <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
     <Property Name="Dependents" Type="Int32" Nullable="false" />
     <Property Name="id_Estate" Type="Int32" Nullable="false" />
-    <Property Name="CotaIndiviza" Type="Decimal" Nullable="false" Precision="6" Scale="2" />
+    <Property Name="CotaIndiviza" Type="Decimal" Precision="14" Scale="4" />
     <Property Name="Number" Type="Int32" Nullable="false" />
     <Property Name="Id_StairCase" Type="Int32" />
     <NavigationProperty Name="ApartmentCounters" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__1B9317B3" FromRole="Tenants" ToRole="ApartmentCounters" />
@@ -438,42 +422,6 @@
       </Principal>
       <Dependent Role="ApartmentCounters">
         <PropertyRef Name="Id_Counters" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__CashBooks__Id_Es__2A164134">
-    <End Type="AdministratoroModel.EstateExpenses" Role="EstateExpenses" Multiplicity="1" />
-    <End Type="AdministratoroModel.CashBooks" Role="CashBooks" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="EstateExpenses">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="CashBooks">
-        <PropertyRef Name="Id_EstateExpense" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__CashBooks__Redis__65370702">
-    <End Type="AdministratoroModel.EstateExpensesRedistributionTypes" Role="EstateExpensesRedistributionTypes" Multiplicity="0..1" />
-    <End Type="AdministratoroModel.CashBooks" Role="CashBooks" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="EstateExpensesRedistributionTypes">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="CashBooks">
-        <PropertyRef Name="RedistributeType" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__Invoices__Id_Cas__76619304">
-    <End Type="AdministratoroModel.CashBooks" Role="CashBooks" Multiplicity="1" />
-    <End Type="AdministratoroModel.Invoices" Role="Invoices" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="CashBooks">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="Invoices">
-        <PropertyRef Name="Id_CashBook" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -513,6 +461,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__EstateExp__Redis__44952D46">
+    <End Type="AdministratoroModel.EstateExpensesRedistributionTypes" Role="EstateExpensesRedistributionTypes" Multiplicity="0..1" />
+    <End Type="AdministratoroModel.EstateExpenses" Role="EstateExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpensesRedistributionTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="EstateExpenses">
+        <PropertyRef Name="RedistributeType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__EstateExt__Id_Es__76969D2E">
     <End Type="AdministratoroModel.Estates" Role="Estates" Multiplicity="1" />
     <End Type="AdministratoroModel.EstateExpenses" Role="EstateExpenses" Multiplicity="*" />
@@ -546,6 +506,18 @@
       </Principal>
       <Dependent Role="EstateExpenses">
         <PropertyRef Name="Id_ExpenseType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Invoices__Id_Est__3FD07829">
+    <End Type="AdministratoroModel.EstateExpenses" Role="EstateExpenses" Multiplicity="0..1" />
+    <End Type="AdministratoroModel.Invoices" Role="Invoices" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpenses">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Invoices">
+        <PropertyRef Name="Id_EstateExpense" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -609,8 +581,8 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__Invoices__Id_Sta__756D6ECB">
-    <End Type="AdministratoroModel.StairCases" Role="StairCases" Multiplicity="1" />
+  <Association Name="FK__Invoices__Id_sta__42ACE4D4">
+    <End Type="AdministratoroModel.StairCases" Role="StairCases" Multiplicity="0..1" />
     <End Type="AdministratoroModel.Invoices" Role="Invoices" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="StairCases">

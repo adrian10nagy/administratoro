@@ -20,7 +20,7 @@ namespace Admin.Config
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
+            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
             var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
             InitializeYearsAndMonths(defaultEE);
             InitializeExpenses();
@@ -104,7 +104,7 @@ namespace Admin.Config
         {
             int selectedYear = drpOpeningYear.SelectedValue.ToNullableInt().Value;
             int selectedMonth = drpOpeningYear.SelectedValue.ToNullableInt().Value;
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
+            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
             if (estate != null)
             {
                 var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
@@ -120,12 +120,13 @@ namespace Admin.Config
             int year = 0;
             if (int.TryParse(drpOpeningMonth.SelectedValue, out month) && int.TryParse(drpOpeningYear.SelectedValue, out year))
             {
-                var estate = (Estates)Session[SessionConstants.SelectedEstate];
+                var estate = (Estates)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
                     int defaultYear = 2017;
-                    int defaultMonth = 1;
+                    int defaultMonth = 1; 
+                    
+                    var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
                     if (defaultEE.Count > 0)
                     {
                         defaultYear = defaultEE.FirstOrDefault().Year;
@@ -133,8 +134,43 @@ namespace Admin.Config
                     }
                     var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
 
-                    var expenses = ExpensesManager.GetAllExpensesAsList();
+                    var expenses = ExpensesManager.GetAllExpenses();
                     var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
+
+                    TableRow defaultRow = new TableRow();
+                    
+                    // add expense exists
+                    TableCell defaultExpenseSelected = new TableCell 
+                    {
+                        Text = "Activează pentru noua lună"                     
+                    };
+                    defaultRow.Cells.Add(defaultExpenseSelected);
+
+                    // add expense name
+                    TableCell defaultExpenseName = new TableCell
+                    {
+                        Text = "Cheltuială"
+                    };
+                    defaultRow.Cells.Add(defaultExpenseName);
+
+                    // add expense type
+                    TableCell defaultExpenseType = new TableCell()
+                    {
+                        Text = "Tip calcul cheltuială"
+                    };
+                    defaultRow.Cells.Add(defaultExpenseType);
+
+                    if (estate.HasStaircase)
+                    {
+                        TableCell tcStairCaseDefaule = new TableCell()
+                            {
+                                Text = "Contor individual per scară"
+                            };
+                        
+                        defaultRow.Cells.Add(tcStairCaseDefaule);
+                    }
+
+                    tblMonthlyExpenses.Rows.Add(defaultRow);
 
                     foreach (var item in expenses)
                     {
@@ -193,7 +229,7 @@ namespace Admin.Config
                             TableCell tcStairCase = new TableCell();
                             CheckBox stairCaseSplit = new CheckBox();
                             stairCaseSplit.AutoPostBack = false;
-                            stairCaseSplit.Checked = isStairCaseSplitSelected(item, ee, defaultMonth);
+                            stairCaseSplit.Checked = isStairCaseSplitSelected(item, ee, defaultYear, defaultMonth);
                             tcStairCase.Controls.Add(stairCaseSplit);
                             row.Cells.Add(tcStairCase);
                         }
@@ -204,11 +240,11 @@ namespace Admin.Config
             }
         }
 
-        private bool isStairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int month)
+        private bool isStairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int year, int month)
         {
 
             bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == 2017 &&
+            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year &&
                 !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value).Any())
             {
                 result = true;
@@ -246,7 +282,7 @@ namespace Admin.Config
             int year = drpOpeningYear.SelectedValue.ToNullableInt().Value;
             int month = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
 
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
+            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
 
             var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, year, month);
 
@@ -259,25 +295,31 @@ namespace Admin.Config
 
             foreach (TableRow row in tblMonthlyExpenses.Rows)
             {
-                TableCell cell0 = row.Cells[0];
-                TableCell cell2 = row.Cells[2];
-                if (cell0.Controls.Count == 1 && cell0.Controls[0] is CheckBox
-                    && cell2.Controls.Count == 1 && cell2.Controls[0] is DropDownList)
+                if (row.Cells.Count > 3)
                 {
-                    CheckBox cb = (CheckBox)cell0.Controls[0];
-                    DropDownList dropDown = (DropDownList)cell2.Controls[0];
+                    TableCell cellIsSelected = row.Cells[0];
+                    TableCell cellExpenseType = row.Cells[2];
+                    TableCell cellIsStairCaseSplit = row.Cells[3];
 
-                    if (cb.Checked)
+                    if (cellIsSelected.Controls.Count == 1 && cellIsSelected.Controls[0] is CheckBox
+                        && cellExpenseType.Controls.Count == 1 && cellExpenseType.Controls[0] is DropDownList)
                     {
-                        string cbId = cb.ID.Replace("expense", "");
-                        int expenseId;
-                        if (int.TryParse(cbId, out expenseId))
+                        CheckBox cbIsSelected = (CheckBox)cellIsSelected.Controls[0];
+                        DropDownList drpExpenseType = (DropDownList)cellExpenseType.Controls[0];
+                        CheckBox cbIsStairCaseSplitSelected = (CheckBox)cellIsStairCaseSplit.Controls[0];
+                        
+                        if (cbIsSelected.Checked)
                         {
-                            //dpExpenseType.SelectedValue
-                            List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
-                            EstateExpenses newEe = EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, year, dropDown.SelectedValue);
-                            EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
-                            CashBookManager.AddDefault(newEe.Id);
+                            string cbId = cbIsSelected.ID.Replace("expense", "");
+                            int expenseId;
+                            if (int.TryParse(cbId, out expenseId))
+                            {
+                                //dpExpenseType.SelectedValue
+                                List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
+
+                                EstateExpenses newEe = EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
+                                EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
+                            }
                         }
                     }
                 }

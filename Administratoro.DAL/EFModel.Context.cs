@@ -28,7 +28,6 @@ namespace Administratoro.DAL
         }
     
         public virtual DbSet<ApartmentCounters> ApartmentCounters { get; set; }
-        public virtual DbSet<CashBooks> CashBooks { get; set; }
         public virtual DbSet<Counters> Counters { get; set; }
         public virtual DbSet<ErrorLogs> ErrorLogs { get; set; }
         public virtual DbSet<EstateExpenses> EstateExpenses { get; set; }

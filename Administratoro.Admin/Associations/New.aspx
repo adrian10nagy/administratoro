@@ -16,11 +16,11 @@
             <div class="x_content form-horizontal form-label-left">
                 <br />
                 <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Nume asociație</label>
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Denumire asociație</label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
                         <input type="text" class="form-control has-feedback-left" id="estateName" runat="server" autocomplete="off">
                         <span class="fa fa-list-alt form-control-feedback left" aria-hidden="true"></span>
-                        <asp:RequiredFieldValidator ControlToValidate="estateName" runat="server" ErrorMessage="Numele proprietății este obligatorie" CssClass="requiredField"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator ControlToValidate="estateName" runat="server" ErrorMessage="Numele proprietății este obligatoriu" CssClass="requiredField"></asp:RequiredFieldValidator>
                     </div>
                 </div>
 
@@ -47,22 +47,23 @@
                 </div>
 
                 <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <div class="bbbbbb">
-                        <asp:RadioButtonList ID="estateEqualIndiviza" runat="server" AutoPostBack="true" RepeatLayout="Flow" OnSelectedIndexChanged="estateEqualIndiviza_SelectedIndexChanged" RepeatDirection="Horizontal">
+                    <div>
+                        <asp:RadioButtonList ID="estateEqualIndiviza" CssClass="AssociationsNewRadioBtns" runat="server" AutoPostBack="true" RepeatLayout="Flow" OnSelectedIndexChanged="estateEqualIndiviza_SelectedIndexChanged" RepeatDirection="Horizontal">
                             <asp:ListItem Text="Nu" Value="0" Selected="True" />
                             <asp:ListItem Text="Da" Value="1" />
                         </asp:RadioButtonList>
                         <span>Cotă de indiviză egală la toate apatamentele</span>
-                        <asp:TextBox runat="server" ID="estateCotaIndivizaApartments" Visible="false" placeholder="ex: 0,16"></asp:TextBox>
+                        <asp:TextBox runat="server" ID="estateCotaIndivizaApartments" Visible="false" placeholder="ex: 1,16"></asp:TextBox> %
                     </div>
-                    <div class="bbbbbb">
+                    <div>
                         <asp:UpdatePanel runat="server" ID="UpdatePanel1">
                             <ContentTemplate>
-                                <asp:RadioButtonList ID="estateStairs" runat="server" AutoPostBack="true" RepeatLayout="Flow" OnSelectedIndexChanged="estateStairs_SelectedIndexChanged" RepeatDirection="Horizontal">
+                                <asp:RadioButtonList ID="estateStairs" runat="server" AutoPostBack="true" CssClass="AssociationsNewRadioBtns"
+                                    RepeatLayout="Flow" OnSelectedIndexChanged="estateStairs_SelectedIndexChanged" RepeatDirection="Horizontal">
                                     <asp:ListItem Text="Nu" Value="0" Selected="True" />
                                     <asp:ListItem Text="Da" Value="1" />
                                 </asp:RadioButtonList>
-                                <span>Bloc împărțit pe scări:</span>
+                                <span>Bloc împărțit pe scări</span>
                                 <asp:Panel runat="server" ID="estateStairsAdded" CssClass="associationsStairCases" Visible="false">
                                 </asp:Panel>
                                 <asp:PlaceHolder ID="PlaceholderControls" runat="server"></asp:PlaceHolder>

@@ -72,8 +72,8 @@ namespace Admin.Expenses
 
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
-            var estate = Session[SessionConstants.SelectedEstate] as Estates;
-            var tenants = ApartmentsManager.GetAllByEstateId(estate.Id);
+            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
+            var tenants = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId);
             EstateExpenses ee = EstateExpensesManager.GetById(esexId);
             foreach (var tenant in tenants)
             {
@@ -105,15 +105,17 @@ namespace Admin.Expenses
 
         private void InitializeGridViewPerConsumption(DataTable dt, int esexId)
         {
-            var tenants = ApartmentsManager.GetAllByEstateId(1);
+            var estateExpense = EstateExpensesManager.GetById(esexId);
+
+            var tenants = ApartmentsManager.GetAllByEstateId(estateExpense.Estates.Id);
 
             foreach (var tenant in tenants)
             {
-                var expenses = ExpensesManager.GetAllExpensesByTenantAndMonth(tenant.Id, 2017, 8);
+                var expenses = TenantExpensesManager.GetAllExpensesByTenantAndMonth(tenant.Id, estateExpense.Year, estateExpense.Month);
                 string query = string.Empty;
                 if (expenses.Count == 0)
                 {
-                    ExpensesManager.AddDefaultTenantExpense(tenant, 2017, 8);
+                    TenantExpensesManager.AddDefaultTenantExpense(tenant, estateExpense.Year, estateExpense.Month);
                 }
                 query = @"USE administratoro DECLARE @DynamicPivotQuery AS NVARCHAR(MAX)
                                 DECLARE @ColumnName AS NVARCHAR(MAX)
@@ -125,7 +127,7 @@ namespace Admin.Expenses
 		                        INNER JOIN EstateExpenses as EE 
 		                        on  EE.Id_Expense = Expense.Id 
 		                        WHERE EE.Id_Estate = 1 and EE.isDefault = 0
-                                AND EE.WasDisabled = 0 and EE.Month = 8 and EE.Year = 2017
+                                AND EE.WasDisabled = 0 and EE.Month = "+ estateExpense.Month + @" and EE.Year = " + estateExpense.Year + @"
                                 AND EE.Id  = " + esexId +
                                 @"
 		                        ) as Expense
@@ -148,8 +150,8 @@ namespace Admin.Expenses
                                 ON E.Id = EE.Id_Expense
                                 WHERE T.ID = 
 		                        " + tenant.Id + @"
-		                         AND EE.year = 2017
-                                AND EE.month = 8
+		                         AND EE.year = " + estateExpense.Year + @"
+                                AND EE.month = " + estateExpense.Month + @"
                                 AND EE.WasDisabled = 0
                                 )
                                 AS P
@@ -350,11 +352,11 @@ namespace Admin.Expenses
                         }
                     }
                 }
-            }
 
-            this.InitializeGridViewPerConsumption(new DataTable(), idExpenseEstate);
-            gvExpenses.EditIndex = -1;
-            gvExpenses.DataBind();
+                this.InitializeGridViewPerConsumption(new DataTable(), idExpenseEstate);
+                gvExpenses.EditIndex = -1;
+                gvExpenses.DataBind();
+            }
         }
 
         protected void gvExpenses_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)

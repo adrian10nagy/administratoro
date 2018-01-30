@@ -5,9 +5,9 @@ namespace Administratoro.BL.Constants
     {
         public static string LoginUser = "LoginUser";
 
-        public static string SelectedEstate = "SelectedEsate";
+        public static string SelectedAssociation = "SelectedAssociation";
 
-        public static string AllEsates = "AllEsates";
+        public static string AllAssociations = "AllAssociations";
 
         public static string LoggedPartner = "LoggedPartner";
     }

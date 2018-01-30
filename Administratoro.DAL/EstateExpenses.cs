@@ -16,7 +16,7 @@ namespace Administratoro.DAL
     {
         public EstateExpenses()
         {
-            this.CashBooks = new HashSet<CashBooks>();
+            this.Invoices = new HashSet<Invoices>();
             this.TenantExpenses = new HashSet<TenantExpenses>();
         }
     
@@ -30,11 +30,13 @@ namespace Administratoro.DAL
         public bool WasDisabled { get; set; }
         public Nullable<decimal> PricePerExpenseUnit { get; set; }
         public Nullable<bool> SplitPerStairCase { get; set; }
+        public Nullable<int> RedistributeType { get; set; }
     
-        public virtual ICollection<CashBooks> CashBooks { get; set; }
+        public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
         public virtual Estates Estates { get; set; }
         public virtual Expenses Expenses { get; set; }
         public virtual ExpenseTypes ExpenseTypes { get; set; }
+        public virtual ICollection<Invoices> Invoices { get; set; }
         public virtual ICollection<TenantExpenses> TenantExpenses { get; set; }
     }
 }

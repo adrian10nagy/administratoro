@@ -150,6 +150,7 @@
     <Content Include="Error.aspx" />
     <Content Include="Expenses\AddEditExpense.aspx" />
     <Content Include="Expenses\Invoices.aspx" />
+    <Content Include="Invoices\Add.aspx" />
     <Content Include="Reports\Index.aspx" />
     <Content Include="Reports\Monthly.aspx" />
     <Content Include="Expenses\Dashboard.aspx" />
@@ -357,6 +358,13 @@
     </Compile>
     <Compile Include="Expenses\Invoices.aspx.designer.cs">
       <DependentUpon>Invoices.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Invoices\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Invoices\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
     <Compile Include="Reports\Index.aspx.cs">
       <DependentUpon>Index.aspx</DependentUpon>

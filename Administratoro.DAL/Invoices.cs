@@ -16,10 +16,11 @@ namespace Administratoro.DAL
     {
         public int Id { get; set; }
         public Nullable<decimal> Value { get; set; }
-        public int Id_StairCase { get; set; }
-        public int Id_CashBook { get; set; }
+        public Nullable<int> Id_EstateExpense { get; set; }
+        public Nullable<int> Id_StairCase { get; set; }
+        public string Description { get; set; }
     
-        public virtual CashBooks CashBooks { get; set; }
+        public virtual EstateExpenses EstateExpenses { get; set; }
         public virtual StairCases StairCases { get; set; }
     }
 }

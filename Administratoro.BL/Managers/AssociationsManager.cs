@@ -7,7 +7,7 @@ namespace Administratoro.BL.Managers
     using System.Linq;
     using System.Threading.Tasks;
 
-    public static class EstatesManager
+    public static class AssociationsManager
     {
         private static AdministratoroEntities _administratoroEntities;
 
@@ -21,27 +21,27 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static Estates AddNewEstate(Estates estate)
+        public static Estates AddNew(Estates association)
         {
-            GetContext(true).Estates.Add(estate);
+            GetContext(true).Estates.Add(association);
             GetContext().SaveChanges();
 
-            return estate;
+            return association;
         }
 
-        public static List<Estates> GetAllEstates()
+        public static List<Estates> GetAll()
         {
             return GetContext(true).Estates.ToList();
         }
 
-        public static List<Estates> GetAllEstatesByPartner(int partnerId)
+        public static List<Estates> GetAllAssociationsByPartner(int partnerId)
         {
-            return GetContext(true).Estates.Where(e=>e.Id_Partner==partnerId).ToList();
+            return GetContext(true).Estates.Where(e => e.Id_Partner == partnerId).ToList();
         }
 
-        public static Estates GetById(int estateId)
+        public static Estates GetById(int assocId)
         {
-            return GetContext(true).Estates.FirstOrDefault(e => e.Id == estateId);
+            return GetContext(true).Estates.FirstOrDefault(e => e.Id == assocId);
         }
 
         public static Estates GetByEstateExpenseId(int estateExpenseId)
@@ -59,6 +59,31 @@ namespace Administratoro.BL.Managers
             if (estate != null)
             {
                 estate.HasStaircase = hasStairs;
+                GetContext().Entry(estate).CurrentValues.SetValues(estate);
+
+                GetContext().SaveChanges();
+            }
+        }
+
+        public static void Update(int id, Estates association)
+        {
+            if (association == null)
+            {
+                return;
+            }
+
+            var estate = new Estates();
+            estate = GetContext().Estates.First(b => b.Id == association.Id);
+
+            if (estate != null)
+            {
+                estate.Address = association.Address;
+                estate.BanckAccont = association.BanckAccont;
+                estate.CotaIndivizaAparments = association.CotaIndivizaAparments;
+                estate.FiscalCode = association.FiscalCode;
+                estate.HasStaircase = association.HasStaircase;
+                estate.Name = association.Name;
+
                 GetContext().Entry(estate).CurrentValues.SetValues(estate);
 
                 GetContext().SaveChanges();

@@ -46,7 +46,11 @@
             </div>
 
             <div class="col-md-2 col-sm-2 col-xs-2">
-                <div class="dashboardItem"></div>
+                <div class="dashboardItem">
+                    <a href="~/Invoices/Add.aspx" runat="server" class="dashboardItemA"><i class="fa fa-plus dashboardItemI"></i>
+                        <br />
+                        Adaugă factură</a>
+                </div>
 
             </div>
             <div class="col-md-2 col-sm-2 col-xs-2">

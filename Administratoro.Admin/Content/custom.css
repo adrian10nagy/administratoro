@@ -4999,6 +4999,12 @@ ul.notifications {
     margin-top: 10px;
 }
 
+.drpDisplayMode{
+    padding: 6px 12px;
+    width: auto;
+    min-width: 100px;
+}
+
 .colorGreen {
     color: green;
 }
@@ -5101,8 +5107,8 @@ input#MainContent_estateStairs_1 {
 }
 
 
-/* cashbook */
-.cashbookItemTextbox {
+/* invoice */
+.invoiceItemTextbox {
     width: 85px;
 }
 
@@ -5140,4 +5146,14 @@ input#MainContent_estateStairs_1 {
 
 .textAlignCenter {
     text-align: center;
+}
+
+.AssociationsNewRadioBtns{
+    padding-left:30px;
+    padding-right:20px;
+}
+
+.paddingLeftRight10{
+    padding-left:10%;
+    padding-right:10%;
 }

@@ -15,29 +15,41 @@ namespace Admin.Reports
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
-            var defaultCssClass = "col-md-2 col-sm-3 col-xs-12 cashbookMonth";
-            List<YearMonth> yearMonths = EstateExpensesManager.GetAllMonthsAndYeardAvailableByEstateId(estate.Id);
-            foreach (var item in yearMonths)
+            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
+            var defaultCssClass = "col-md-2 col-sm-3 col-xs-12";
+            List<YearMonth> yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByEstateId(estate.Id);
+            if (yearMonths.Count != 0)
             {
-                var month = new Panel
+                foreach (var item in yearMonths)
+                {
+                    var month = new Panel
+                    {
+                        CssClass = defaultCssClass
+                    };
+                    var link = new LinkButton { Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Month) + " " + item.Year.ToString() };
+                    link.Click += link_Click;
+                    link.CommandArgument = item.Year.ToString() + item.Month.ToString();
+                    link.CssClass = "monthsMainItem";
+                    month.Controls.Add(link);
+                    monthsMain.Controls.Add(month);
+                }
+
+                var month0 = new Panel
                 {
                     CssClass = defaultCssClass
                 };
-                var link = new LinkButton { Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Month) + " " + item.Year.ToString() };
-                link.Click += link_Click;
-                link.CommandArgument = item.Year.ToString() + item.Month.ToString();
-                link.CssClass = "monthsMainItem";
-                month.Controls.Add(link);
-                monthsMain.Controls.Add(month);
+
+                monthsMain.Controls.Add(month0);
             }
-
-            var month0 = new Panel
+            else
             {
-                CssClass = defaultCssClass
-            };
-
-            monthsMain.Controls.Add(month0);
+                var lblMessage = new Label
+                {
+                    Text = @"<h4>Nici o lună deschisă.</h4> <br> Pentru a vedea rapoarte, mai întâi trebuie să ai cel puțin o lună deschisă. 
+                            <a href='/Expenses/Dashboard.aspx'>Click aici pentru a începe<a/>"
+                };
+                monthsMain.Controls.Add(lblMessage);
+            }
         }
 
         private void link_Click(object sender, EventArgs e)

@@ -33,10 +33,10 @@ namespace Admin
 
         private void CheckStairCases(StringBuilder sb)
         {
-            if (Estate.HasStaircase)
+            if (Association.HasStaircase)
             {
                 decimal sum = 0;
-                foreach (var stairCase in Estate.StairCases)
+                foreach (var stairCase in Association.StairCases)
                 {
                     if (stairCase.Indiviza.HasValue)
                     {

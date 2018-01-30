@@ -27,32 +27,32 @@ namespace Admin.Tenants
                 }
             }
 
-            PopulateCounters(Estate, apId);
+            PopulateCounters(Association, apId);
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
-                PopulateStairCase(Estate);
+                PopulateStairCase(Association);
                 if (!string.IsNullOrEmpty(Request["apartmentid"]))
                 {
                     var apartmentid = Request["apartmentid"].ToNullableInt();
                     if (apartmentid != null && apartmentid != 0)
                     {
-                        var user = ApartmentsManager.GetById(apartmentid.Value);
-                        if (user != null)
+                        var apartment = ApartmentsManager.GetById(apartmentid.Value);
+                        if (apartment != null)
                         {
-                            userName.Value = user.Name;
-                            userExtraInfo.Value = user.ExtraInfo;
-                            userPhone.Value = user.Telephone;
-                            userEmail.Value = user.Email;
-                            userDependents.Value = user.Dependents.ToString();
-                            apartmentCota.Value = user.CotaIndiviza.ToString();
-                            userNr.Value = user.Number.ToString();
+                            userName.Value = apartment.Name;
+                            userExtraInfo.Value = apartment.ExtraInfo;
+                            userPhone.Value = apartment.Telephone;
+                            userEmail.Value = apartment.Email;
+                            userDependents.Value = apartment.Dependents.ToString();
+                            apartmentCota.Value = apartment.CotaIndiviza.ToString();
+                            userNr.Value = apartment.Number.ToString();
                             btnSave.Text = "Actualizează datele proprietatății";
                             lblUserId.Text = Request["apartmentid"];
-                            userStairCase.SelectedValue = (user.Id_StairCase != null) ? user.Id_StairCase.ToString() : null;
+                            userStairCase.SelectedValue = (apartment.Id_StairCase != null) ? apartment.Id_StairCase.ToString() : null;
                         }
                         else
                         {
@@ -66,7 +66,7 @@ namespace Admin.Tenants
                 }
                 else
                 {
-                    PopulateApartmentLogic(Estate);
+                    PopulateApartmentLogic(Association);
                 }
             }
 
@@ -79,7 +79,7 @@ namespace Admin.Tenants
 
             if (estate.HasStaircase)
             {
-                var expenses = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
+                var expenses = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id, true);
                 Tenants apartment = null;
                 if (apartmentId.HasValue)
                 {
@@ -110,7 +110,8 @@ namespace Admin.Tenants
 
             ListItem defaultNull = new ListItem
             {
-                Value = null
+                Value = null,
+                Text = "Fără (Contor indivudual pe apartament)"
             };
             drp.Items.Add(defaultNull);
 
@@ -212,7 +213,7 @@ namespace Admin.Tenants
                 Telephone = userPhone.Value,
                 Email = userEmail.Value,
                 CreatedDate = DateTime.Now,
-                id_Estate = Estate.Id,
+                id_Estate = Association.Id,
                 Password = "dasd",
                 Id_StairCase = userStairCase.SelectedValue.ToNullableInt()
             };
@@ -232,8 +233,8 @@ namespace Admin.Tenants
 
             ProcessSaveCounters(tenant);
 
-            var estate = EstatesManager.GetById(Estate.Id);
-            Session[SessionConstants.SelectedEstate] = estate;
+            var estate = AssociationsManager.GetById(Association.Id);
+            Session[SessionConstants.SelectedAssociation] = estate;
 
             Response.Redirect("~/Apartments/Manage.aspx?Message=UserUpdatedSuccess");
         }

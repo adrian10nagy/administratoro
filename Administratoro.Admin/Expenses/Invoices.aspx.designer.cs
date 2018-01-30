@@ -10,7 +10,7 @@
 namespace Admin.Expenses {
     
     
-    public partial class CashBook {
+    public partial class Invoice {
         
         /// <summary>
         /// mainHeader control.
@@ -31,93 +31,102 @@ namespace Admin.Expenses {
         protected global::System.Web.UI.WebControls.LinkButton lblExpenseMeessageConfigure;
         
         /// <summary>
-        /// cashBookRedistribute control.
+        /// lblExpenseMonthlyList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel cashBookRedistribute;
+        protected global::System.Web.UI.WebControls.LinkButton lblExpenseMonthlyList;
         
         /// <summary>
-        /// cashBookRedistributeCancel control.
+        /// invoiceRedistribute control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button cashBookRedistributeCancel;
+        protected global::System.Web.UI.WebControls.Panel invoiceRedistribute;
         
         /// <summary>
-        /// cashBookRedistributeMessage control.
+        /// invoiceRedistributeCancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label cashBookRedistributeMessage;
+        protected global::System.Web.UI.WebControls.Button invoiceRedistributeCancel;
         
         /// <summary>
-        /// cashBookRedistributeEqualApartment control.
+        /// invoiceRedistributeMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button cashBookRedistributeEqualApartment;
+        protected global::System.Web.UI.WebControls.Label invoiceRedistributeMessage;
         
         /// <summary>
-        /// txtCashBookRedistributeEqualApartment control.
+        /// invoiceRedistributeEqualApartment control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label txtCashBookRedistributeEqualApartment;
+        protected global::System.Web.UI.WebControls.Button invoiceRedistributeEqualApartment;
         
         /// <summary>
-        /// cashBookRedistributeEqualTenants control.
+        /// txtInvoiceRedistributeEqualApartment control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button cashBookRedistributeEqualTenants;
+        protected global::System.Web.UI.WebControls.Label txtInvoiceRedistributeEqualApartment;
         
         /// <summary>
-        /// txtCashBookRedistributeEqualTenants control.
+        /// invoiceRedistributeEqualTenants control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label txtCashBookRedistributeEqualTenants;
+        protected global::System.Web.UI.WebControls.Button invoiceRedistributeEqualTenants;
         
         /// <summary>
-        /// cashBookRedistributeConsumption control.
+        /// txtInvoiceRedistributeEqualTenants control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button cashBookRedistributeConsumption;
+        protected global::System.Web.UI.WebControls.Label txtInvoiceRedistributeEqualTenants;
         
         /// <summary>
-        /// txtCashBookRedistributeConsumption control.
+        /// invoiceRedistributeConsumption control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label txtCashBookRedistributeConsumption;
+        protected global::System.Web.UI.WebControls.Button invoiceRedistributeConsumption;
         
         /// <summary>
-        /// cashBookMain control.
+        /// txtInvoiceRedistributeConsumption control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel cashBookMain;
+        protected global::System.Web.UI.WebControls.Label txtInvoiceRedistributeConsumption;
+        
+        /// <summary>
+        /// invoiceMain control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel invoiceMain;
     }
 }

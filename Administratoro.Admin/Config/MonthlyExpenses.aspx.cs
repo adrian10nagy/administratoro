@@ -41,9 +41,6 @@ namespace Admin.Config
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
-            
-
             if (!Page.IsPostBack)
             {
                 InitializeExpenses();
@@ -70,16 +67,17 @@ namespace Admin.Config
         private void InitializeExpenses()
         {
             //tblMonthlyExpenses.Rows.Clear();
-            int month = 0;
+            int month;
+            int year = 2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out month))
             {
-                var estate = (Estates)Session[SessionConstants.SelectedEstate];
+                var estate = (Estates)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, 2017, month);
-                    var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, 2017, month);
+                    var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, year, month);
+                    var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, year, month);
 
-                    var expenses = ExpensesManager.GetAllExpensesAsList();
+                    var expenses = ExpensesManager.GetAllExpenses();
 
                     foreach (var item in expenses)
                     {
@@ -90,7 +88,7 @@ namespace Admin.Config
                         CheckBox esexExists = new CheckBox();
                         esexExists.AutoPostBack = false;
                         esexExists.ID = String.Format("esateExpense{0}", item.Id);
-                        esexExists.Checked = isExpenseSelected(item, ee, month);
+                        esexExists.Checked = isExpenseSelected(item, ee, year, month);
                         expenseExists.Controls.Add(esexExists);
                         row.Cells.Add(expenseExists);
 
@@ -104,7 +102,7 @@ namespace Admin.Config
                         // add expense type
                         TableCell expenseType = new TableCell();
                         DropDownList dp = new DropDownList();
-                        EstateExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == item.Id && s.Month == month && s.Year == 2017 && s.Id_Estate == estate.Id);
+                        EstateExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == item.Id && s.Month == month && s.Year == year && s.Id_Estate == estate.Id);
 
                         var selected1 = isDplExpenseTypesSelected(esex, ExpenseType.PerIndex);
                         dp.Items.Add(new ListItem
@@ -137,7 +135,7 @@ namespace Admin.Config
                             TableCell tcStairCase = new TableCell();
                             CheckBox stairCaseSplit = new CheckBox();
                             stairCaseSplit.AutoPostBack = false;
-                            stairCaseSplit.Checked = isstairCaseSplitSelected(item, ee, month);
+                            stairCaseSplit.Checked = isStairCaseSplitSelected(item, ee, year, month);
                             tcStairCase.Controls.Add(stairCaseSplit);
                             row.Cells.Add(tcStairCase);
                         }
@@ -152,11 +150,11 @@ namespace Admin.Config
             }
         }
 
-        private bool isstairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int month)
+        private bool isStairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int year, int month)
         {
 
             bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == 2017 && !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value).Any())
+            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value).Any())
             {
                 result = true;
             }
@@ -164,10 +162,10 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, List<EstateExpenses> ee, int month)
+        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, List<EstateExpenses> ee, int year, int month)
         {
             bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == 2017 && !e.WasDisabled).Any())
+            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled).Any())
             {
                 result = true;
             }
@@ -190,10 +188,10 @@ namespace Admin.Config
         private void InitializeMonths(int? year, int? month)
         {
             drpExpenseMonth.Items.Clear();
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
+            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
             if (estate != null)
             {
-                var yearMonths = EstateExpensesManager.GetAllMonthsAndYeardAvailableByEstateId(estate.Id);
+                var yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByEstateId(estate.Id);
                 foreach (var ym in yearMonths)
                 {
                     drpExpenseMonth.Items.Add(new ListItem
@@ -234,13 +232,14 @@ namespace Admin.Config
             expenseListHref3.Attributes["class"] = "selected";
 
             int month = 0;
+            int year = 2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out month))
             {
-                var estate = (Estates)Session[SessionConstants.SelectedEstate];
+                var estate = (Estates)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var existingEstateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, 2017, month);
-                    var existingEstateExpensesIncludingDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, 2017, month);
+                    var existingEstateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, year, month);
+                    var existingEstateExpensesIncludingDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, year, month);
 
                     foreach (TableRow row in tblMonthlyExpenses.Rows)
                     {
@@ -272,18 +271,18 @@ namespace Admin.Config
                                     if (cbExpenseSelect.Checked && existingEstateExpensesContainsItemAsDisabled)
                                     {
                                         // enables it
-                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, 2017, month);
+                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, year, month);
                                         EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, false, cbExpensePerStaircase);
                                     }
                                     else if (!cbExpenseSelect.Checked && existingEstateExpensesContainsItem)
                                     {
                                         // disables it
-                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, 2017, month, false);
+                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, year, month, false);
                                         EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, true, cbExpensePerStaircase);
                                     }
                                     else if (cbExpenseSelect.Checked && !existingEstateExpensesContainsItem)
                                     {
-                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(expenseId, estate.Id, 2017, month);
+                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(expenseId, estate.Id, year, month);
                                         if (ee != null)
                                         {
                                             // disables it
@@ -292,7 +291,7 @@ namespace Admin.Config
                                         else
                                         {
                                             // adds it
-                                            EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, 2017, dpExpenseType.SelectedValue);
+                                            EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, year, dpExpenseType.SelectedValue, false);
                                         }
                                     }
 
@@ -301,7 +300,7 @@ namespace Admin.Config
                                     {
                                         if (ee == null)
                                         {
-                                            ee = EstateExpensesManager.GetEstateExpenses(estate.Id, expenseId, 2017, month);
+                                            ee = EstateExpensesManager.GetEstateExpenses(estate.Id, expenseId, year, month);
                                         }
 
                                         if (ee != null && (ExpenseType)ee.ExpenseTypes.Id != selectedExpenseType)

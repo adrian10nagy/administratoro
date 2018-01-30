@@ -9,8 +9,8 @@ namespace Admin.Account
         protected void Page_Load(object sender, EventArgs e)
         {
             Session.Remove(SessionConstants.LoggedPartner);
-            Session.Remove(SessionConstants.AllEsates);
-            Session.Remove(SessionConstants.SelectedEstate);
+            Session.Remove(SessionConstants.AllAssociations);
+            Session.Remove(SessionConstants.SelectedAssociation);
 
             Response.Redirect("~/Account/Login.aspx?Message=Logout");
         }

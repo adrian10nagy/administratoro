@@ -98,5 +98,29 @@ namespace Administratoro.BL.Managers
                 GetContext().SaveChanges();
             }
         }
+
+        public static List<Counters> GetAllByExpenseType(int estateId, int expense)
+        {
+            return GetContext(true).Counters.Where(c => c.Id_Estate == estateId && c.Id_Expense == expense).ToList();
+        }
+
+        public static List<Counters> GetByApartment(int apartmentId)
+        {
+            var result= new List<Counters>();
+
+            var allApartmentcounters = GetContext(true).ApartmentCounters.Where(ac=>ac.Id_Apartment == apartmentId).ToList();
+
+            foreach (var ac in allApartmentcounters)
+	        {
+                var counter = GetById(ac.Id_Counters);
+
+                if(counter!=null)
+                {
+                    result.Add(counter);
+                }
+	        }
+
+            return result;
+        }
     }
 }

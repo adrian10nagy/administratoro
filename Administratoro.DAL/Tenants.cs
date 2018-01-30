@@ -30,7 +30,7 @@ namespace Administratoro.DAL
         public string Name { get; set; }
         public int Dependents { get; set; }
         public int id_Estate { get; set; }
-        public decimal CotaIndiviza { get; set; }
+        public Nullable<decimal> CotaIndiviza { get; set; }
         public int Number { get; set; }
         public Nullable<int> Id_StairCase { get; set; }
     

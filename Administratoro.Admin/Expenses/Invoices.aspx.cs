@@ -10,12 +10,13 @@ namespace Admin.Expenses
     using System.Linq;
     using System.Globalization;
     using System.Web.UI;
+    using System.Collections.Generic;
 
-    public partial class CashBook : BasePage
+    public partial class Invoice : BasePage
     {
         private int estateId()
         {
-            var estate = (Estates)Session[SessionConstants.SelectedEstate];
+            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
 
             if (estate == null)
             {
@@ -52,18 +53,18 @@ namespace Admin.Expenses
         protected void Page_Init(object sender, EventArgs e)
         {
             mainHeader.InnerText = "Facturi pentru luna " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month());
-            InitializeCashBook();
+            InitializeInvoice();
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
         }
 
-        private void InitializeCashBook(int? exesId = null)
+        private void InitializeInvoice(int? exesId = null)
         {
             if (month() != 0 && year() != 0 && estateId() != 0)
             {
-                InitializeCashBook(estateId(), year(), month(), exesId);
+                InitializeInvoice(estateId(), year(), month(), exesId);
             }
             else
             {
@@ -71,7 +72,7 @@ namespace Admin.Expenses
             }
         }
 
-        private void InitializeCashBook(int estateId, int yearNr, int monthNr, int? exesId)
+        private void InitializeInvoice(int estateId, int yearNr, int monthNr, int? exesId)
         {
             AddHeaderPanels();
             AddBodyPanels(estateId, yearNr, monthNr);
@@ -82,7 +83,7 @@ namespace Admin.Expenses
             string mainRowCssFormat = "col-md-12 col-sm-12 xs-12 cashBokItemsRow {0}";
             bool even = false;
 
-            var allExpenses = ExpensesManager.GetAllExpensesAsList();
+            var allExpenses = ExpensesManager.GetAllExpenses();
             var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estateId, yearNr, monthNr);
 
 
@@ -106,24 +107,18 @@ namespace Admin.Expenses
                     }
 
                     bool isExpensePerIndex = estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex;
-                    var cashBook = CashBookManager.GetByEstateExpenseId(estateExpense.Id);
-                    if (cashBook == null)
-                    {
-                        CashBookManager.AddDefault(estateExpense.Id);
-                        cashBook = CashBookManager.GetByEstateExpenseId(estateExpense.Id);
-                    }
 
-                    var col0 = AddBodyPanelCol0(estateExpense, isExpensePerIndex, cashBook);
+                    var col0 = AddBodyPanelCol0(estateExpense, isExpensePerIndex);
                     var col1 = AddBodyPanelCol1(expense, estateExpense);
 
-                    TextBox tb1;
-                    var col2 = AddBodyPanelCol2(estateExpense, cashBook, out tb1);
+                    TextBox tb2;
+                    var col2 = AddBodyPanelCol2(estateExpense, out tb2);
 
                     TextBox tb3;
-                    var col3 = AddBodyPanelCol3(estateExpense, cashBook, tb1, out tb3);
+                    var col3 = AddBodyPanelCol3(estateExpense, tb2, out tb3);
 
-                    var col6 = AddBodyPanelCol6(estateExpense, cashBook, tb3);
-                    var col4 = AddBodyPanelCol4(estateExpense, tb1);
+                    var col6 = AddBodyPanelCol6(estateExpense, tb3);
+                    var col4 = AddBodyPanelCol4(estateExpense, tb2);
                     var col5 = AddBodyPanelCol5(estateExpense, isExpensePerIndex);
 
                     mainCol.Controls.Add(col0);
@@ -134,7 +129,7 @@ namespace Admin.Expenses
                     mainCol.Controls.Add(col4);
                     mainCol.Controls.Add(col5);
 
-                    cashBookMain.Controls.Add(mainCol);
+                    invoiceMain.Controls.Add(mainCol);
                 }
             }
         }
@@ -153,13 +148,16 @@ namespace Admin.Expenses
                 Visible = isExpensePerIndex
             };
 
-            if (isExpensePerIndex && (decimal)estateExpense.TenantExpenses.Count() > 0)
+            if (isExpensePerIndex && estateExpense.Estates.Tenants.Count() > 0)
             {
                 var message = ExpensePercentageFilledInMessage(estateExpense);
                 var col5Literal = new Literal { Text = message };
                 col5.Controls.Add(col5Literal);
+                if (!message.Contains("<b>0</b> cheltuieli adăugate din <b>0</b"))
+                {
+                    col5.Controls.Add(btnAddExpense);
+                }
             }
-            col5.Controls.Add(btnAddExpense);
             return col5;
         }
 
@@ -189,17 +187,21 @@ namespace Admin.Expenses
             return col4;
         }
 
-        private Panel AddBodyPanelCol6(EstateExpenses estateExpense, CashBooks cashBook, TextBox tb3)
+        private Panel AddBodyPanelCol6(EstateExpenses estateExpense, TextBox tb3)
         {
             // column 6
             var col6 = new Panel
             {
                 CssClass = "col-md-2 col-sm-2 col-xs-6"
             };
+
+
+            string percentage = GetPercentage(estateExpense);
+
             Button btnRedistibuteRemainingExpense = new Button
             {
-                Visible = (tb3.Text == string.Empty) ? false : true,
-                Text = (!cashBook.RedistributeType.HasValue) ? "Redistribuie" : "Redistibuit " + cashBook.EstateExpensesRedistributionTypes.Value + ", MODIFICĂ",
+                Visible = (tb3.Text != string.Empty && (percentage == "100" || percentage == string.Empty)) ? true : false,
+                Text = (!estateExpense.RedistributeType.HasValue) ? "Redistribuie" : "Redistibuit " + estateExpense.EstateExpensesRedistributionTypes.Value + ", MODIFICĂ",
                 CommandArgument = estateExpense.Id.ToString()
             };
             btnRedistibuteRemainingExpense.Click += btnRedistibuteRemainingExpense_Click;
@@ -207,44 +209,64 @@ namespace Admin.Expenses
             return col6;
         }
 
-        private Panel AddBodyPanelCol3(EstateExpenses estateExpense, CashBooks cashBook, TextBox tb1, out TextBox tb3)
+        private Panel AddBodyPanelCol3(EstateExpenses estateExpense, TextBox tb1, out TextBox tb3)
         {
             // column 3
             var col3 = new Panel
             {
                 CssClass = "col-md-1 col-sm-4 col-xs-6"
             };
-            tb3 = new TextBox { Enabled = false, CssClass = "cashbookItemTextbox" };
+            tb3 = new TextBox { Enabled = false, CssClass = "invoiceItemTextbox" };
             // tb3.Attributes.Add("eeId", estateExpense.Id.ToString());
 
             if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
             {
-                tb3.Text = RedistributeValuePerIndex(estateExpense, cashBook);
-                if (!string.IsNullOrEmpty(tb3.Text))
+                if (!estateExpense.RedistributeType.HasValue)
                 {
-                    var col3Literal = new Literal { Text = "<b>" + tb1.Text + " - " + estateExpense.TenantExpenses.Sum(ee => ee.Value) + "</b>" };
-                    col3.Controls.Add(col3Literal);
+                    var percentage = GetPercentage(estateExpense);
+                    if (percentage == "100")
+                    {
+                        tb3.Text = RedistributeValuePerIndex(estateExpense);
+
+                    }
+                    if (tb3.Text == "0,00")
+                    {
+                        tb3.Text = string.Empty;
+                    }
+
+                    if (!string.IsNullOrEmpty(tb3.Text))
+                    {
+                        var col3Literal = new Literal { Text = "<b>" + tb1.Text + " - " + estateExpense.TenantExpenses.Sum(ee => ee.Value) + "</b>" };
+                        col3.Controls.Add(col3Literal);
+                    }
+                    col3.Controls.Add(tb3);
                 }
-                col3.Controls.Add(tb3);
-            }
-            else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
-            {
-                if (!string.IsNullOrEmpty(tb1.Text))
+                else
                 {
-                    var col3Literal = new Literal { Text = "0" };
-                    col3.Controls.Add(col3Literal);
+                    tb3.Text = "";
+                    col3.Controls.Add(tb3);
                 }
             }
-            else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants && estateExpense.TenantExpenses.Count > 0)
-            {
-                var col3Literal = new Literal { Text = Estate.Tenants.Sum(s => s.Dependents) + " locatari, <b>" + EstateExpensesManager.CalculatePertenantPrice(estateExpense) + "</b> alocat fiecăruia " };
-                col3.Controls.Add(col3Literal);
-            }
+            //else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+            //{
+            //    //if (!string.IsNullOrEmpty(tb1.Text))
+            //    //{
+            //    //    var col3Literal = new Literal { Text = "0" };
+            //    //    col3.Controls.Add(col3Literal);
+            //    //}
+            //}
+            //else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants && estateExpense.TenantExpenses.Count > 0)
+            //{
+            //    //var col3Literal = new Literal { Text = "0" };
+
+            //    //var col3Literal = new Literal { Text = Estate.Tenants.Sum(s => s.Dependents) + " locatari, <b>" + EstateExpensesManager.CalculatePertenantPrice(estateExpense) + "</b> alocat fiecăruia " };
+            //    //col3.Controls.Add(col3Literal);
+            //}
 
             return col3;
         }
 
-        private Panel AddBodyPanelCol2(EstateExpenses estateExpense, CashBooks cashBook, out TextBox tb1)
+        private Panel AddBodyPanelCol2(EstateExpenses estateExpense, out TextBox tb2)
         {
             // column 2
             var col2 = new Panel
@@ -252,13 +274,15 @@ namespace Admin.Expenses
                 CssClass = "col-md-2 col-sm-4 col-xs-6"
             };
 
-            tb1 = new TextBox { Enabled = false, CssClass = "cashbookItemTextbox" };
+            tb2 = new TextBox { Enabled = false, CssClass = "invoiceItemTextbox" };
 
-            if (Estate.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+            if (Association.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
             {
-                foreach (StairCases stairCase in Estate.StairCases)
+                decimal? sumOfInvoices = null;
+
+                foreach (StairCases stairCase in Association.StairCases)
                 {
-                    var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_CashBook == cashBook.Id);
+                    var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_EstateExpense == estateExpense.Id);
                     var lit = new Literal
                     {
                         Text = "Scara: " + stairCase.Nume + "  "
@@ -267,7 +291,7 @@ namespace Admin.Expenses
                     var tb = new TextBox
                     {
                         Enabled = false,
-                        CssClass = "cashbookItemTextbox",
+                        CssClass = "invoiceItemTextbox",
                         Text = ((invoice != null) ? invoice.Value.ToString() : string.Empty)
                     };
                     tb.Attributes.Add("eeId", estateExpense.Id.ToString());
@@ -275,13 +299,31 @@ namespace Admin.Expenses
                     col2.Controls.Add(lit);
                     col2.Controls.Add(tb);
                     col2.Controls.Add(new Literal { Text = "<br>" });
+
+                    if (invoice != null && invoice.Value.HasValue)
+                    {
+                        if (!sumOfInvoices.HasValue)
+                        {
+                            sumOfInvoices = 0m;
+                        }
+                        sumOfInvoices = sumOfInvoices + invoice.Value.Value;
+                    }
                 }
+
+                tb2.Text = (sumOfInvoices.HasValue) ? sumOfInvoices.Value.ToString() : string.Empty;
             }
             else
             {
-                tb1.Attributes.Add("eeId", estateExpense.Id.ToString());
-                tb1.Text = (cashBook != null) ? cashBook.Value.ToString() : string.Empty;
-                col2.Controls.Add(tb1);
+                tb2.Attributes.Add("eeId", estateExpense.Id.ToString());
+                var invoice = estateExpense.Invoices.FirstOrDefault(i => i.Id_EstateExpense == estateExpense.Id && i.Id_StairCase == null);
+
+                string message = string.Empty;
+                if (invoice != null && invoice.Value.HasValue)
+                {
+                    message = invoice.Value.Value.ToString();
+                }
+                tb2.Text = message;
+                col2.Controls.Add(tb2);
             }
 
             return col2;
@@ -302,13 +344,13 @@ namespace Admin.Expenses
             return col1;
         }
 
-        private Panel AddBodyPanelCol0(EstateExpenses estateExpense, bool isExpensePerIndex, CashBooks cashBook)
+        private Panel AddBodyPanelCol0(EstateExpenses estateExpense, bool isExpensePerIndex)
         {
             // column 0
             var col0 = new Panel();
             Literal literal0 = new Literal
             {
-                Text = statusOfCashBook(cashBook, estateExpense, isExpensePerIndex)
+                Text = statusOfInvoices(estateExpense, isExpensePerIndex)
             };
             col0.Controls.Add(literal0);
             col0.CssClass = "col-md-1 col-sm-2 col-xs-6";
@@ -350,13 +392,13 @@ namespace Admin.Expenses
             headerPanel.Controls.Add(headerCol5);
             headerPanel.Controls.Add(headerCol6);
             headerPanel.Controls.Add(headerCol7);
-            cashBookMain.Controls.Add(headerPanel);
+            invoiceMain.Controls.Add(headerPanel);
         }
 
-        private static string ExpensePercentageFilledIn(EstateExpenses estateExpense)
+        private static string ExpensePercentageFilledIn(EstateExpenses estateExpense, int tenantsWithCounters)
         {
             var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
-            var percentage = (((decimal)addedExpenses / (decimal)estateExpense.TenantExpenses.Count()) * 100).ToString("0.##");
+            var percentage = (((decimal)addedExpenses / (decimal)tenantsWithCounters) * 100).ToString("0.##");
 
             return percentage;
         }
@@ -364,105 +406,195 @@ namespace Admin.Expenses
         private static string ExpensePercentageFilledInMessage(EstateExpenses estateExpense)
         {
             var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
-            var allExpenses = estateExpense.TenantExpenses.Count();
+            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
 
-            return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + allExpenses + "</b> ";
+            return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + tenantsWithCountersOfThatExpense + "</b> ";
         }
 
-        private string statusOfCashBook(CashBooks cashBook, EstateExpenses estateExpense, bool isExpensePerIndex)
+        private static int GetTenantsWithCountersOfThatExpense(EstateExpenses estateExpense)
+        {
+            int tenantsWithCountersOfThatExpense = 0;
+            List<Counters> allcountersOfExpense = CountersManager.GetAllByExpenseType(estateExpense.Estates.Id, estateExpense.Expenses.Id);
+            foreach (var tenant in estateExpense.Estates.Tenants)
+            {
+                if (allcountersOfExpense.Select(c => c.Id).Intersect(tenant.ApartmentCounters.Select(ac => ac.Id_Counters)).Any())
+                {
+                    tenantsWithCountersOfThatExpense++;
+                }
+            }
+            return tenantsWithCountersOfThatExpense;
+        }
+
+        private string statusOfInvoices(EstateExpenses estateExpense, bool isExpensePerIndex)
         {
             string result = string.Empty;
-            var redistributeValue = CalculateRedistributeValue(estateExpense.Id, cashBook);
+            var redistributeValue = CalculateRedistributeValue(estateExpense.Id);
             var percentage = string.Empty;
 
             if (isExpensePerIndex)
             {
-                if ((decimal)estateExpense.TenantExpenses.Count() > 0)
-                {
-                    percentage = ExpensePercentageFilledIn(estateExpense);
-                }
-                else if(estateExpense.Estates.Tenants.Count > 0)
-                {
-                    percentage = "0";
-                }
+                percentage = GetPercentage(estateExpense);
             }
 
-            if(estateExpense.SplitPerStairCase.HasValue &&estateExpense.SplitPerStairCase.Value)
+            if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
             {
-                if (cashBook.Invoices.All(i => i.Value.HasValue) && string.IsNullOrEmpty(percentage) && string.IsNullOrEmpty(redistributeValue))
+                result = statusOfInvoicesForSplit(estateExpense, result, redistributeValue, percentage);
+            }
+            else
+            {
+                result = statusOfInvoicesForNoSplit(result, redistributeValue, percentage, estateExpense);
+            }
+
+            return result;
+        }
+
+        private static string GetPercentage(EstateExpenses estateExpense)
+        {
+            string percentage = string.Empty;
+
+            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
+
+            if (tenantsWithCountersOfThatExpense > 0)
+            {
+                percentage = ExpensePercentageFilledIn(estateExpense, tenantsWithCountersOfThatExpense);
+            }
+            else
+            {
+                percentage = "100";
+            }
+
+            return percentage;
+        }
+
+        #region statusOfinvoiceFor Split -NoSplit
+
+        private static string statusOfInvoicesForSplit(EstateExpenses estateExpense, string result, string redistributeValue, string percentage)
+        {
+            if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
+            {
+                if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count
+                    && (string.IsNullOrEmpty(percentage) || percentage == "100") && (estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00"))
                 {
                     result = "<i class='fa fa-check'></i> 100%";
                 }
-                else if((cashBook.Invoices.Any(i=>!i.Value.HasValue) || cashBook.Invoices.Count != estateExpense.Estates.StairCases.Count) &&
-                    (!string.IsNullOrEmpty(percentage)))
+                else if ((estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count) &&
+                    percentage != "100")
                 {
                     result = "Adaugă facturile, cheltuielile individuale! 0%";
-                }
-                else if(cashBook.Invoices.Any(i=>!i.Value.HasValue) || cashBook.Invoices.Count != estateExpense.Estates.StairCases.Count)
-                {
-                    result = "Facturi neadăugate! 20%";
-                }
-                else if (!string.IsNullOrEmpty(percentage))
-                {
-                    result = "Cheltuieli neadăugate! 20%";
                 }
                 else if (!string.IsNullOrEmpty(redistributeValue))
                 {
                     result = "Redistribuie cheltuiala! 80%";
                 }
+                else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
+                {
+                    result = "Cheltuieli neadăugate! 20%";
+                }
+                else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
+                {
+                    result = "Facturi neadăugate! 50%";
+                }
             }
             else
             {
-                result = statusOfCashBookForNoSplit(cashBook, result, redistributeValue, percentage);
+                if ((estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count) &&
+                    (estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00"))
+                {
+                    result = "<i class='fa fa-check'></i> 100%";
+                }
+                else if (estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count)
+                {
+                    result = "Facturi neadăugate! 50%";
+                }
+                else if (!estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00")
+                {
+                    result = "Redistribuie cheltuiala! 80%";
+                }
             }
 
             return result;
         }
 
-        private static string statusOfCashBookForNoSplit(CashBooks cashBook, string result, string redistributeValue, string percentage)
+        private static string statusOfInvoicesForNoSplit(string result, string redistributeValue, string percentage, EstateExpenses estateExpense)
         {
-            if (cashBook.Value != null && string.IsNullOrEmpty(percentage) && string.IsNullOrEmpty(redistributeValue))
+            if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count > 0 && (string.IsNullOrEmpty(percentage) || percentage == "100") &&
+                (estateExpense.RedistributeType.HasValue || string.IsNullOrEmpty(redistributeValue) || redistributeValue == "0,00"))
             {
                 result = "<i class='fa fa-check'></i> 100%";
             }
-            else if (string.IsNullOrEmpty(redistributeValue) && cashBook.Value == null && percentage == "0")
+            else if (!estateExpense.RedistributeType.HasValue && estateExpense.Invoices.Any(i => !i.Value.HasValue) && percentage == "0")
             {
                 result = "Adaugă factura, cheltuielile! 0%";
             }
-            else if (!string.IsNullOrEmpty(percentage))
+            else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
             {
                 result = "Cheltuieli neadăugate! 20%";
             }
-            else if (!string.IsNullOrEmpty(redistributeValue))
+            else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
+            {
+                result = "Facturi neadăugate! 50%";
+            }
+            else if (!estateExpense.RedistributeType.HasValue)
             {
                 result = "Redistribuie cheltuiala! 80%";
-            }
-            else if (cashBook.Value == null)
-            {
-                result = "Lipsă factură! 60%";
             }
 
             return result;
         }
 
-        private static string RedistributeValuePerIndex(EstateExpenses estateExpense, CashBooks cashBook1)
+        #endregion
+
+        private static string RedistributeValuePerIndex(EstateExpenses estateExpense)
         {
+            string result = string.Empty;
+
             decimal? sumOfIndexes = TenantExpensesManager.GetSumOfIndexesForexpense(estateExpense.Id);
-            return (sumOfIndexes != null & cashBook1 != null && estateExpense.PricePerExpenseUnit != null)
-                ? (cashBook1.Value - (estateExpense.PricePerExpenseUnit * sumOfIndexes.Value)).ToString()
-                : string.Empty;
+            if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+            {
+                decimal? sumOfInvoices = null;
+                foreach (StairCases stairCase in estateExpense.Estates.StairCases)
+                {
+                    var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_EstateExpense == estateExpense.Id);
+                    if (invoice != null && invoice.Value.HasValue)
+                    {
+                        if (!sumOfInvoices.HasValue)
+                        {
+                            sumOfInvoices = 0m;
+                        }
+                        sumOfInvoices = sumOfInvoices + invoice.Value.Value;
+                    }
+                }
+
+                if (sumOfInvoices.HasValue && estateExpense.PricePerExpenseUnit.HasValue && sumOfIndexes.HasValue)
+                {
+                    result = (sumOfInvoices.Value - (estateExpense.PricePerExpenseUnit.Value * sumOfIndexes.Value)).ToString();
+                }
+            }
+            else
+            {
+                var invoice = estateExpense.Invoices.FirstOrDefault(i => i.Id_StairCase == null && i.Id_EstateExpense == estateExpense.Id);
+
+                if (sumOfIndexes.HasValue & invoice != null && invoice.Value.HasValue && estateExpense.PricePerExpenseUnit.HasValue)
+                {
+                    result = (invoice.Value - (estateExpense.PricePerExpenseUnit * sumOfIndexes.Value)).ToString();
+                }
+            }
+
+            return result;
         }
 
-        private static string RedistributeValueCotaIndiviza(Estates estate, EstateExpenses estateExpense, CashBooks cashBook)
+        private static string RedistributeValueCotaIndiviza(Estates estate, EstateExpenses estateExpense)
         {
+            decimal? allInvoicesSum = estateExpense.Invoices.Where(i => i.Value.HasValue).Sum(i => i.Value);
             decimal? sumOfIndiviza = TenantExpensesManager.GetSumOfIndivizaForExpense(estateExpense);
-            return (sumOfIndiviza != null & estate != null)
-                ? ((sumOfIndiviza.Value / estate.Indiviza) * cashBook.Value).ToString()
+            return (sumOfIndiviza != null && estate != null && allInvoicesSum.HasValue)
+                ? ((sumOfIndiviza.Value / estate.Indiviza) * allInvoicesSum.Value).ToString()
                 : string.Empty;
         }
 
         public void ClickablePanel1_Click(object sender, EventArgs e)
         {
+
             bool shouldRefresh = false;
             Button btn = (Button)sender;
             int estateExpenseId;
@@ -470,14 +602,16 @@ namespace Admin.Expenses
 
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
+
                 var estateExpense = EstateExpensesManager.GetById(estateExpenseId);
 
                 if (estateExpense == null)
                 {
                     return;
                 }
+                Response.Redirect("~/Invoices/Add.aspx?year=" + year() + "&month=" + month() + "&expense=" + estateExpense.Id_Expense);
 
-                foreach (var control in cashBookMain.Controls)
+                foreach (var control in invoiceMain.Controls)
                 {
                     if (found)
                     {
@@ -523,7 +657,7 @@ namespace Admin.Expenses
                                                     // if no staircase update only default value
                                                     if (!(estateExpense.Estates.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value))
                                                     {
-                                                        CashBookManager.Update(estateExpense, updatedValue);
+                                                        InvoicesManager.AddOrUpdate(estateExpense, updatedValue);
                                                         RefreshEstate();
                                                         Response.Redirect(Request.RawUrl);
                                                     }
@@ -533,14 +667,14 @@ namespace Admin.Expenses
                                                         if (int.TryParse(tb2.Attributes["sc"], out stairCaseId)
                                                          && tbxEstateExpenseId == estateExpenseId)
                                                         {
-                                                            int cashBookId;
-                                                            if (int.TryParse(tb2.Attributes["cb"], out cashBookId)
+                                                            int invoiceId;
+                                                            if (int.TryParse(tb2.Attributes["cb"], out invoiceId)
                                                              && tbxEstateExpenseId == estateExpenseId)
                                                             {
 
                                                             }
 
-                                                            CashBookManager.Update(estateExpense, updatedValue, stairCaseId);
+                                                            InvoicesManager.AddOrUpdate(estateExpense, updatedValue, stairCaseId);
                                                             shouldRefresh = true;
                                                         }
                                                     }
@@ -572,6 +706,7 @@ namespace Admin.Expenses
             if (shouldRefresh)
             {
                 RefreshEstate();
+                Response.Redirect(Request.RawUrl);
             }
         }
 
@@ -586,28 +721,24 @@ namespace Admin.Expenses
             int estateExpenseId;
             if (int.TryParse(estateExpense.CommandArgument, out estateExpenseId))
             {
-                var cashBook = CashBookManager.GetByEstateExpenseId(estateExpenseId);
-                if (cashBook != null)
-                {
-                    ConfigureRedistributeMessages(estateExpenseId, cashBook);
-                }
+                ConfigureRedistributeMessages(estateExpenseId);
             }
 
-            cashBookRedistribute.Visible = true;
-            cashBookMain.Visible = false;
+            invoiceRedistribute.Visible = true;
+            invoiceMain.Visible = false;
             lblExpenseMeessageConfigure.Visible = false;
         }
 
-        private void ConfigureRedistributeMessages(int estateExpenseId, CashBooks cashBook)
+        private void ConfigureRedistributeMessages(int estateExpenseId)
         {
-            string redistributeValue = CalculateRedistributeValue(estateExpenseId, cashBook);
-            cashBookRedistributeMessage.Text = "<br>Cheltuială de redistribuit:" + redistributeValue + "<br>";
+            string redistributeValue = CalculateRedistributeValue(estateExpenseId);
+            invoiceRedistributeMessage.Text = "<br>Cheltuială de redistribuit:" + redistributeValue + "<br>";
 
             decimal redistributeVal;
             if (decimal.TryParse(redistributeValue, out redistributeVal))
             {
-                Estates estate = EstatesManager.GetByEstateExpenseId(estateExpenseId);
-                txtCashBookRedistributeEqualApartment.Text = estate.Tenants.Count + "apartamente, alocă <b>" +
+                Estates estate = AssociationsManager.GetByEstateExpenseId(estateExpenseId);
+                txtInvoiceRedistributeEqualApartment.Text = estate.Tenants.Count + "apartamente, alocă <b>" +
                     Math.Round(redistributeVal / estate.Tenants.Count, 2) + "</b> la fiecare apartament";
 
                 var tenants = ApartmentsManager.GetAllByEstateId(estate.Id);
@@ -618,81 +749,75 @@ namespace Admin.Expenses
                     valuePerTenant = Math.Round(redistributeVal / allTenantDependents, 2).ToString();
                 }
 
-                txtCashBookRedistributeEqualTenants.Text = allTenantDependents + " locatari în bloc, alocă <b>" + valuePerTenant + "</b> per fiecare locatar";
+                txtInvoiceRedistributeEqualTenants.Text = allTenantDependents + " locatari în bloc, alocă <b>" + valuePerTenant + "</b> per fiecare locatar";
 
-                txtCashBookRedistributeConsumption.Text = "Not implemented";
+                txtInvoiceRedistributeConsumption.Text = "Not implemented";
 
-                cashBookRedistributeEqualApartment.CommandArgument = estateExpenseId.ToString();
-                cashBookRedistributeEqualTenants.CommandArgument = estateExpenseId.ToString();
-                cashBookRedistributeConsumption.CommandArgument = estateExpenseId.ToString();
+                invoiceRedistributeEqualApartment.CommandArgument = estateExpenseId.ToString();
+                invoiceRedistributeEqualTenants.CommandArgument = estateExpenseId.ToString();
+                invoiceRedistributeConsumption.CommandArgument = estateExpenseId.ToString();
             }
         }
 
-        private string CalculateRedistributeValue(int estateExpenseId, CashBooks cashBook)
+        private string CalculateRedistributeValue(int estateExpenseId)
         {
             EstateExpenses estateExpense = EstateExpensesManager.GetById(estateExpenseId);
 
             if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
             {
-                return RedistributeValuePerIndex(estateExpense, cashBook);
+                return RedistributeValuePerIndex(estateExpense);
             }
             else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
             {
-                var estate = EstatesManager.GetById(estateExpenseId);
-                return RedistributeValueCotaIndiviza(estate, estateExpense, cashBook);
+                var estate = AssociationsManager.GetById(estateExpenseId);
+                return RedistributeValueCotaIndiviza(estate, estateExpense);
             }
 
             return string.Empty;
         }
 
-        private void lnkCashBookModify_Click(object sender, EventArgs e)
-        {
-            LinkButton lnk = sender as LinkButton;
-            int? estateId = lnk.ID.Replace("lnkBtn", "").ToNullableInt();
-            if (estateId.HasValue)
-            {
-                CashBookManager.AddDefault(estateId.Value);
-                InitializeCashBook(estateId);
-            }
-        }
-
-        protected void cashBookRedistributeConsumption_Click(object sender, EventArgs e)
+        protected void invoiceRedistributeConsumption_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             int estateExpenseId;
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-                CashBookManager.UpdateRedistributeMethodAndValue(estateExpenseId, 3);
+                EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 3);
             }
         }
 
-        protected void cashBookRedistributeEqualTenants_Click(object sender, EventArgs e)
+        protected void invoiceRedistributeEqualTenants_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             int estateExpenseId;
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-                CashBookManager.UpdateRedistributeMethodAndValue(estateExpenseId, 2);
+                EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 2);
                 Response.Redirect(Request.RawUrl);
             }
         }
 
-        protected void cashBookRedistributeEqualApartment_Click(object sender, EventArgs e)
+        protected void invoiceRedistributeEqualApartment_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             int estateExpenseId;
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-                CashBookManager.UpdateRedistributeMethodAndValue(estateExpenseId, 1);
+                EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 1);
                 Response.Redirect(Request.RawUrl);
             }
         }
 
-        protected void cashBookRedistributeCancel_Click(object sender, EventArgs e)
+        protected void invoiceRedistributeCancel_Click(object sender, EventArgs e)
         {
-            cashBookRedistribute.Visible = false;
-            cashBookMain.Visible = true;
+            invoiceRedistribute.Visible = false;
+            invoiceMain.Visible = true;
             lblExpenseMeessageConfigure.Visible = true;
+        }
+
+        protected void lblExpenseMonthlyList_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Reports/Monthly.aspx?year=" + year() + "&month=" + month());
         }
     }
 }

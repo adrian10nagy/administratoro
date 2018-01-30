@@ -54,9 +54,6 @@
     <Compile Include="ApartmentCounters.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="CashBooks.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Counters.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>

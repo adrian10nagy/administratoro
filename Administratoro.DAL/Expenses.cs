@@ -22,6 +22,7 @@ namespace Administratoro.DAL
     
         public int Id { get; set; }
         public string Name { get; set; }
+        public Nullable<bool> specialType { get; set; }
     
         public virtual ICollection<Counters> Counters { get; set; }
         public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }

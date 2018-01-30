@@ -148,11 +148,11 @@ namespace Admin.Associations
 
         private void AddCounterHeader()
         {
-            var estate = Session[SessionConstants.SelectedEstate] as Estates;
+            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
             var estateExpenses = EstateExpensesManager.GetDefault(estate.Id);
             var headerCssClass = estate.HasStaircase ? "col-md-4 col-xs-4 countersHeadersNew" : "col-md-6 col-xs-6 countersHeadersNew";
 
-            var cssClass = Estate.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
+            var cssClass = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
 
             Panel headerPanel = new Panel { CssClass = "col-md-12 col-xs-12" };
             // add expense name header
@@ -203,6 +203,7 @@ namespace Admin.Associations
 
             if (_step == 3)
             {
+                Step2PopulateExpenses();
                 ConfigureStep3();
             }
 
@@ -222,6 +223,17 @@ namespace Admin.Associations
         {
             Partners partner = Session[SessionConstants.LoggedPartner] as Partners;
             _step = 2;
+            decimal? indivizaAparmentsResult = null;
+            
+            if(estateStairs.SelectedIndex == 1)
+            {
+                decimal indivizaAparments;
+                if(decimal.TryParse(estateCotaIndivizaApartments.Text, out indivizaAparments))
+                {
+                    indivizaAparmentsResult = indivizaAparments;
+                }
+            }
+
             var estate = new Estates
             {
                 Name = estateName.Value,
@@ -229,10 +241,10 @@ namespace Admin.Associations
                 HasStaircase = (estateStairs.SelectedIndex == 1),
                 Id_Partner = partner.Id,
                 FiscalCode = estateFiscalCode.Value,
-                CotaIndivizaAparments = (estateStairs.SelectedIndex == 0) ? -1 : estateCotaIndivizaApartments.Text.ToNullableInt()
+                CotaIndivizaAparments = indivizaAparmentsResult
             };
 
-            var addedEstate = EstatesManager.AddNewEstate(estate);
+            var addedEstate = AssociationsManager.AddNew(estate);
             for (int i = 0; i < DynamicStairs.Count; i++)
             {
                 var stairName = FindControl(DynamicStairs.ElementAt(i).Key);
@@ -259,54 +271,31 @@ namespace Admin.Associations
                 }
             }
 
-            addedEstate = EstatesManager.GetById(addedEstate.Id);
+            addedEstate = AssociationsManager.GetById(addedEstate.Id);
 
-            Session[SessionConstants.SelectedEstate] = addedEstate;
-            var estates = EstatesManager.GetAllEstatesByPartner(partner.Id);
-            Session[SessionConstants.AllEsates] = estates;
+            Session[SessionConstants.SelectedAssociation] = addedEstate;
+            var estates = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
+            Session[SessionConstants.AllAssociations] = estates;
 
             ConfigureStep2();
         }
 
         protected void btnSave2_Click(object sender, EventArgs e)
         {
-            var estate = Session[SessionConstants.SelectedEstate] as Estates;
-            Dictionary<int, int> dictionary = new Dictionary<int, int>();
-
-            foreach (var item in expensesDefault.Controls)
-            {
-                if (item is Panel)
-                {
-                    var thePanel = (Panel)item;
-                    if (thePanel.Controls.Count >= 3 && thePanel.Controls[0] is CheckBox && thePanel.Controls[2] is DropDownList)
-                    {
-                        var chb = (CheckBox)thePanel.Controls[0];
-                        var drp = (DropDownList)thePanel.Controls[2];
-                        if (chb.Checked)
-                        {
-                            int expenseId;
-                            int selectedTypeId;
-                            if (int.TryParse(chb.ID.Replace("expense", ""), out expenseId) &&
-                                int.TryParse(drp.SelectedValue, out selectedTypeId))
-                            {
-                                dictionary.Add(expenseId, selectedTypeId);
-                            }
-                        }
-                    }
-                }
-            }
+            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
+            Dictionary<int, int> dictionary = GetSelectdExpenses();
 
             EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, dictionary);
-            estate = EstatesManager.GetById(estate.Id);
+            estate = AssociationsManager.GetById(estate.Id);
 
-            Session[SessionConstants.SelectedEstate] = estate;
+            Session[SessionConstants.SelectedAssociation] = estate;
             ConfigureStep3();
 
         }
 
         protected void btnSave3_Click(object sender, EventArgs e)
         {
-            var estate = Session[SessionConstants.SelectedEstate] as Estates;
+            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
             List<Counters> cnts = new List<Counters>();
 
             foreach (var item in countersConfiguration.Controls)
@@ -351,9 +340,9 @@ namespace Admin.Associations
             }
 
             CountersManager.Addcounter(cnts);
-            estate = EstatesManager.GetById(estate.Id);
+            estate = AssociationsManager.GetById(estate.Id);
 
-            Session[SessionConstants.SelectedEstate] = estate;
+            Session[SessionConstants.SelectedAssociation] = estate;
             Response.Redirect("~/?message=newEstate");
         }
 
@@ -363,8 +352,12 @@ namespace Admin.Associations
         {
             step1.Visible = false;
             step2.Visible = true;
+            Step2PopulateExpenses();
+        }
 
-            var expenses = ExpensesManager.GetAllExpensesAsList();
+        private void Step2PopulateExpenses()
+        {
+            var expenses = ExpensesManager.GetAllExpenses();
 
             foreach (var expense in expenses)
             {
@@ -448,22 +441,54 @@ namespace Admin.Associations
 
         private ListItem[] GetExpensesAsListItemsWithExtradummyValue(int controlID)
         {
-            var expenses = ExpensesManager.GetAllExpensesAsList();
-            ListItem[] result = new ListItem[expenses.Count];
+            Dictionary<int, int> dictionary = GetSelectdExpenses();
+
+            ListItem[] result = new ListItem[dictionary.Count];
             int i = 0;
 
-            foreach (var item in expenses)
+            foreach (var item in dictionary)
             {
+                var ex = ExpensesManager.GetById(item.Key);
                 var expense = new ListItem
                 {
-                    Value = item.Id + "dummyExpense" + controlID,
-                    Text = item.Name
+                    Value = ex.Id + "dummyExpense" + controlID,
+                    Text = ex.Name
                 };
+
                 result[i] = expense;
                 i++;
             }
 
             return result;
+        }
+
+        private Dictionary<int, int> GetSelectdExpenses()
+        {
+            Dictionary<int, int> dictionary = new Dictionary<int, int>();
+
+            foreach (var item in expensesDefault.Controls)
+            {
+                if (item is Panel)
+                {
+                    var thePanel = (Panel)item;
+                    if (thePanel.Controls.Count >= 3 && thePanel.Controls[0] is CheckBox && thePanel.Controls[2] is DropDownList)
+                    {
+                        var chb = (CheckBox)thePanel.Controls[0];
+                        var drp = (DropDownList)thePanel.Controls[2];
+                        if (chb.Checked)
+                        {
+                            int expenseId;
+                            int selectedTypeId;
+                            if (int.TryParse(chb.ID.Replace("expense", ""), out expenseId) &&
+                                int.TryParse(drp.SelectedValue, out selectedTypeId))
+                            {
+                                dictionary.Add(expenseId, selectedTypeId);
+                            }
+                        }
+                    }
+                }
+            }
+            return dictionary;
         }
 
         protected void btnAddNext_Command(object sender, CommandEventArgs e)
@@ -494,9 +519,9 @@ namespace Admin.Associations
         {
             var result = new DymanicCounter();
             var expenses = GetExpensesAsListItemsWithExtradummyValue(ControlNumber);
-            var stairCases = GetStairCasesAsListItemsWithExtradummyValue(Estate, ControlNumber);
+            var stairCases = GetStairCasesAsListItemsWithExtradummyValue(Association, ControlNumber);
 
-            var cssClassRow = Estate.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
+            var cssClassRow = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
             Panel rowPanel = new Panel { CssClass = "col-md-12 col-xs-12 associationsNewCounters" };
 
             var dpdCounterExpense = new DropDownList()
@@ -515,7 +540,7 @@ namespace Admin.Associations
             };
             rowPanel.Controls.Add(txtContorValue);
 
-            if (Estate.HasStaircase && Estate.StairCases.Count != 0)
+            if (Association.HasStaircase && Association.StairCases.Count != 0)
             {
                 var dpdStairCases = new DropDownList()
                 {

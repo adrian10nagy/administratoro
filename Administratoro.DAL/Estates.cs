@@ -30,7 +30,7 @@ namespace Administratoro.DAL
         public bool HasStaircase { get; set; }
         public string BanckAccont { get; set; }
         public string FiscalCode { get; set; }
-        public Nullable<int> CotaIndivizaAparments { get; set; }
+        public Nullable<decimal> CotaIndivizaAparments { get; set; }
     
         public virtual ICollection<Counters> Counters { get; set; }
         public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }

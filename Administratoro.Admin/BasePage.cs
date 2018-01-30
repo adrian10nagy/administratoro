@@ -12,15 +12,29 @@ namespace Admin
 
     public class BasePage : Page
     {
-        public Estates Estate
+        public Estates Association
         {
             get
             {
                 Estates result = null;
-                if (Session[SessionConstants.SelectedEstate] != null)
+                if (Session[SessionConstants.SelectedAssociation] != null)
                 {
-                    result = (Estates)Session[SessionConstants.SelectedEstate];
+                    result = (Estates)Session[SessionConstants.SelectedAssociation];
                 }
+                return result;
+            }
+        }
+
+        public List<Estates> Associations
+        {
+            get
+            {
+                List<Estates> result = null;
+                if (Session[SessionConstants.AllAssociations] != null)
+                {
+                    result = (List<Estates>)Session[SessionConstants.AllAssociations];
+                }
+
                 return result;
             }
         }
@@ -29,13 +43,13 @@ namespace Admin
         {
             get
             {
-                return ExpensesManager.GetAllExpensesAsList();
+                return ExpensesManager.GetAllExpenses();
             }
         }
 
         public void RefreshEstate()
         {
-            Session[SessionConstants.SelectedEstate] = EstatesManager.GetById(Estate.Id);
+            Session[SessionConstants.SelectedAssociation] = AssociationsManager.GetById(Association.Id);
         }
 
     }

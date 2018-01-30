@@ -34,19 +34,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="CashBooks">
-      <EntityTypeMapping TypeName="AdministratoroModel.CashBooks">
-        <MappingFragment StoreEntitySet="CashBooks">
-          <ScalarProperty Name="RedistributeType" ColumnName="RedistributeType" />
-          <ScalarProperty Name="LastModifiedOn" ColumnName="LastModifiedOn" />
-          <ScalarProperty Name="AddedOn" ColumnName="AddedOn" />
-          <ScalarProperty Name="ExtraInfo" ColumnName="ExtraInfo" />
-          <ScalarProperty Name="Value" ColumnName="Value" />
-          <ScalarProperty Name="Id_EstateExpense" ColumnName="Id_EstateExpense" />
-          <ScalarProperty Name="Id" ColumnName="Id" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="Counters">
       <EntityTypeMapping TypeName="AdministratoroModel.Counters">
         <MappingFragment StoreEntitySet="Counters">
@@ -70,6 +57,7 @@
     <EntitySetMapping Name="EstateExpenses">
       <EntityTypeMapping TypeName="AdministratoroModel.EstateExpenses">
         <MappingFragment StoreEntitySet="EstateExpenses">
+          <ScalarProperty Name="RedistributeType" ColumnName="RedistributeType" />
           <ScalarProperty Name="SplitPerStairCase" ColumnName="SplitPerStairCase" />
           <ScalarProperty Name="PricePerExpenseUnit" ColumnName="PricePerExpenseUnit" />
           <ScalarProperty Name="WasDisabled" ColumnName="WasDisabled" />
@@ -109,6 +97,7 @@
     <EntitySetMapping Name="Expenses">
       <EntityTypeMapping TypeName="AdministratoroModel.Expenses">
         <MappingFragment StoreEntitySet="Expenses">
+          <ScalarProperty Name="specialType" ColumnName="specialType" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>
@@ -133,8 +122,9 @@
     <EntitySetMapping Name="Invoices">
       <EntityTypeMapping TypeName="AdministratoroModel.Invoices">
         <MappingFragment StoreEntitySet="Invoices">
-          <ScalarProperty Name="Id_CashBook" ColumnName="Id_CashBook" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
+          <ScalarProperty Name="Id_EstateExpense" ColumnName="Id_EstateExpense" />
           <ScalarProperty Name="Value" ColumnName="Value" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>

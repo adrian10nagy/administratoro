@@ -8,18 +8,6 @@
     <Property Name="Id_Apartment" Type="int" Nullable="false" />
     <Property Name="Id_Counters" Type="int" Nullable="false" />
   </EntityType>
-  <EntityType Name="CashBooks">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
-    <Property Name="Value" Type="decimal" Precision="12" Scale="2" />
-    <Property Name="ExtraInfo" Type="nvarchar(max)" />
-    <Property Name="AddedOn" Type="datetime" />
-    <Property Name="LastModifiedOn" Type="datetime" />
-    <Property Name="RedistributeType" Type="int" />
-  </EntityType>
   <EntityType Name="Counters">
     <Key>
       <PropertyRef Name="Id" />
@@ -52,6 +40,7 @@
     <Property Name="WasDisabled" Type="bit" Nullable="false" />
     <Property Name="PricePerExpenseUnit" Type="decimal" Precision="20" Scale="2" />
     <Property Name="SplitPerStairCase" Type="bit" />
+    <Property Name="RedistributeType" Type="int" />
   </EntityType>
   <EntityType Name="EstateExpensesRedistributionTypes">
     <Key>
@@ -72,7 +61,7 @@
     <Property Name="HasStaircase" Type="bit" Nullable="false" />
     <Property Name="BanckAccont" Type="nvarchar" MaxLength="30" />
     <Property Name="FiscalCode" Type="nvarchar" MaxLength="30" />
-    <Property Name="CotaIndivizaAparments" Type="int" />
+    <Property Name="CotaIndivizaAparments" Type="decimal" Precision="14" Scale="4" />
   </EntityType>
   <EntityType Name="Expenses">
     <Key>
@@ -80,6 +69,7 @@
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="specialType" Type="bit" />
   </EntityType>
   <EntityType Name="ExpenseTypes">
     <Key>
@@ -101,8 +91,9 @@
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Value" Type="decimal" Precision="20" Scale="2" />
-    <Property Name="Id_StairCase" Type="int" Nullable="false" />
-    <Property Name="Id_CashBook" Type="int" Nullable="false" />
+    <Property Name="Id_EstateExpense" Type="int" />
+    <Property Name="Id_StairCase" Type="int" />
+    <Property Name="Description" Type="nvarchar" MaxLength="150" />
   </EntityType>
   <EntityType Name="Localities">
     <Key>
@@ -205,7 +196,7 @@
     <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Dependents" Type="int" Nullable="false" />
     <Property Name="id_Estate" Type="int" Nullable="false" />
-    <Property Name="CotaIndiviza" Type="decimal" Precision="6" Scale="2" Nullable="false" />
+    <Property Name="CotaIndiviza" Type="decimal" Precision="14" Scale="4" />
     <Property Name="Number" Type="int" Nullable="false" />
     <Property Name="Id_StairCase" Type="int" />
   </EntityType>
@@ -230,30 +221,6 @@
       </Principal>
       <Dependent Role="ApartmentCounters">
         <PropertyRef Name="Id_Counters" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__CashBooks__Id_Es__2A164134">
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="1" />
-    <End Role="CashBooks" Type="Self.CashBooks" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="EstateExpenses">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="CashBooks">
-        <PropertyRef Name="Id_EstateExpense" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__CashBooks__Redis__65370702">
-    <End Role="EstateExpensesRedistributionTypes" Type="Self.EstateExpensesRedistributionTypes" Multiplicity="0..1" />
-    <End Role="CashBooks" Type="Self.CashBooks" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="EstateExpensesRedistributionTypes">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="CashBooks">
-        <PropertyRef Name="RedistributeType" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -290,6 +257,18 @@
       </Principal>
       <Dependent Role="Counters">
         <PropertyRef Name="Id_StairCase" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__EstateExp__Redis__44952D46">
+    <End Role="EstateExpensesRedistributionTypes" Type="Self.EstateExpensesRedistributionTypes" Multiplicity="0..1" />
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpensesRedistributionTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="EstateExpenses">
+        <PropertyRef Name="RedistributeType" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -341,20 +320,20 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__Invoices__Id_Cas__76619304">
-    <End Role="CashBooks" Type="Self.CashBooks" Multiplicity="1" />
+  <Association Name="FK__Invoices__Id_Est__3FD07829">
+    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="0..1" />
     <End Role="Invoices" Type="Self.Invoices" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="CashBooks">
+      <Principal Role="EstateExpenses">
         <PropertyRef Name="Id" />
       </Principal>
       <Dependent Role="Invoices">
-        <PropertyRef Name="Id_CashBook" />
+        <PropertyRef Name="Id_EstateExpense" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__Invoices__Id_Sta__756D6ECB">
-    <End Role="StairCases" Type="Self.StairCases" Multiplicity="1" />
+  <Association Name="FK__Invoices__Id_sta__42ACE4D4">
+    <End Role="StairCases" Type="Self.StairCases" Multiplicity="0..1" />
     <End Role="Invoices" Type="Self.Invoices" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="StairCases">
@@ -530,7 +509,6 @@
   <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
   <EntityContainer Name="AdministratoroModelStoreContainer">
     <EntitySet Name="ApartmentCounters" EntityType="Self.ApartmentCounters" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="CashBooks" EntityType="Self.CashBooks" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Counters" EntityType="Self.Counters" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ErrorLogs" EntityType="Self.ErrorLogs" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="EstateExpenses" EntityType="Self.EstateExpenses" Schema="dbo" store:Type="Tables" />
@@ -558,14 +536,6 @@
       <End Role="Counters" EntitySet="Counters" />
       <End Role="ApartmentCounters" EntitySet="ApartmentCounters" />
     </AssociationSet>
-    <AssociationSet Name="FK__CashBooks__Id_Es__2A164134" Association="Self.FK__CashBooks__Id_Es__2A164134">
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
-      <End Role="CashBooks" EntitySet="CashBooks" />
-    </AssociationSet>
-    <AssociationSet Name="FK__CashBooks__Redis__65370702" Association="Self.FK__CashBooks__Redis__65370702">
-      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
-      <End Role="CashBooks" EntitySet="CashBooks" />
-    </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Est__0B5CAFEA" Association="Self.FK__Counters__Id_Est__0B5CAFEA">
       <End Role="Estates" EntitySet="Estates" />
       <End Role="Counters" EntitySet="Counters" />
@@ -577,6 +547,10 @@
     <AssociationSet Name="FK__Counters__Id_Sta__0C50D423" Association="Self.FK__Counters__Id_Sta__0C50D423">
       <End Role="StairCases" EntitySet="StairCases" />
       <End Role="Counters" EntitySet="Counters" />
+    </AssociationSet>
+    <AssociationSet Name="FK__EstateExp__Redis__44952D46" Association="Self.FK__EstateExp__Redis__44952D46">
+      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExt__Id_Es__76969D2E" Association="Self.FK__EstateExt__Id_Es__76969D2E">
       <End Role="Estates" EntitySet="Estates" />
@@ -594,11 +568,11 @@
       <End Role="Partners" EntitySet="Partners" />
       <End Role="Estates" EntitySet="Estates" />
     </AssociationSet>
-    <AssociationSet Name="FK__Invoices__Id_Cas__76619304" Association="Self.FK__Invoices__Id_Cas__76619304">
-      <End Role="CashBooks" EntitySet="CashBooks" />
+    <AssociationSet Name="FK__Invoices__Id_Est__3FD07829" Association="Self.FK__Invoices__Id_Est__3FD07829">
+      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
-    <AssociationSet Name="FK__Invoices__Id_Sta__756D6ECB" Association="Self.FK__Invoices__Id_Sta__756D6ECB">
+    <AssociationSet Name="FK__Invoices__Id_sta__42ACE4D4" Association="Self.FK__Invoices__Id_sta__42ACE4D4">
       <End Role="StairCases" EntitySet="StairCases" />
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
