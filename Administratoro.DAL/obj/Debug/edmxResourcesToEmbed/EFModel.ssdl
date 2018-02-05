@@ -94,6 +94,7 @@
     <Property Name="Id_EstateExpense" Type="int" />
     <Property Name="Id_StairCase" Type="int" />
     <Property Name="Description" Type="nvarchar" MaxLength="150" />
+    <Property Name="id_Redistributiontype" Type="int" />
   </EntityType>
   <EntityType Name="Localities">
     <Key>
@@ -329,6 +330,18 @@
       </Principal>
       <Dependent Role="Invoices">
         <PropertyRef Name="Id_EstateExpense" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Invoices__id_Red__4589517F">
+    <End Role="EstateExpensesRedistributionTypes" Type="Self.EstateExpensesRedistributionTypes" Multiplicity="0..1" />
+    <End Role="Invoices" Type="Self.Invoices" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EstateExpensesRedistributionTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Invoices">
+        <PropertyRef Name="id_Redistributiontype" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -570,6 +583,10 @@
     </AssociationSet>
     <AssociationSet Name="FK__Invoices__Id_Est__3FD07829" Association="Self.FK__Invoices__Id_Est__3FD07829">
       <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="Invoices" EntitySet="Invoices" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Invoices__id_Red__4589517F" Association="Self.FK__Invoices__id_Red__4589517F">
+      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
     <AssociationSet Name="FK__Invoices__Id_sta__42ACE4D4" Association="Self.FK__Invoices__Id_sta__42ACE4D4">

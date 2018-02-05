@@ -317,7 +317,7 @@ namespace Admin.Config
                                 //dpExpenseType.SelectedValue
                                 List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
 
-                                EstateExpenses newEe = EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
+                                EstateExpenses newEe = EstateExpensesManager.Add(estate.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
                                 EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
                             }
                         }

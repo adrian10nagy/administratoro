@@ -30,6 +30,14 @@ namespace Administratoro.BL.Managers
                 !ee.WasDisabled && !ee.Expenses.specialType.HasValue).ToList();
         }
 
+        public static List<EstateExpenses> GetAllEstateExpensesByMonthAndYearwithDiverse(int estateId, int year, int month)
+        {
+            return GetContext(true).EstateExpenses.Where(
+                ee => ee.Id_Estate == estateId &&
+                ee.Year == year && ee.Month == month &&
+                !ee.WasDisabled).ToList();
+        }
+
         public static List<EstateExpenses> GetFromLastesOpenedMonth(int estateId, bool shouldRefresh = false)
         {
             int maxYear = GetContext(shouldRefresh).EstateExpenses.Max(i => i.Year);
@@ -83,7 +91,7 @@ namespace Administratoro.BL.Managers
                 ee => ee.Id == idExpenseEstate).First();
         }
 
-        public static EstateExpenses AddEstateExpensesByTenantAndMonth(int estateId, int expenseId, int month, int year, string expenseType, bool? isStairCaseSplit)
+        public static EstateExpenses Add(int estateId, int expenseId, int month, int year, string expenseType, bool? isStairCaseSplit)
         {
             EstateExpenses ee = null;
 

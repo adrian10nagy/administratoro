@@ -17,11 +17,13 @@ namespace Administratoro.DAL
         public EstateExpensesRedistributionTypes()
         {
             this.EstateExpenses = new HashSet<EstateExpenses>();
+            this.Invoices = new HashSet<Invoices>();
         }
     
         public int Id { get; set; }
         public string Value { get; set; }
     
         public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
+        public virtual ICollection<Invoices> Invoices { get; set; }
     }
 }

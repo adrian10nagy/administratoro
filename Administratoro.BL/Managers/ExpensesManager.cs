@@ -28,7 +28,7 @@ namespace Administratoro.BL.Managers
 
         public static List<Expenses> GetAllExpenses()
         {
-            return GetContext().Expenses.Where(e=>!e.specialType.HasValue).ToList();
+            return GetContext().Expenses.Where(e => !e.specialType.HasValue).ToList();
         }
 
         public static List<Expenses> GetAllExpensesIncludingSpecialTypes()
@@ -41,5 +41,10 @@ namespace Administratoro.BL.Managers
             return GetContext().Expenses.FirstOrDefault(e => e.Id == expenseId);
         }
 
+
+        public static List<EstateExpensesRedistributionTypes> GetRedistributiontypes()
+        {
+            return GetContext().EstateExpensesRedistributionTypes.ToList();
+        }
     }
 }

@@ -291,7 +291,7 @@ namespace Admin.Config
                                         else
                                         {
                                             // adds it
-                                            EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, expenseId, month, year, dpExpenseType.SelectedValue, false);
+                                            EstateExpensesManager.Add(estate.Id, expenseId, month, year, dpExpenseType.SelectedValue, false);
                                         }
                                     }
 

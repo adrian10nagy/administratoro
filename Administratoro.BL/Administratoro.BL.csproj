@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Constants\Expense.cs" />
     <Compile Include="Constants\ExpenseType.cs" />
+    <Compile Include="Constants\RedistributionType.cs" />
     <Compile Include="Constants\SessionConstants.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Managers\InvoicesManager.cs" />
     <Compile Include="Managers\PartnerRightsManager.cs" />
     <Compile Include="Managers\PartnersManager.cs" />
+    <Compile Include="Managers\RedistributionManager.cs" />
     <Compile Include="Managers\StairCasesManager.cs" />
     <Compile Include="Managers\TenantExpensesManager.cs" />
     <Compile Include="Managers\ApartmentsManager.cs" />

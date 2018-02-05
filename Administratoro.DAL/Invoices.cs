@@ -19,8 +19,10 @@ namespace Administratoro.DAL
         public Nullable<int> Id_EstateExpense { get; set; }
         public Nullable<int> Id_StairCase { get; set; }
         public string Description { get; set; }
+        public Nullable<int> id_Redistributiontype { get; set; }
     
         public virtual EstateExpenses EstateExpenses { get; set; }
+        public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
         public virtual StairCases StairCases { get; set; }
     }
 }

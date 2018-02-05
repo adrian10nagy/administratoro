@@ -48,7 +48,7 @@ namespace Administratoro.BL.Managers
                 && i.Id_StairCase == stairsCaseId);
         }
 
-        public static void Update(Invoices invoice, decimal? value, int? stairCaseId, string description = null)
+        public static void Update(Invoices invoice, decimal? value, int? stairCaseId, string description = null, int? redistributionId = null)
         {
             Invoices result = new Invoices();
             result = GetContext(true).Invoices.FirstOrDefault(c => c.Id == invoice.Id);
@@ -58,6 +58,7 @@ namespace Administratoro.BL.Managers
                 result.Value = value;
                 result.Description = description;
                 result.Id_StairCase = stairCaseId;
+                result.id_Redistributiontype = redistributionId;
                 GetContext().Entry(result).CurrentValues.SetValues(result);
 
                 TenantExpensesManager.UpdateTenantExpenses(invoice.EstateExpenses, value, stairCaseId);
@@ -195,14 +196,28 @@ namespace Administratoro.BL.Managers
             return GetContext().Invoices.FirstOrDefault(i => i.Id == invoiceId);
         }
 
-        public static void AddDiverse(EstateExpenses ee, decimal? theValue, string description)
+        public static List<Invoices> GetDiverseByAssociationYearMonth(int association, int year, int month)
+        {
+            var result = new List<Invoices>();
+
+            var esExpense = GetContext(true).EstateExpenses.FirstOrDefault(ee=>ee.Id_Expense == 24 && ee.Id_Estate == association && ee.Year == year && ee.Month == month);
+            if(esExpense != null)
+            {
+                result = esExpense.Invoices.ToList();
+            }
+
+            return result;
+        }
+
+        public static void AddDiverse(EstateExpenses ee, decimal? theValue, string description, int? stairCaseId, int? redistributionId = null)
         {
             var invoice = new Invoices
             {
-                Id_StairCase = null,
+                Id_StairCase = stairCaseId,
                 Value = theValue,
                 Id_EstateExpense = ee.Id,
-                Description = description
+                Description = description,
+                id_Redistributiontype = redistributionId
             };
             GetContext().Invoices.Add(invoice);
             GetContext().SaveChanges();

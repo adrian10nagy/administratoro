@@ -172,12 +172,12 @@ namespace Administratoro.BL.Managers
                 if (tte != null)
                 {
                     decimal? result = null;
-                    if(valuePerCotaUnit.HasValue)
+                    if (valuePerCotaUnit.HasValue)
                     {
                         result = DecimalExtensions.RoundUp((double)(tenant.CotaIndiviza.Value * valuePerCotaUnit.Value), 2);
                     }
                     tte.Value = result;
-                    
+
                     GetContext().Entry(tte).CurrentValues.SetValues(tte);
                 }
                 else
@@ -203,7 +203,7 @@ namespace Administratoro.BL.Managers
             {
                 List<Tenants> allTenants;
 
-                if(tenants == null)
+                if (tenants == null)
                 {
                     allTenants = ApartmentsManager.GetAllByEstateId(ee.Id_Estate);
                 }
@@ -475,7 +475,7 @@ namespace Administratoro.BL.Managers
                 EstateExpenses estateExpense = GetContext().EstateExpenses.FirstOrDefault(ee => ee.Id_Estate == tenant.id_Estate
                     && ee.Id_Expense == expense.Id && ee.Month == month && ee.Year == year);
 
-                if (estateExpense != null )
+                if (estateExpense != null)
                 {
                     TenantExpenses tenantExpense = new TenantExpenses
                     {
@@ -652,40 +652,50 @@ namespace Administratoro.BL.Managers
             DataTable dt = new DataTable();
             Dictionary<int, Expense> raportDictionary = new Dictionary<int, Expense>();
             Dictionary<Expense, decimal> totalCol = new Dictionary<Expense, decimal>();
-            int fieldSize = 0;
             List<ExpenseReport> expenseReportList = new List<ExpenseReport>();
 
             var association = AssociationsManager.GetById(associationId);
-            if (association != null)
+            if (association == null)
             {
-                var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, year, month);
-                List<Tenants> tenants;
-                if (!stairCase.HasValue)
-                {
-                    tenants = association.Tenants.ToList();
-                }
-                else
-                {
-                    tenants = ApartmentsManager.GetAllByEstateIdAndStairCase(association.Id, stairCase.Value);
-                }
-
-                fieldSize = estateExpenses.Count();
-
-                // populate list
-                RaportPopulateExpensesList(raportDictionary, totalCol, expenseReportList, estateExpenses, tenants);
-                // add headers
-                RaportAddHeaders(dt, estateExpenses);
-                // add rows
-                decimal generalMonthSum = RaportAddRows(dt, raportDictionary, fieldSize, expenseReportList);
-
-                raportAddTotalRow(dt, totalCol, generalMonthSum);
+                return dt;
             }
+            var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, year, month);
+            List<Tenants> tenants;
+            if (!stairCase.HasValue)
+            {
+                tenants = association.Tenants.ToList();
+            }
+            else
+            {
+                tenants = ApartmentsManager.GetAllByEstateIdAndStairCase(association.Id, stairCase.Value);
+            }
+
+            var invoices = InvoicesManager.GetDiverseByAssociationYearMonth(associationId, year, month);
+            int fieldSize = estateExpenses.Count();
+
+            // populate expenses- pre-step
+            bool hasDiverse;
+            RaportPopulateExpensesList(raportDictionary, totalCol, expenseReportList, estateExpenses, tenants, association, invoices, out hasDiverse);
+            if (hasDiverse)
+            {
+                fieldSize++;
+            }
+
+            // add headers
+            RaportAddHeaders(dt, estateExpenses, hasDiverse);
+
+            // add rows
+            decimal generalMonthSum = RaportAddRows(dt, raportDictionary, fieldSize, expenseReportList);
+
+            raportAddTotalRow(dt, totalCol, generalMonthSum);
 
             return dt;
         }
 
-        private static void RaportPopulateExpensesList(Dictionary<int, Expense> raportDictionary, Dictionary<Expense, decimal> totalCol, List<ExpenseReport> expenseReportList, List<EstateExpenses> estateExpenses, List<Tenants> tenants)
+        private static void RaportPopulateExpensesList(Dictionary<int, Expense> raportDictionary, Dictionary<Expense, decimal> totalCol, List<ExpenseReport> expenseReportList, List<EstateExpenses> estateExpenses, List<Tenants> tenants,
+            Estates association, List<Invoices> invoices, out bool hasDiverse)
         {
+            hasDiverse = false;
             foreach (var tenant in tenants)
             {
                 ExpenseReport expenseReport = new ExpenseReport();
@@ -697,82 +707,232 @@ namespace Administratoro.BL.Managers
                 int counter = 0;
                 foreach (EstateExpenses estateExpense in estateExpenses)
                 {
+                    decimal? redistributionValue = null;
+                    decimal? rowValue = null;
                     raportDictionary.Add(counter, (Expense)estateExpense.Expenses.Id);
+                    counter++;
+
                     if (!totalCol.ContainsKey((Expense)estateExpense.Expenses.Id))
                     {
                         totalCol.Add((Expense)estateExpense.Expenses.Id, 0.0m);
                     }
+
                     TenantExpenses te = TenantExpensesManager.GetByExpenseYearAndMonth(tenant.Id, estateExpense.Id);
-                    if (te != null)
+                    if (estateExpense.RedistributeType.HasValue)
                     {
-                        switch ((Expense)te.EstateExpenses.Expenses.Id)
-                        {
-                            case Expense.ApaCalda:
-                                expenseReport.WatherWarm = te.Value;
-                                totalCol[Expense.ApaCalda] = te.Value != null ? totalCol[Expense.ApaCalda] + te.Value.Value : totalCol[Expense.ApaCalda];
-                                break;
-                            case Expense.ApaRece:
-                                expenseReport.WatherCold = te.Value;
-                                totalCol[Expense.ApaRece] = te.Value != null ? totalCol[Expense.ApaRece] + te.Value.Value : totalCol[Expense.ApaRece];
-                                break;
-                            case Expense.Salubritate:
-                                expenseReport.Trash = te.Value;
-                                totalCol[Expense.Salubritate] = te.Value != null ? totalCol[Expense.Salubritate] + te.Value.Value : totalCol[Expense.Salubritate];
-                                break;
-                            case Expense.Administrator:
-                                expenseReport.Administrator = te.Value;
-                                totalCol[Expense.Administrator] = te.Value != null ? totalCol[Expense.Administrator] + te.Value.Value : totalCol[Expense.Administrator];
-                                break;
-                            case Expense.Gaz:
-                                expenseReport.Gas = te.Value;
-                                totalCol[Expense.Gaz] = te.Value != null ? totalCol[Expense.Gaz] + te.Value.Value : totalCol[Expense.Gaz];
-                                break;
-                            case Expense.PersonalServiciu:
-                                expenseReport.Cleaning = te.Value;
-                                totalCol[Expense.PersonalServiciu] = te.Value != null ? totalCol[Expense.PersonalServiciu] + te.Value.Value : totalCol[Expense.PersonalServiciu];
-                                break;
-                            case Expense.Incalzire:
-                                expenseReport.Heat = te.Value;
-                                totalCol[Expense.Incalzire] = te.Value != null ? totalCol[Expense.Incalzire] + te.Value.Value : totalCol[Expense.Incalzire];
-                                break;
-                            case Expense.EnergieElectrica:
-                                expenseReport.Electricity = te.Value;
-                                totalCol[Expense.EnergieElectrica] = te.Value != null ? totalCol[Expense.EnergieElectrica] + te.Value.Value : totalCol[Expense.EnergieElectrica];
-                                break;
-                            case Expense.Lift:
-                                expenseReport.Elevator = te.Value;
-                                totalCol[Expense.Lift] = te.Value != null ? totalCol[Expense.Lift] + te.Value.Value : totalCol[Expense.Lift];
-                                break;
-                            case Expense.IntretinereInstalatii:
-                                expenseReport.Utilities = te.Value;
-                                totalCol[Expense.IntretinereInstalatii] = te.Value != null ? totalCol[Expense.IntretinereInstalatii] + te.Value.Value : totalCol[Expense.IntretinereInstalatii];
-                                break;
-                            case Expense.Presedinte:
-                                expenseReport.President = te.Value;
-                                totalCol[Expense.Presedinte] = te.Value != null ? totalCol[Expense.Presedinte] + te.Value.Value : totalCol[Expense.Presedinte];
-                                break;
-                            case Expense.Cenzor:
-                                expenseReport.Censor = te.Value;
-                                totalCol[Expense.Cenzor] = te.Value != null ? totalCol[Expense.Cenzor] + te.Value.Value : totalCol[Expense.Cenzor];
-                                break;
-                            case Expense.Fochist:
-                                expenseReport.Fireman = te.Value;
-                                totalCol[Expense.Fochist] = te.Value != null ? totalCol[Expense.Fochist] + te.Value.Value : totalCol[Expense.Fochist];
-                                break;
-                            case Expense.IntretinereAscensor:
-                                expenseReport.ElevatorUtility = te.Value;
-                                break;
-                        }
+                        redistributionValue = GetRaportRedistributionValue(totalCol, tenant, estateExpense, association);
+                    }
+                    rowValue = CalculateRowValue(te, redistributionValue);
+
+                    switch ((Expense)estateExpense.Expenses.Id)
+                    {
+                        case Expense.ApaCalda:
+                            expenseReport.WatherWarm = rowValue;
+                            break;
+                        case Expense.ApaRece:
+                            expenseReport.WatherCold = rowValue;
+                            break;
+                        case Expense.Salubritate:
+                            expenseReport.Trash = rowValue;
+                            break;
+                        case Expense.Administrator:
+                            expenseReport.Administrator = rowValue;
+                            break;
+                        case Expense.Gaz:
+                            expenseReport.Gas = rowValue;
+                            break;
+                        case Expense.PersonalServiciu:
+                            expenseReport.Cleaning = rowValue;
+                            break;
+                        case Expense.Incalzire:
+                            expenseReport.Heat = rowValue;
+                            break;
+                        case Expense.EnergieElectrica:
+                            expenseReport.Electricity = rowValue;
+                            break;
+                        case Expense.Lift:
+                            expenseReport.Elevator = rowValue;
+                            break;
+                        case Expense.IntretinereInstalatii:
+                            expenseReport.Utilities = rowValue;
+                            break;
+                        case Expense.Presedinte:
+                            expenseReport.President = rowValue;
+                            break;
+                        case Expense.Cenzor:
+                            expenseReport.Censor = rowValue;
+                            break;
+                        case Expense.Fochist:
+                            expenseReport.Fireman = rowValue;
+                            break;
+                        case Expense.IntretinereAscensor:
+                            expenseReport.ElevatorUtility = rowValue;
+                            break;
                     }
 
-                    counter++;
+                    totalCol[(Expense)estateExpense.Expenses.Id] = rowValue == null ? totalCol[(Expense)estateExpense.Expenses.Id] :
+                                totalCol[(Expense)estateExpense.Expenses.Id] + rowValue.Value;
+
                 }
+
+                raportDictionary.Add(counter, Expense.Diverse);
+
+                hasDiverse = RaportPopulateExpensesListDiverse(tenant, invoices, association.Tenants.ToList(), totalCol, expenseReport) || hasDiverse;
 
                 expenseReportList.Add(expenseReport);
             }
         }
 
-        private static void RaportAddHeaders(DataTable dt, List<EstateExpenses> estateExpenses)
+        private static decimal? CalculateRowValue(TenantExpenses te, decimal? redistributionValue)
+        {
+            decimal? result = null;
+
+            if (te!=null && te.Value.HasValue)
+            {
+                result = te.Value.Value;
+            }
+
+            if (redistributionValue.HasValue)
+            {
+                result = result + redistributionValue.Value;
+            }
+
+            return result;
+        }
+
+        private static decimal? GetRaportRedistributionValue(Dictionary<Expense, decimal> totalCol, Tenants apartment, EstateExpenses estateExpense, Estates association)
+        {
+            decimal? valueToAdd = null;
+            var redistributeVal = RedistributionManager.CalculateRedistributeValue(estateExpense.Id);
+
+            if (!redistributeVal.HasValue)
+            {
+                return null;
+            }
+
+            if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerApartament)
+            {
+                if (redistributeVal.HasValue && association.Tenants.Count != 0)
+                {
+                    valueToAdd = Math.Round(redistributeVal.Value / association.Tenants.Count, 2);
+                }
+            }
+            else if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerConsumption)
+            {
+                //var allValue = RedistributionManager.RedistributeValuePerIndex(estateExpense);
+                //if (allValue.HasValue && te.TenantsCount != 0)
+                //{
+                //    valueToAdd = Math.Round(allValue.Value / association.Tenants.Count, 2);
+                //}
+            }
+            else if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerTenants)
+            {
+                var apartments = ApartmentsManager.GetAllByEstateId(association.Id);
+                var allApartmentsDependents = apartments.Sum(t => t.Dependents);
+                if (redistributeVal.HasValue && allApartmentsDependents != 0)
+                {
+                    valueToAdd = Math.Round(redistributeVal.Value * apartment.Dependents / allApartmentsDependents, 2);
+                }
+            }
+
+            return valueToAdd;
+        }
+
+        private static bool RaportPopulateExpensesListDiverse(Tenants tenant, List<Invoices> invoices, List<Tenants> tenants, Dictionary<Expense, decimal> totalCol, ExpenseReport expenseReport)
+        {
+            bool hasDiverse = false;
+
+            decimal? result = null;
+            foreach (Invoices invoice in invoices)
+            {
+                if (!invoice.Value.HasValue)
+                {
+                    continue;
+                }
+
+                if (invoice.id_Redistributiontype == (int)RedistributionType.PerTenants)
+                {
+                    int? nrOfDependents = null;
+                    if (invoice.Id_StairCase.HasValue)
+                    {
+                        nrOfDependents = tenants.Where(t => t.Id_StairCase == invoice.Id_StairCase).Select(i => i.Dependents).Sum();
+                    }
+
+                    decimal? valueToAdd = null;
+                    if (nrOfDependents.HasValue)
+                    {
+                        if (nrOfDependents != 0)
+                        {
+                            valueToAdd = ((invoice.Value.Value * tenant.Dependents) / nrOfDependents.Value);
+                        }
+                    }
+                    else
+                    {
+                        var allDependents = tenants.Select(t => t.Dependents).Sum();
+
+                        if (allDependents != 0)
+                        {
+                            valueToAdd = ((invoice.Value.Value * tenant.Dependents) / allDependents);
+                        }
+                    }
+
+                    result = result.HasValue ? (result + valueToAdd) : valueToAdd;
+
+                }
+                else if (invoice.id_Redistributiontype == (int)RedistributionType.PerConsumption)
+                {
+                    // to do
+                }
+                else if (invoice.id_Redistributiontype == (int)RedistributionType.PerApartament)
+                {
+                    if (invoice.Id_StairCase.HasValue && !tenant.Id_StairCase.HasValue)
+                    {
+                        continue;
+                    }
+
+                    if (invoice.Id_StairCase.HasValue && tenant.Id_StairCase.HasValue && tenant.Id_StairCase.Value != invoice.Id_StairCase.Value)
+                    {
+                        continue;
+                    }
+
+                    if (tenants.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    int? nrApartments = null;
+                    if (invoice.Id_StairCase.HasValue)
+                    {
+                        nrApartments = tenants.Where(t => t.Id_StairCase == invoice.Id_StairCase.Value).Count();
+                    }
+                    else
+                    {
+                        nrApartments = tenants.Count();
+                    }
+
+                    decimal? valueToAdd = invoice.Value.Value / nrApartments;
+                    result = result.HasValue ? (result + valueToAdd) : valueToAdd;
+                }
+            }
+
+
+            if (result.HasValue)
+            {
+                var addedValue = DecimalExtensions.RoundUp((double)result, 2);
+                expenseReport.Diverse = addedValue;
+                if (!totalCol.ContainsKey(Expense.Diverse))
+                {
+                    totalCol.Add(Expense.Diverse, 0.0m);
+                }
+
+                totalCol[Expense.Diverse] = totalCol[Expense.Diverse] + addedValue;
+                hasDiverse = true;
+            }
+
+            return hasDiverse;
+        }
+
+        private static void RaportAddHeaders(DataTable dt, List<EstateExpenses> estateExpenses, bool addDiverse)
         {
             dt.Columns.Add(new DataColumn("Ap", typeof(string)));
             dt.Columns.Add(new DataColumn("Pers", typeof(string)));
@@ -782,7 +942,12 @@ namespace Administratoro.BL.Managers
             {
                 dt.Columns.Add(new DataColumn(estateExpense.Expenses.Name, typeof(string)));
             }
-            dt.Columns.Add(new DataColumn("Diverse", typeof(string)));
+
+            if (addDiverse)
+            {
+                dt.Columns.Add(new DataColumn("Diverse", typeof(string)));
+            }
+
             dt.Columns.Add(new DataColumn("Total lună", typeof(string)));
             dt.Columns.Add(new DataColumn("Ajutor încălzire", typeof(string)));
             dt.Columns.Add(new DataColumn("Fond rulment", typeof(string)));
@@ -824,10 +989,8 @@ namespace Administratoro.BL.Managers
                 }
 
                 generalMonthSum = generalMonthSum + monthSum;
-                monthSum = monthSum + 0; // diverse
                 generalSum = monthSum;
                 generalSum = generalSum + 0 + 0 + 0 + 0;
-                row.Add(string.Empty);
                 row.Add(monthSum.ToString());
                 row.Add(string.Empty);
                 row.Add(string.Empty);
@@ -839,6 +1002,7 @@ namespace Administratoro.BL.Managers
 
                 dt.Rows.Add(row.ToArray());
             }
+
             return generalMonthSum;
         }
 
@@ -853,7 +1017,6 @@ namespace Administratoro.BL.Managers
             {
                 rowTotal.Add(item.Value);
             }
-            rowTotal.Add("0,0");
             rowTotal.Add(generalMonthSum.ToString());
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
@@ -909,6 +1072,9 @@ namespace Administratoro.BL.Managers
                     break;
                 case Expense.Salubritate:
                     result = raportList.Trash.HasValue ? raportList.Trash : null;
+                    break;
+                case Expense.Diverse:
+                    result = raportList.Diverse.HasValue ? raportList.Diverse : null;
                     break;
             }
 

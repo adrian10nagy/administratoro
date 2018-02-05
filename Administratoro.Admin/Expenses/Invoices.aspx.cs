@@ -226,8 +226,7 @@ namespace Admin.Expenses
                     var percentage = GetPercentage(estateExpense);
                     if (percentage == "100")
                     {
-                        tb3.Text = RedistributeValuePerIndex(estateExpense);
-
+                        tb3.Text = RedistributionManager.RedistributeValuePerIndexAsString(estateExpense);
                     }
                     if (tb3.Text == "0,00")
                     {
@@ -428,7 +427,7 @@ namespace Admin.Expenses
         private string statusOfInvoices(EstateExpenses estateExpense, bool isExpensePerIndex)
         {
             string result = string.Empty;
-            var redistributeValue = CalculateRedistributeValue(estateExpense.Id);
+            var redistributeValue = RedistributionManager.CalculateRedistributeValueAsString(estateExpense.Id);
             var percentage = string.Empty;
 
             if (isExpensePerIndex)
@@ -544,65 +543,15 @@ namespace Admin.Expenses
 
         #endregion
 
-        private static string RedistributeValuePerIndex(EstateExpenses estateExpense)
-        {
-            string result = string.Empty;
 
-            decimal? sumOfIndexes = TenantExpensesManager.GetSumOfIndexesForexpense(estateExpense.Id);
-            if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
-            {
-                decimal? sumOfInvoices = null;
-                foreach (StairCases stairCase in estateExpense.Estates.StairCases)
-                {
-                    var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_EstateExpense == estateExpense.Id);
-                    if (invoice != null && invoice.Value.HasValue)
-                    {
-                        if (!sumOfInvoices.HasValue)
-                        {
-                            sumOfInvoices = 0m;
-                        }
-                        sumOfInvoices = sumOfInvoices + invoice.Value.Value;
-                    }
-                }
-
-                if (sumOfInvoices.HasValue && estateExpense.PricePerExpenseUnit.HasValue && sumOfIndexes.HasValue)
-                {
-                    result = (sumOfInvoices.Value - (estateExpense.PricePerExpenseUnit.Value * sumOfIndexes.Value)).ToString();
-                }
-            }
-            else
-            {
-                var invoice = estateExpense.Invoices.FirstOrDefault(i => i.Id_StairCase == null && i.Id_EstateExpense == estateExpense.Id);
-
-                if (sumOfIndexes.HasValue & invoice != null && invoice.Value.HasValue && estateExpense.PricePerExpenseUnit.HasValue)
-                {
-                    result = (invoice.Value - (estateExpense.PricePerExpenseUnit * sumOfIndexes.Value)).ToString();
-                }
-            }
-
-            return result;
-        }
-
-        private static string RedistributeValueCotaIndiviza(Estates estate, EstateExpenses estateExpense)
-        {
-            decimal? allInvoicesSum = estateExpense.Invoices.Where(i => i.Value.HasValue).Sum(i => i.Value);
-            decimal? sumOfIndiviza = TenantExpensesManager.GetSumOfIndivizaForExpense(estateExpense);
-            return (sumOfIndiviza != null && estate != null && allInvoicesSum.HasValue)
-                ? ((sumOfIndiviza.Value / estate.Indiviza) * allInvoicesSum.Value).ToString()
-                : string.Empty;
-        }
 
         public void ClickablePanel1_Click(object sender, EventArgs e)
         {
-
-            bool shouldRefresh = false;
             Button btn = (Button)sender;
             int estateExpenseId;
-            bool found = false;
 
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-
                 var estateExpense = EstateExpensesManager.GetById(estateExpenseId);
 
                 if (estateExpense == null)
@@ -610,103 +559,6 @@ namespace Admin.Expenses
                     return;
                 }
                 Response.Redirect("~/Invoices/Add.aspx?year=" + year() + "&month=" + month() + "&expense=" + estateExpense.Id_Expense);
-
-                foreach (var control in invoiceMain.Controls)
-                {
-                    if (found)
-                    {
-                        // break;
-                    }
-
-                    if (control != null && control is Panel)
-                    {
-                        Panel panel = (Panel)control;
-                        foreach (var innerControl in panel.Controls)
-                        {
-                            if (found)
-                            {
-                                //break;
-                            }
-
-                            if (control != null && innerControl is Panel)
-                            {
-                                Panel innerPanel = (Panel)innerControl;
-                                foreach (var controls3 in innerPanel.Controls)
-                                {
-
-                                    if (controls3 != null && controls3 is TextBox)
-                                    {
-                                        TextBox tb2 = (TextBox)controls3;
-                                        int tbxEstateExpenseId;
-                                        if (int.TryParse(tb2.Attributes["eeId"], out tbxEstateExpenseId)
-                                            && tbxEstateExpenseId == estateExpenseId)
-                                        {
-
-                                            if (tb2.Enabled)
-                                            {
-                                                decimal? updatedValue = null;
-                                                decimal eeValue;
-                                                if (decimal.TryParse(tb2.Text, out eeValue) || tb2.Text == string.Empty)
-                                                {
-                                                    if (tb2.Text != string.Empty)
-                                                    {
-                                                        updatedValue = eeValue;
-                                                    }
-
-                                                    tb2.Attributes.Add("border-color", "");
-                                                    // if no staircase update only default value
-                                                    if (!(estateExpense.Estates.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value))
-                                                    {
-                                                        InvoicesManager.AddOrUpdate(estateExpense, updatedValue);
-                                                        RefreshEstate();
-                                                        Response.Redirect(Request.RawUrl);
-                                                    }
-                                                    else
-                                                    {
-                                                        int stairCaseId;
-                                                        if (int.TryParse(tb2.Attributes["sc"], out stairCaseId)
-                                                         && tbxEstateExpenseId == estateExpenseId)
-                                                        {
-                                                            int invoiceId;
-                                                            if (int.TryParse(tb2.Attributes["cb"], out invoiceId)
-                                                             && tbxEstateExpenseId == estateExpenseId)
-                                                            {
-
-                                                            }
-
-                                                            InvoicesManager.AddOrUpdate(estateExpense, updatedValue, stairCaseId);
-                                                            shouldRefresh = true;
-                                                        }
-                                                    }
-
-                                                    tb2.Enabled = false;
-                                                }
-                                                else
-                                                {
-                                                    tb2.Attributes.Add("style", "border-color: red");
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                tb2.Enabled = true;
-                                            }
-
-                                            found = true;
-                                            // break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (shouldRefresh)
-            {
-                RefreshEstate();
-                Response.Redirect(Request.RawUrl);
             }
         }
 
@@ -731,14 +583,14 @@ namespace Admin.Expenses
 
         private void ConfigureRedistributeMessages(int estateExpenseId)
         {
-            string redistributeValue = CalculateRedistributeValue(estateExpenseId);
+            string redistributeValue = RedistributionManager.CalculateRedistributeValueAsString(estateExpenseId);
             invoiceRedistributeMessage.Text = "<br>Cheltuială de redistribuit:" + redistributeValue + "<br>";
 
             decimal redistributeVal;
             if (decimal.TryParse(redistributeValue, out redistributeVal))
             {
                 Estates estate = AssociationsManager.GetByEstateExpenseId(estateExpenseId);
-                txtInvoiceRedistributeEqualApartment.Text = estate.Tenants.Count + "apartamente, alocă <b>" +
+                txtInvoiceRedistributeEqualApartment.Text = estate.Tenants.Count + " apartamente, alocă <b>" +
                     Math.Round(redistributeVal / estate.Tenants.Count, 2) + "</b> la fiecare apartament";
 
                 var tenants = ApartmentsManager.GetAllByEstateId(estate.Id);
@@ -751,29 +603,10 @@ namespace Admin.Expenses
 
                 txtInvoiceRedistributeEqualTenants.Text = allTenantDependents + " locatari în bloc, alocă <b>" + valuePerTenant + "</b> per fiecare locatar";
 
-                txtInvoiceRedistributeConsumption.Text = "Not implemented";
-
                 invoiceRedistributeEqualApartment.CommandArgument = estateExpenseId.ToString();
                 invoiceRedistributeEqualTenants.CommandArgument = estateExpenseId.ToString();
                 invoiceRedistributeConsumption.CommandArgument = estateExpenseId.ToString();
             }
-        }
-
-        private string CalculateRedistributeValue(int estateExpenseId)
-        {
-            EstateExpenses estateExpense = EstateExpensesManager.GetById(estateExpenseId);
-
-            if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
-            {
-                return RedistributeValuePerIndex(estateExpense);
-            }
-            else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
-            {
-                var estate = AssociationsManager.GetById(estateExpenseId);
-                return RedistributeValueCotaIndiviza(estate, estateExpense);
-            }
-
-            return string.Empty;
         }
 
         protected void invoiceRedistributeConsumption_Click(object sender, EventArgs e)
@@ -783,6 +616,7 @@ namespace Admin.Expenses
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
                 EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 3);
+                Response.Redirect(Request.RawUrl);
             }
         }
 

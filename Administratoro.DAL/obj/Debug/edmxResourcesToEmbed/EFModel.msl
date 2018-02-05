@@ -122,6 +122,7 @@
     <EntitySetMapping Name="Invoices">
       <EntityTypeMapping TypeName="AdministratoroModel.Invoices">
         <MappingFragment StoreEntitySet="Invoices">
+          <ScalarProperty Name="id_Redistributiontype" ColumnName="id_Redistributiontype" />
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
           <ScalarProperty Name="Id_EstateExpense" ColumnName="Id_EstateExpense" />

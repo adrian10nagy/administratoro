@@ -27,7 +27,6 @@
 
         <asp:Panel runat="server">
             <asp:Button runat="server" Text="Proporțional cu consumul" ID="invoiceRedistributeConsumption" OnClick="invoiceRedistributeConsumption_Click" />
-            <asp:Label runat="server" ID="txtInvoiceRedistributeConsumption"></asp:Label>
         </asp:Panel>
 
     </asp:Panel>

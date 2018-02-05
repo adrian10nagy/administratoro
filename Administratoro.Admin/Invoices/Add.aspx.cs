@@ -152,9 +152,9 @@ namespace Admin.Invoices
 
             var estate = AssociationsManager.GetById(Association.Id);
             Session[SessionConstants.SelectedAssociation] = estate;
-            if(_year.HasValue && _month.HasValue)
+            if (_year.HasValue && _month.HasValue)
             {
-                Response.Redirect("~/Reports/Monthly.aspx?year=" + _year.Value + "&month=" + _month.Value);
+                Response.Redirect("~/Expenses/Invoices.aspx?year=" + _year.Value + "&month=" + _month.Value);
             }
             else
             {
@@ -169,29 +169,31 @@ namespace Admin.Invoices
                 if (control is Panel)
                 {
                     var innerControls = control as Panel;
-                    if (innerControls != null && innerControls.Controls.Count == 2)
+                    if (innerControls != null && innerControls.Controls.Count == 4)
                     {
+                        var theRedistributionControl = innerControls.Controls[3] as Panel;
+                        var thestairCaseControl = innerControls.Controls[2] as Panel;
                         var theDescriptionControl = innerControls.Controls[1] as Panel;
                         var theInvoiceValuecontrol = innerControls.Controls[0] as Panel;
                         if (theDescriptionControl != null && theDescriptionControl.Controls.Count == 1 && theDescriptionControl.Controls[0] is TextBox &&
-                            theInvoiceValuecontrol != null && theInvoiceValuecontrol.Controls.Count == 1 && theInvoiceValuecontrol.Controls[0] is TextBox)
+                            theInvoiceValuecontrol != null && theInvoiceValuecontrol.Controls.Count == 1 && theInvoiceValuecontrol.Controls[0] is TextBox &&
+                            thestairCaseControl != null && thestairCaseControl.Controls.Count == 1 && thestairCaseControl.Controls[0] is DropDownList &&
+                            theRedistributionControl != null && theRedistributionControl.Controls.Count == 1 && theRedistributionControl.Controls[0] is DropDownList)
                         {
                             var theDescription = theDescriptionControl.Controls[0] as TextBox;
                             var theInvoiceValue = theInvoiceValuecontrol.Controls[0] as TextBox;
+                            var thestairCase = thestairCaseControl.Controls[0] as DropDownList;
+                            var theRedistribution = theRedistributionControl.Controls[0] as DropDownList;
 
+                            // get invoice
                             int? invoiceId = null;
                             int invoiceIdValue;
                             if (int.TryParse(theInvoiceValue.ID.Replace("tbInvoiceId", string.Empty), out invoiceIdValue))
                             {
                                 invoiceId = invoiceIdValue;
                             }
-                            var ee = EstateExpensesManager.GetAllMonthYearAssoiationExpense(associationId, expenseId, year, month);
-                            if (ee == null)
-                            {
-                                EstateExpensesManager.AddEstateExpensesByTenantAndMonth(associationId, expenseId, month, year, ((int)ExpenseType.PerTenants).ToString(), false);
-                                ee = EstateExpensesManager.GetAllMonthYearAssoiationExpense(associationId, expenseId, year, month);
-                            }
 
+                            // get value
                             decimal? theValue = null;
                             decimal tempValue;
                             if (decimal.TryParse(theInvoiceValue.Text, out tempValue))
@@ -199,12 +201,20 @@ namespace Admin.Invoices
                                 theValue = tempValue;
                             }
 
+                            // get stairCase
                             int? stairCaseId = null;
                             int stairCaseIdValue;
-                            var stairCaseIDUnprocces = theDescription.ID.Substring(theDescription.ID.IndexOf("tbStairCase") + 11);
-                            if (int.TryParse(stairCaseIDUnprocces, out stairCaseIdValue))
+                            if (int.TryParse(thestairCase.SelectedValue, out stairCaseIdValue))
                             {
                                 stairCaseId = stairCaseIdValue;
+                            }
+
+                            // get redistribution
+                            int? redistributionId = null;
+                            int redistributionIdValue;
+                            if (int.TryParse(theRedistribution.SelectedValue, out redistributionIdValue))
+                            {
+                                redistributionId = redistributionIdValue;
                             }
 
                             if (invoiceId.HasValue)
@@ -214,7 +224,7 @@ namespace Admin.Invoices
                                     var invoice = InvoicesManager.GetDiverseById(invoiceId.Value);
                                     if (invoice != null)
                                     {
-                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text);
+                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId);
                                     }
                                 }
                                 else
@@ -224,7 +234,15 @@ namespace Admin.Invoices
                             }
                             else if (theValue.HasValue)
                             {
-                                InvoicesManager.AddDiverse(ee, theValue, theDescription.Text);
+
+                                var ee = EstateExpensesManager.GetAllMonthYearAssoiationExpense(associationId, expenseId, year, month);
+                                if (ee == null)
+                                {
+                                    EstateExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerTenants).ToString(), false);
+                                    ee = EstateExpensesManager.GetAllMonthYearAssoiationExpense(associationId, expenseId, year, month);
+                                }
+
+                                InvoicesManager.AddDiverse(ee, theValue, theDescription.Text, stairCaseId, redistributionId);
                             }
                         }
                     }
@@ -376,13 +394,13 @@ namespace Admin.Invoices
 
         private void InitializeValueFieldAddExtraControlsForDiverse(int year, int month, int associationId, EstateExpenses estateExpense)
         {
-            InitializeValueFieldAddColumnHeaders();
+            InitializeValueFieldAddColumnHeaders(true);
 
             if (estateExpense != null)
             {
                 var invoices = InvoicesManager.GetDiverseByEstateExpense(estateExpense.Id);
 
-                InitializeValueFieldAddInvoices(invoices);
+                InitializeValueFieldAddInvoices(invoices, true, true);
             }
 
             Panel panelMain = new Panel
@@ -392,7 +410,7 @@ namespace Admin.Invoices
 
             Panel panel3 = new Panel
             {
-                CssClass = "col-md-6"
+                CssClass = "col-md-3"
             };
             TextBox tbValue = new TextBox
             {
@@ -404,7 +422,7 @@ namespace Admin.Invoices
 
             Panel panel4 = new Panel
             {
-                CssClass = "col-md-6"
+                CssClass = "col-md-3"
             };
             TextBox tbDescription = new TextBox
             {
@@ -414,16 +432,69 @@ namespace Admin.Invoices
             };
             panel4.Controls.Add(tbDescription);
 
+            Panel panel5 = new Panel
+            {
+                CssClass = "col-md-3"
+            };
+
+            DropDownList drpStairCase = new DropDownList
+            {
+                CssClass = "form-control"
+            };
+
+            drpStairCase.Items.Add(new ListItem
+            {
+                Text = "Pe tot blocul",
+                Value = "",
+
+            });
+
+            foreach (var stairCase in Association.StairCases)
+            {
+                drpStairCase.Items.Add(new ListItem
+                {
+                    Text = "Scara " + stairCase.Nume,
+                    Value = stairCase.Id.ToString()
+                });
+            }
+            drpStairCase.ID = "scarCaseID";
+
+            panel5.Controls.Add(drpStairCase);
+
+            Panel panel6 = new Panel
+            {
+                CssClass = "col-md-3"
+            };
+
+            DropDownList drpExpenseredistribute = new DropDownList
+            {
+                CssClass = "form-control"
+            };
+
+            List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypes();
+            foreach (var type in eert)
+            {
+                drpExpenseredistribute.Items.Add(new ListItem
+                {
+                    Text = type.Value,
+                    Value = type.Id.ToString()
+                });
+            }
+
+            panel6.Controls.Add(drpExpenseredistribute);
+
             panelMain.Controls.Add(panel3);
             panelMain.Controls.Add(panel4);
+            panelMain.Controls.Add(panel5);
+            panelMain.Controls.Add(panel6);
 
             pnInvoiceValues.Controls.Add(panelMain);
 
         }
 
-        private void InitializeValueFieldAddInvoices(List<Administratoro.DAL.Invoices> invoices)
+        private void InitializeValueFieldAddInvoices(List<Administratoro.DAL.Invoices> invoices, bool isStairCaseEnabled, bool shouldSeeRedistribute)
         {
-            foreach (var item in invoices)
+            foreach (var invoice in invoices)
             {
                 Panel panelMain = new Panel
                 {
@@ -432,48 +503,111 @@ namespace Admin.Invoices
 
                 Panel panel1 = new Panel
                 {
-                    CssClass = "col-md-6"
+                    CssClass = shouldSeeRedistribute ? "col-md-3" : "col-md-4"
                 };
 
                 TextBox tbValue = new TextBox
                 {
-                    Text = item.Value.HasValue ? item.Value.Value.ToString() : string.Empty,
+                    Text = invoice.Value.HasValue ? invoice.Value.Value.ToString() : string.Empty,
                     CssClass = "form-control",
-                    ID = "tbInvoiceId" + item.Id
+                    ID = "tbInvoiceId" + invoice.Id
                 };
                 panel1.Controls.Add(tbValue);
 
                 Panel panel2 = new Panel
                 {
-                    CssClass = "col-md-6"
+                    CssClass = shouldSeeRedistribute ? "col-md-3" : "col-md-4"
                 };
 
                 TextBox tbDescription = new TextBox
                 {
                     CssClass = "form-control",
-                    Text = item.Description,
-                    ID = item.Id + "tbStairCase" + item.Id_StairCase
+                    Text = invoice.Description,
+                    ID = invoice.Id + "tbStairCase" + invoice.Id_StairCase
                 };
                 panel2.Controls.Add(tbDescription);
-                //var litValue = item.StairCases != null ? item.StairCases.Nume : string.Empty;
-                //Literal literal = new Literal
-                //{
-                //    Text = "Scara " + litValue
-                //};
 
+                Panel panel3 = new Panel
+                {
+                    CssClass = shouldSeeRedistribute ? "col-md-3" : "col-md-4"
+                };
+
+                DropDownList drpStairCase = new DropDownList
+                {
+                    CssClass = "form-control",
+                    Enabled = isStairCaseEnabled
+                };
+                if (invoice.StairCases != null)
+                {
+                    drpStairCase.Items.Add(new ListItem
+                    {
+                        Text = "Scara " + invoice.StairCases.Nume,
+                        Value = invoice.StairCases.Id.ToString()
+                    });
+                }
+                else
+                {
+                    drpStairCase.Items.Add(new ListItem
+                    {
+                        Text = "Pe tot blocul",
+                        Value = ""
+                    });
+
+                    foreach (var stairCase in Association.StairCases)
+                    {
+                        drpStairCase.Items.Add(new ListItem
+                        {
+                            Text = "Scara " + stairCase.Nume,
+                            Value = stairCase.Id.ToString()
+                        });
+                    }
+                    drpStairCase.ID = "scarCaseID" + invoice.Id;
+                }
+                panel3.Controls.Add(drpStairCase);
 
                 panelMain.Controls.Add(panel1);
                 panelMain.Controls.Add(panel2);
+                panelMain.Controls.Add(panel3);
+
+                if (shouldSeeRedistribute)
+                {
+                    Panel panel4 = new Panel
+                    {
+                        CssClass = "col-md-3"
+                    };
+
+                    DropDownList drpExpenseredistribute = new DropDownList
+                    {
+                        CssClass = "form-control",
+                        Enabled = isStairCaseEnabled
+                    };
+
+                    List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypes();
+                    foreach (var type in eert)
+                    {
+                        drpExpenseredistribute.Items.Add(new ListItem
+                        {
+                            Text = type.Value,
+                            Value = type.Id.ToString(),
+                            Selected = invoice.id_Redistributiontype.HasValue ? invoice.id_Redistributiontype.Value == type.Id : false
+                        });
+                    }
+
+                    drpExpenseredistribute.ID = "drpExpenseredistribute" + invoice.Id;
+                    panel4.Controls.Add(drpExpenseredistribute);
+                    panelMain.Controls.Add(panel4);
+                }
+
 
                 pnInvoiceValues.Controls.Add(panelMain);
             }
         }
 
-        private void InitializeValueFieldAddColumnHeaders()
+        private void InitializeValueFieldAddColumnHeaders(bool shouldSeeRedistribute)
         {
             Panel panel1 = new Panel
             {
-                CssClass = "col-md-6"
+                CssClass = shouldSeeRedistribute ? "col-md-3" : "col-md-4"
             };
             Label lb1 = new Label
             {
@@ -484,7 +618,7 @@ namespace Admin.Invoices
 
             Panel panel2 = new Panel
             {
-                CssClass = "col-md-6"
+                CssClass = shouldSeeRedistribute ? "col-md-3" : "col-md-4"
             };
             Label lb2 = new Label
             {
@@ -492,13 +626,38 @@ namespace Admin.Invoices
             };
             panel2.Controls.Add(lb2);
             pnInvoiceValues.Controls.Add(panel2);
+
+            Panel panel3 = new Panel
+            {
+                CssClass = shouldSeeRedistribute ? "col-md-3" : "col-md-4"
+            };
+            Label lb3 = new Label
+            {
+                Text = "Împărțire"
+            };
+            panel3.Controls.Add(lb3);
+            pnInvoiceValues.Controls.Add(panel3);
+
+            if (shouldSeeRedistribute)
+            {
+                Panel panel4 = new Panel
+                {
+                    CssClass = "col-md-3"
+                };
+                Label lb4 = new Label
+                {
+                    Text = "Redistribuit"
+                };
+                panel4.Controls.Add(lb4);
+                pnInvoiceValues.Controls.Add(panel4);
+            }
         }
 
         private void InitializeValueFieldAddcontrols(int year, int month, int associationId, int expenseId, EstateExpenses estateExpense)
         {
             if (estateExpense != null && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
             {
-                InitializeValueFieldAddColumnHeaders();
+                InitializeValueFieldAddColumnHeaders(false);
                 var invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month, true);
 
                 if (invoices.Count != Association.StairCases.Count)
@@ -507,7 +666,7 @@ namespace Admin.Invoices
                     invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month, true);
                 }
 
-                InitializeValueFieldAddInvoices(invoices);
+                InitializeValueFieldAddInvoices(invoices, false, false);
             }
             else
             {
