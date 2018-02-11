@@ -25,6 +25,5 @@ D:\BTT\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.dll
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.SqlServer.dll
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.xml
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.SqlServer.xml
-D:\BTT\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.csprojResolveAssemblyReference.cache
 D:\BTT\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.dll
 D:\BTT\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.pdb
