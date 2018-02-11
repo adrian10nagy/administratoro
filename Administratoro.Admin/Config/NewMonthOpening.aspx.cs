@@ -12,7 +12,7 @@ namespace Admin.Config
     using System.Web.UI.WebControls;
     using Administratoro.BL.Extensions;
 
-    public partial class NewMonthOpening : System.Web.UI.Page
+    public partial class NewMonthOpening : BasePage
     {
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -20,8 +20,7 @@ namespace Admin.Config
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
-            var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
+            var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
             InitializeYearsAndMonths(defaultEE);
             InitializeExpenses();
         }
@@ -79,7 +78,7 @@ namespace Admin.Config
 
         private void InitializeYearsAndMonths(List<EstateExpenses> defaultEE)
         {
-            var ee = defaultEE.FirstOrDefault();
+            var ee = defaultEE.LastOrDefault();
             int year = 2010;
             int month = 0;
             if (ee != null)
@@ -94,8 +93,8 @@ namespace Admin.Config
                 drpOpeningYear.Items.Add(new ListItem { Value = "2018", Text = "2018", Enabled = (year <= 2018) });
                 drpOpeningYear.Items.Add(new ListItem { Value = "2019", Text = "2019", Enabled = (year <= 2019) });
                 drpOpeningYear.AutoPostBack = true;
-                InitializeMonths(year, month);
             }
+            InitializeMonths(year, month);
             drpOpeningYear.SelectedIndexChanged += drpOpeningYear_SelectedIndexChanged;
 
         }
@@ -103,13 +102,9 @@ namespace Admin.Config
         private void drpOpeningYear_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedYear = drpOpeningYear.SelectedValue.ToNullableInt().Value;
-            int selectedMonth = drpOpeningYear.SelectedValue.ToNullableInt().Value;
-            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
-            if (estate != null)
-            {
-                var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
-                InitializeYearsAndMonths(defaultEE);
-            }
+            int selectedMonth = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
+            var defaultEEs = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
+            InitializeYearsAndMonths(defaultEEs);
         }
 
         private void InitializeExpenses(int? selectedYear = null, int? selectedMonth = null)
@@ -124,8 +119,8 @@ namespace Admin.Config
                 if (estate != null)
                 {
                     int defaultYear = 2017;
-                    int defaultMonth = 1; 
-                    
+                    int defaultMonth = 1;
+
                     var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
                     if (defaultEE.Count > 0)
                     {
@@ -138,11 +133,11 @@ namespace Admin.Config
                     var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
 
                     TableRow defaultRow = new TableRow();
-                    
+
                     // add expense exists
-                    TableCell defaultExpenseSelected = new TableCell 
+                    TableCell defaultExpenseSelected = new TableCell
                     {
-                        Text = "Activează pentru noua lună"                     
+                        Text = "Activează pentru noua lună"
                     };
                     defaultRow.Cells.Add(defaultExpenseSelected);
 
@@ -166,7 +161,7 @@ namespace Admin.Config
                             {
                                 Text = "Contor individual per scară"
                             };
-                        
+
                         defaultRow.Cells.Add(tcStairCaseDefaule);
                     }
 
@@ -282,9 +277,7 @@ namespace Admin.Config
             int year = drpOpeningYear.SelectedValue.ToNullableInt().Value;
             int month = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
 
-            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
-
-            var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, year, month);
+            var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(Association.Id, year, month);
 
             if (ee.Count != 0)
             {
@@ -307,7 +300,7 @@ namespace Admin.Config
                         CheckBox cbIsSelected = (CheckBox)cellIsSelected.Controls[0];
                         DropDownList drpExpenseType = (DropDownList)cellExpenseType.Controls[0];
                         CheckBox cbIsStairCaseSplitSelected = (CheckBox)cellIsStairCaseSplit.Controls[0];
-                        
+
                         if (cbIsSelected.Checked)
                         {
                             string cbId = cbIsSelected.ID.Replace("expense", "");
@@ -315,9 +308,9 @@ namespace Admin.Config
                             if (int.TryParse(cbId, out expenseId))
                             {
                                 //dpExpenseType.SelectedValue
-                                List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
+                                List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
 
-                                EstateExpenses newEe = EstateExpensesManager.Add(estate.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
+                                EstateExpenses newEe = EstateExpensesManager.Add(Association.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
                                 EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
                             }
                         }

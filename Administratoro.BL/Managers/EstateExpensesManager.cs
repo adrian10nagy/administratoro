@@ -174,7 +174,7 @@ namespace Administratoro.BL.Managers
         {
             return GetContext().EstateExpenses.Where(ee => ee.Id_Estate == assotiationId &&
                 ee.Year != -1 && ee.Month != -1 && !ee.Expenses.specialType.HasValue)
-                .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().ToList();
+                .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee=>ee.Year).ToList();
         }
 
         public static void UpdatePricePerUnitDefaultPrevieousMonth(EstateExpenses newEE, List<EstateExpenses> oldEEs)
@@ -182,7 +182,7 @@ namespace Administratoro.BL.Managers
             if (newEE != null)
             {
                 EstateExpenses oldEE = oldEEs.FirstOrDefault(ee => ee.Id_Expense == newEE.Id_Expense && !ee.Expenses.specialType.HasValue);
-                if (oldEE != null)
+                if (oldEE != null && oldEE.Id_ExpenseType == (int)ExpenseType.PerIndex )
                 {
                     UpdatePricePerUnit(newEE.Id, oldEE.PricePerExpenseUnit);
                 }

@@ -260,7 +260,7 @@ namespace Admin.Invoices
                     if (control is Panel)
                     {
                         var thePanelControl = control as Panel;
-                        if (thePanelControl != null && thePanelControl.Controls.Count == 2)
+                        if (thePanelControl != null && thePanelControl.Controls.Count == 3)
                         {
                             var theDescriptionControl = thePanelControl.Controls[1] as Panel;
                             var theInvoiceValuecontrol = thePanelControl.Controls[0] as Panel;
@@ -550,7 +550,8 @@ namespace Admin.Invoices
                     drpStairCase.Items.Add(new ListItem
                     {
                         Text = "Pe tot blocul",
-                        Value = ""
+                        Value = "",
+                        Selected = !invoice.Id_StairCase.HasValue 
                     });
 
                     foreach (var stairCase in Association.StairCases)
@@ -558,7 +559,8 @@ namespace Admin.Invoices
                         drpStairCase.Items.Add(new ListItem
                         {
                             Text = "Scara " + stairCase.Nume,
-                            Value = stairCase.Id.ToString()
+                            Value = stairCase.Id.ToString(),
+                            Selected = invoice.Id_StairCase.HasValue && invoice.Id_StairCase.Value == stairCase.Id
                         });
                     }
                     drpStairCase.ID = "scarCaseID" + invoice.Id;
@@ -660,7 +662,7 @@ namespace Admin.Invoices
                 InitializeValueFieldAddColumnHeaders(false);
                 var invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month, true);
 
-                if (invoices.Count != Association.StairCases.Count)
+                if (invoices.Count < Association.StairCases.Count)
                 {
                     InvoicesManager.AddDefault(associationId, expenseId, year, month, true);
                     invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month, true);

@@ -59,11 +59,30 @@ namespace Administratoro.BL.Managers
             return GetContext().TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId).Sum(s => s.IndexNew - s.IndexOld);
         }
 
+        public static decimal? GetSumOfIndexesForexpenseOnStairCase(int estateExpenseId, int? stairCase)
+        {
+            return GetContext().TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId && te.Tenants.Id_StairCase == stairCase).Sum(s => s.IndexNew - s.IndexOld);
+        }
+
         public static decimal? GetSumOfIndivizaForExpense(EstateExpenses estateExpense)
         {
             decimal? result = null;
 
             var tenants = GetContext().Tenants.Where(t => t.id_Estate == estateExpense.Id_Estate).ToList();
+
+            if (tenants != null && tenants.Count > 0)
+            {
+                result = tenants.Sum(s => s.CotaIndiviza);
+            }
+
+            return result;
+        }
+
+        public static decimal? GetSumOfIndivizaForExpense(EstateExpenses estateExpense, int? stairCase)
+        {
+            decimal? result = null;
+
+            var tenants = GetContext().Tenants.Where(t => t.id_Estate == estateExpense.Id_Estate && t.Id_StairCase == stairCase).ToList();
 
             if (tenants != null && tenants.Count > 0)
             {
@@ -159,24 +178,24 @@ namespace Administratoro.BL.Managers
             }
 
             decimal totalCota = apartments.Sum(te => te.CotaIndiviza.Value);
+            decimal? valuePerCotaUnit = null;
+            if (totalValue.HasValue && totalCota != 0)
+            {
+                valuePerCotaUnit = totalValue.Value / totalCota;
+            }
 
             foreach (var tenant in apartments)
             {
+                decimal? theValue = null;
                 TenantExpenses tte = GetContext().TenantExpenses.FirstOrDefault(tee => tee.Id_EstateExpense == expenseEstate.Id && tee.Id_Tenant == tenant.Id);
-                decimal? valuePerCotaUnit = null;
-                if (totalValue.HasValue && totalCota != 0)
+                if (valuePerCotaUnit.HasValue && tenant.CotaIndiviza.HasValue)
                 {
-                    valuePerCotaUnit = totalValue.Value / totalCota;
+                    theValue = DecimalExtensions.RoundUp((double)(tenant.CotaIndiviza.Value * valuePerCotaUnit.Value), 2);
                 }
 
                 if (tte != null)
                 {
-                    decimal? result = null;
-                    if (valuePerCotaUnit.HasValue)
-                    {
-                        result = DecimalExtensions.RoundUp((double)(tenant.CotaIndiviza.Value * valuePerCotaUnit.Value), 2);
-                    }
-                    tte.Value = result;
+                    tte.Value = theValue;
 
                     GetContext().Entry(tte).CurrentValues.SetValues(tte);
                 }
@@ -184,7 +203,7 @@ namespace Administratoro.BL.Managers
                 {
                     TenantExpenses te = new TenantExpenses
                     {
-                        Value = valuePerCotaUnit.HasValue ? tenant.CotaIndiviza * valuePerCotaUnit : null,
+                        Value = theValue,
                         Id_Tenant = tenant.Id,
                         Id_EstateExpense = expenseEstate.Id,
 
@@ -720,7 +739,7 @@ namespace Administratoro.BL.Managers
                     TenantExpenses te = TenantExpensesManager.GetByExpenseYearAndMonth(tenant.Id, estateExpense.Id);
                     if (estateExpense.RedistributeType.HasValue)
                     {
-                        redistributionValue = GetRaportRedistributionValue(totalCol, tenant, estateExpense, association);
+                        redistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(estateExpense.Id, tenant.Id_StairCase);
                     }
                     rowValue = CalculateRowValue(te, redistributionValue);
 
@@ -787,55 +806,17 @@ namespace Administratoro.BL.Managers
         {
             decimal? result = null;
 
-            if (te!=null && te.Value.HasValue)
+            if (te != null && te.Value.HasValue)
             {
                 result = te.Value.Value;
             }
 
             if (redistributionValue.HasValue)
             {
-                result = result + redistributionValue.Value;
+                result = result.HasValue ? result + redistributionValue.Value : redistributionValue.Value;
             }
 
             return result;
-        }
-
-        private static decimal? GetRaportRedistributionValue(Dictionary<Expense, decimal> totalCol, Tenants apartment, EstateExpenses estateExpense, Estates association)
-        {
-            decimal? valueToAdd = null;
-            var redistributeVal = RedistributionManager.CalculateRedistributeValue(estateExpense.Id);
-
-            if (!redistributeVal.HasValue)
-            {
-                return null;
-            }
-
-            if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerApartament)
-            {
-                if (redistributeVal.HasValue && association.Tenants.Count != 0)
-                {
-                    valueToAdd = Math.Round(redistributeVal.Value / association.Tenants.Count, 2);
-                }
-            }
-            else if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerConsumption)
-            {
-                //var allValue = RedistributionManager.RedistributeValuePerIndex(estateExpense);
-                //if (allValue.HasValue && te.TenantsCount != 0)
-                //{
-                //    valueToAdd = Math.Round(allValue.Value / association.Tenants.Count, 2);
-                //}
-            }
-            else if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerTenants)
-            {
-                var apartments = ApartmentsManager.GetAllByEstateId(association.Id);
-                var allApartmentsDependents = apartments.Sum(t => t.Dependents);
-                if (redistributeVal.HasValue && allApartmentsDependents != 0)
-                {
-                    valueToAdd = Math.Round(redistributeVal.Value * apartment.Dependents / allApartmentsDependents, 2);
-                }
-            }
-
-            return valueToAdd;
         }
 
         private static bool RaportPopulateExpensesListDiverse(Tenants tenant, List<Invoices> invoices, List<Tenants> tenants, Dictionary<Expense, decimal> totalCol, ExpenseReport expenseReport)

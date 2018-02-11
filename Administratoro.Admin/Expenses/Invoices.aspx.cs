@@ -481,10 +481,6 @@ namespace Admin.Expenses
                 {
                     result = "Adaugă facturile, cheltuielile individuale! 0%";
                 }
-                else if (!string.IsNullOrEmpty(redistributeValue))
-                {
-                    result = "Redistribuie cheltuiala! 80%";
-                }
                 else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
                 {
                     result = "Cheltuieli neadăugate! 20%";
@@ -492,6 +488,10 @@ namespace Admin.Expenses
                 else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
                 {
                     result = "Facturi neadăugate! 50%";
+                }
+                else if (!string.IsNullOrEmpty(redistributeValue))
+                {
+                    result = "Redistribuie cheltuiala! 80%";
                 }
             }
             else
@@ -529,7 +529,7 @@ namespace Admin.Expenses
             {
                 result = "Cheltuieli neadăugate! 20%";
             }
-            else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
+            else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count == 0)
             {
                 result = "Facturi neadăugate! 50%";
             }
