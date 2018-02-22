@@ -41,10 +41,14 @@ namespace Administratoro.BL.Managers
             return GetContext().Expenses.FirstOrDefault(e => e.Id == expenseId);
         }
 
-
         public static List<EstateExpensesRedistributionTypes> GetRedistributiontypes()
         {
             return GetContext().EstateExpensesRedistributionTypes.ToList();
+        }
+
+        public static List<EstateExpensesRedistributionTypes> GetRedistributiontypesForDiverse()
+        {
+            return GetContext().EstateExpensesRedistributionTypes.Where(e => e.Id != 3).ToList();
         }
     }
 }

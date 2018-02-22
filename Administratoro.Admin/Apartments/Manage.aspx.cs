@@ -36,15 +36,15 @@ namespace Admin.Tenants
             var sessionUser = Session[SessionConstants.LoginUser] as Tenants;
             var estate = Session[SessionConstants.SelectedAssociation] as Estates;
 
-            var tentants = ApartmentsManager.GetAllByEstateId(estate.Id);
+            var apartments = ApartmentsManager.GetAllByEstateId(estate.Id);
 
-            foreach (Tenants user in tentants)
+            foreach (Tenants ap in apartments)
             {
                 TableRow row = new TableRow();
 
                 HyperLink linkEditUser = new HyperLink
                 {
-                    NavigateUrl = "~/Apartments/Add.aspx?apartmentid=" + user.Id,
+                    NavigateUrl = "~/Apartments/Add.aspx?apartmentid=" + ap.Id,
                     CssClass = "toClickOn",
                     Text = "Editează"
                 };
@@ -54,37 +54,37 @@ namespace Admin.Tenants
 
                 TableCell tentantNr = new TableCell
                 {
-                    Text = user.Number.ToString()
+                    Text = ap.Number.ToString()
                 };
                 row.Cells.Add(tentantNr);
 
                 TableCell tentantName = new TableCell
                 {
-                    Text = user.Name
+                    Text = ap.Name
                 };
                 row.Cells.Add(tentantName);
 
                 TableCell userPhone = new TableCell
                 {
-                    Text = user.Telephone
+                    Text = ap.Telephone
                 };
                 row.Cells.Add(userPhone);
 
                 TableCell userEmail = new TableCell
                 {
-                    Text = user.Email
+                    Text = ap.Email
                 };
                 row.Cells.Add(userEmail);
 
                 TableCell userDependents = new TableCell
                 {
-                    Text = user.Dependents.ToString()
+                    Text = ap.Dependents.ToString()
                 };
                 row.Cells.Add(userDependents);
 
                 TableCell userSurface = new TableCell
                 {
-                    Text = user.CotaIndiviza.ToString()
+                    Text = ap.CotaIndiviza.ToString()
                 };
                 row.Cells.Add(userSurface);
 

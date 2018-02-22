@@ -13,9 +13,9 @@ namespace Administratoro.BL.Models
         public string CotaIndiviza { get; set; }
 
         public int Id { get; set; }
-
         public int NrPers { get; set; }
         public string Ap { get; set; }
+        public string Name { get; set; }
         public decimal? Administrator { get; set; }
         public decimal? WatherCold { get; set; }
         public decimal? WatherWarm { get; set; }

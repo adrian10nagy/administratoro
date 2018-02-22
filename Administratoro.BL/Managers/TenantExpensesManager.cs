@@ -59,7 +59,7 @@ namespace Administratoro.BL.Managers
             return GetContext().TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId).Sum(s => s.IndexNew - s.IndexOld);
         }
 
-        public static decimal? GetSumOfIndexesForexpenseOnStairCase(int estateExpenseId, int? stairCase)
+        public static decimal? GetSumOfIndexesForexpense(int estateExpenseId, int? stairCase)
         {
             return GetContext().TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId && te.Tenants.Id_StairCase == stairCase).Sum(s => s.IndexNew - s.IndexOld);
         }
@@ -679,34 +679,37 @@ namespace Administratoro.BL.Managers
                 return dt;
             }
             var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, year, month);
-            List<Tenants> tenants;
+            List<Tenants> apartments;
             if (!stairCase.HasValue)
             {
-                tenants = association.Tenants.ToList();
+                apartments = association.Tenants.ToList();
             }
             else
             {
-                tenants = ApartmentsManager.GetAllByEstateIdAndStairCase(association.Id, stairCase.Value);
+                apartments = ApartmentsManager.GetAllByEstateIdAndStairCase(association.Id, stairCase.Value);
             }
 
+            apartments = apartments.OrderBy(a => a.Number).ToList();
+
             var invoices = InvoicesManager.GetDiverseByAssociationYearMonth(associationId, year, month);
-            int fieldSize = estateExpenses.Count();
+            int expensesFieldSize = estateExpenses.Count();
 
             // populate expenses- pre-step
             bool hasDiverse;
-            RaportPopulateExpensesList(raportDictionary, totalCol, expenseReportList, estateExpenses, tenants, association, invoices, out hasDiverse);
+            bool hasRoundUpColumn = association.HasRoundUpColumn.HasValue && association.HasRoundUpColumn.Value;
+            RaportPopulateExpensesList(raportDictionary, totalCol, expenseReportList, estateExpenses, apartments, association, invoices, out hasDiverse);
             if (hasDiverse)
             {
-                fieldSize++;
+                expensesFieldSize++;
             }
 
             // add headers
-            RaportAddHeaders(dt, estateExpenses, hasDiverse);
+            RaportAddHeaders(dt, estateExpenses, hasDiverse, hasRoundUpColumn);
 
             // add rows
-            decimal generalMonthSum = RaportAddRows(dt, raportDictionary, fieldSize, expenseReportList);
+            decimal generalMonthSum = RaportAddRows(dt, raportDictionary, expensesFieldSize, expenseReportList, hasRoundUpColumn);
 
-            raportAddTotalRow(dt, totalCol, generalMonthSum);
+            raportAddTotalRow(dt, totalCol, generalMonthSum, hasRoundUpColumn);
 
             return dt;
         }
@@ -719,6 +722,7 @@ namespace Administratoro.BL.Managers
             {
                 ExpenseReport expenseReport = new ExpenseReport();
                 expenseReport.Ap = tenant.Number.ToString();
+                expenseReport.Name = tenant.Name;
                 expenseReport.NrPers = tenant.Dependents;
                 expenseReport.CotaIndiviza = tenant.CotaIndiviza.HasValue ? tenant.CotaIndiviza.Value.ToString() : string.Empty;
 
@@ -739,7 +743,7 @@ namespace Administratoro.BL.Managers
                     TenantExpenses te = TenantExpensesManager.GetByExpenseYearAndMonth(tenant.Id, estateExpense.Id);
                     if (estateExpense.RedistributeType.HasValue)
                     {
-                        redistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(estateExpense.Id, tenant.Id_StairCase);
+                        redistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(estateExpense.Id, tenant, te);
                     }
                     rowValue = CalculateRowValue(te, redistributionValue);
 
@@ -791,7 +795,6 @@ namespace Administratoro.BL.Managers
 
                     totalCol[(Expense)estateExpense.Expenses.Id] = rowValue == null ? totalCol[(Expense)estateExpense.Expenses.Id] :
                                 totalCol[(Expense)estateExpense.Expenses.Id] + rowValue.Value;
-
                 }
 
                 raportDictionary.Add(counter, Expense.Diverse);
@@ -913,9 +916,10 @@ namespace Administratoro.BL.Managers
             return hasDiverse;
         }
 
-        private static void RaportAddHeaders(DataTable dt, List<EstateExpenses> estateExpenses, bool addDiverse)
+        private static void RaportAddHeaders(DataTable dt, List<EstateExpenses> estateExpenses, bool addDiverse, bool hasRoundUpColumn)
         {
             dt.Columns.Add(new DataColumn("Ap", typeof(string)));
+            dt.Columns.Add(new DataColumn("Nume", typeof(string)));
             dt.Columns.Add(new DataColumn("Pers", typeof(string)));
             dt.Columns.Add(new DataColumn("Cota ind.", typeof(string)));
 
@@ -936,10 +940,16 @@ namespace Administratoro.BL.Managers
 
             dt.Columns.Add(new DataColumn("Penalizări", typeof(string)));
             dt.Columns.Add(new DataColumn("Total general", typeof(string)));
+
+            if (hasRoundUpColumn)
+            {
+                dt.Columns.Add(new DataColumn("Rotunjiri", typeof(string)));
+            }
+
             dt.Columns.Add(new DataColumn("Ap ", typeof(string)));
         }
 
-        private static decimal RaportAddRows(DataTable dt, Dictionary<int, Expense> raportDictionary, int fieldSize, List<ExpenseReport> expenseReportList)
+        private static decimal RaportAddRows(DataTable dt, Dictionary<int, Expense> raportDictionary, int fieldSize, List<ExpenseReport> expenseReportList, bool hasRoundUpColumn)
         {
             decimal generalMonthSum = 0.0m;
             foreach (var raportList in expenseReportList)
@@ -948,6 +958,7 @@ namespace Administratoro.BL.Managers
                 decimal monthSum = 0.0m;
                 decimal generalSum = 0.0m;
                 row.Add(raportList.Ap);
+                row.Add(raportList.Name);
                 row.Add(raportList.NrPers);
                 row.Add(raportList.CotaIndiviza);
 
@@ -978,8 +989,14 @@ namespace Administratoro.BL.Managers
                 row.Add(string.Empty);
                 row.Add(string.Empty);
                 row.Add(generalSum.ToString());
-                row.Add(raportList.Ap);
+                
+                if (hasRoundUpColumn)
+                {
+                    var value = (DecimalExtensions.RoundUp((double)generalSum,0));
+                    row.Add(value.ToString());
+                }
 
+                row.Add(raportList.Ap);
 
                 dt.Rows.Add(row.ToArray());
             }
@@ -987,10 +1004,11 @@ namespace Administratoro.BL.Managers
             return generalMonthSum;
         }
 
-        private static void raportAddTotalRow(DataTable dt, Dictionary<Expense, decimal> totalCol, decimal generalMonthSum)
+        private static void raportAddTotalRow(DataTable dt, Dictionary<Expense, decimal> totalCol, decimal generalMonthSum, bool hasRoundUpColumn)
         {
             List<object> rowTotal = new List<object>();
 
+            rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
@@ -1004,6 +1022,11 @@ namespace Administratoro.BL.Managers
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(generalMonthSum.ToString());
+            if (hasRoundUpColumn)
+            {
+                var value = DecimalExtensions.RoundUp((double)generalMonthSum, 0);
+                rowTotal.Add(value.ToString());
+            }
             rowTotal.Add(string.Empty);
 
             dt.Rows.Add(rowTotal.ToArray());

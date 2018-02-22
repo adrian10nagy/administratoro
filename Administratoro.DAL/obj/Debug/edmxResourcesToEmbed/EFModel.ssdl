@@ -41,6 +41,7 @@
     <Property Name="PricePerExpenseUnit" Type="decimal" Precision="20" Scale="2" />
     <Property Name="SplitPerStairCase" Type="bit" />
     <Property Name="RedistributeType" Type="int" />
+    <Property Name="IsClosed" Type="bit" />
   </EntityType>
   <EntityType Name="EstateExpensesRedistributionTypes">
     <Key>
@@ -62,6 +63,7 @@
     <Property Name="BanckAccont" Type="nvarchar" MaxLength="30" />
     <Property Name="FiscalCode" Type="nvarchar" MaxLength="30" />
     <Property Name="CotaIndivizaAparments" Type="decimal" Precision="14" Scale="4" />
+    <Property Name="HasRoundUpColumn" Type="bit" />
   </EntityType>
   <EntityType Name="Expenses">
     <Key>

@@ -8,16 +8,6 @@ C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.DAL\bin\Debug\
 C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.dll
 C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.pdb
 C:\DATA\Repositories\AdministratoRO\Administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.csprojResolveAssemblyReference.cache
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.dll.config
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.pdb
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.SqlServer.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.xml
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.SqlServer.xml
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.csprojResolveAssemblyReference.cache
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.pdb
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.dll.config
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.dll
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.pdb
@@ -27,3 +17,10 @@ D:\BTT\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.xml
 D:\BTT\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.SqlServer.xml
 D:\BTT\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.dll
 D:\BTT\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.dll.config
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\Administratoro.DAL.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\bin\Debug\EntityFramework.SqlServer.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.DAL\obj\Debug\Administratoro.DAL.pdb

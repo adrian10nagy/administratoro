@@ -32,7 +32,14 @@
     <asp:Button runat="server" ID="btnEstateEqualIndiviza" OnClick="btnEstateEqualIndiviza_Click" Text="Modifică" Visible="false" />
     </div>
     <br />
-
+    <div>
+        <span class="associationsLabels">Coloana de rotunjiri vizibilă în lista de cheltuieli:</span>
+        <asp:RadioButtonList ID="rbHasRoundup" runat="server" AutoPostBack="true" OnSelectedIndexChanged="rbHasRoundup_SelectedIndexChanged"
+            RepeatLayout="Flow" RepeatDirection="Horizontal">
+            <asp:ListItem Text="Nu" Value="0" />
+            <asp:ListItem Text="Da" Value="1" />
+        </asp:RadioButtonList>
+    </div>
     <div>
         <span class="associationsLabels">Bloc împărțit pe scări:</span>
         <asp:RadioButtonList ID="estateStairs" runat="server" AutoPostBack="true" OnSelectedIndexChanged="estateStairs_SelectedIndexChanged"

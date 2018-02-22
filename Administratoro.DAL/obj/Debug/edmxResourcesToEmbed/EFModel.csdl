@@ -206,6 +206,7 @@
     <Property Name="PricePerExpenseUnit" Type="Decimal" Precision="20" Scale="2" />
     <Property Name="SplitPerStairCase" Type="Boolean" />
     <Property Name="RedistributeType" Type="Int32" />
+    <Property Name="IsClosed" Type="Boolean" />
     <NavigationProperty Name="EstateExpensesRedistributionTypes" Relationship="AdministratoroModel.FK__EstateExp__Redis__44952D46" FromRole="EstateExpenses" ToRole="EstateExpensesRedistributionTypes" />
     <NavigationProperty Name="Estates" Relationship="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E" FromRole="EstateExpenses" ToRole="Estates" />
     <NavigationProperty Name="Expenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Ex__778AC167" FromRole="EstateExpenses" ToRole="Expenses" />
@@ -235,6 +236,7 @@
     <Property Name="BanckAccont" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
     <Property Name="FiscalCode" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
     <Property Name="CotaIndivizaAparments" Type="Decimal" Precision="14" Scale="4" />
+    <Property Name="HasRoundUpColumn" Type="Boolean" />
     <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__Counters__Id_Est__0B5CAFEA" FromRole="Estates" ToRole="Counters" />
     <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E" FromRole="Estates" ToRole="EstateExpenses" />
     <NavigationProperty Name="Partners" Relationship="AdministratoroModel.FK__Estates__Id_Part__5CD6CB2B" FromRole="Estates" ToRole="Partners" />

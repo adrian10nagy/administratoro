@@ -79,13 +79,13 @@ namespace Admin.Tenants
 
             if (estate.HasStaircase)
             {
-                var expenses = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id, true);
                 Tenants apartment = null;
                 if (apartmentId.HasValue)
                 {
                     apartment = ApartmentsManager.GetById(apartmentId.Value);
                 }
 
+                var expenses = ExpensesManager.GetAllExpenses();
                 foreach (var expense in expenses)
                 {
                     PopulateCountersData(estate, expense, apartment);
@@ -93,13 +93,13 @@ namespace Admin.Tenants
             }
         }
 
-        private void PopulateCountersData(Estates estate, EstateExpenses esEx, Tenants apartment)
+        private void PopulateCountersData(Estates estate, Expenses expense, Tenants apartment)
         {
             Panel mainPanel = new Panel();
 
             Label lb = new Label
             {
-                Text = esEx.Expenses.Name,
+                Text = expense.Name,
                 CssClass = "col-md-6 col-xs-6"
             };
 
@@ -111,12 +111,12 @@ namespace Admin.Tenants
             ListItem defaultNull = new ListItem
             {
                 Value = null,
-                Text = "Fără (Contor indivudual pe apartament)"
+                Text = " -Fără contor- "
             };
             drp.Items.Add(defaultNull);
 
-            var counters = estate.Counters.Where(c => c.Id_Expense == esEx.Id_Expense).ToList();
             ApartmentCounters ac = null;
+            var counters = estate.Counters.Where(c => c.Id_Expense == expense.Id).ToList();
 
             if (apartment != null)
             {

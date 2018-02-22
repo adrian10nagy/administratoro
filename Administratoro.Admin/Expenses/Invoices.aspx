@@ -10,6 +10,8 @@
     <asp:LinkButton ID="lblExpenseMonthlyList" CssClass="expenseMeessageConfigure" OnClick="lblExpenseMonthlyList_Click" runat="server">Vezi lista de plată(<i class="fa fa-table"></i>)</asp:LinkButton>
     <br />
     <br />
+    <asp:Panel ID="pnlMessage" runat="server" Visible="false">
+    </asp:Panel>
 
     <asp:Panel ID="invoiceRedistribute" runat="server" Visible="false">
         <asp:Button runat="server" Text="Anulează" ID="invoiceRedistributeCancel" OnClick="invoiceRedistributeCancel_Click" />
@@ -34,6 +36,7 @@
     <asp:Panel ID="invoiceMain" runat="server">
     </asp:Panel>
 
+    <asp:Button runat="server" ID="btnCloseMonth" Text="Închide luna" OnClick="btnCloseMonth_Click" CssClass="btn btn-main" />
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="MainScript" runat="server">
 </asp:Content>

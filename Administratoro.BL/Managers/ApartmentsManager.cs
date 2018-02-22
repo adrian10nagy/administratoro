@@ -25,7 +25,33 @@ namespace Administratoro.BL.Managers
 
         public static List<Tenants> GetAllByEstateId(int estateId)
         {
-            return GetContext().Tenants.Where(t => t.Estates.Id == estateId).ToList();
+            return GetContext().Tenants.Where(t => t.Estates.Id == estateId).OrderBy(a=>a.Number).ToList();
+        }
+
+        public static int GetDependentsNr(int associationId)
+        {
+            int result = 0;
+
+            var association =  AssociationsManager.GetById(associationId);
+            if(association != null)
+            {
+               result =  association.Tenants.Select(t => t.Dependents).Sum();
+            }
+
+            return result;
+        }
+
+        public static int GetDependentsNr(int associationId, int? stairCase)
+        {
+            int result = 0;
+
+            var association = AssociationsManager.GetById(associationId);
+            if (association != null)
+            {
+                result = association.Tenants.Where(t=>t.Id_StairCase == stairCase).Select(t => t.Dependents).Sum();
+            }
+
+            return result;
         }
 
         public static DbSet<Tenants> GetAllAsDbSet(int estateId)

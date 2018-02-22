@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\Expense.cs" />
+    <Compile Include="Constants\ExpensesCompletedStatus.cs" />
     <Compile Include="Constants\ExpenseType.cs" />
     <Compile Include="Constants\RedistributionType.cs" />
     <Compile Include="Constants\SessionConstants.cs" />

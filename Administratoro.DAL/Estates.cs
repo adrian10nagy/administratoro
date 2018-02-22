@@ -31,6 +31,7 @@ namespace Administratoro.DAL
         public string BanckAccont { get; set; }
         public string FiscalCode { get; set; }
         public Nullable<decimal> CotaIndivizaAparments { get; set; }
+        public Nullable<bool> HasRoundUpColumn { get; set; }
     
         public virtual ICollection<Counters> Counters { get; set; }
         public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }

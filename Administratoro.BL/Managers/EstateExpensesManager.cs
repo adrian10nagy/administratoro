@@ -21,7 +21,7 @@ namespace Administratoro.BL.Managers
 
             return _administratoroEntities;
         }
-        
+
         public static List<EstateExpenses> GetAllEstateExpensesByMonthAndYearNotDisabled(int estateId, int year, int month)
         {
             return GetContext(true).EstateExpenses.Where(
@@ -47,7 +47,7 @@ namespace Administratoro.BL.Managers
             {
                 int maxMonth = eeFromMaxYear.Max(i => i.Month);
 
-                return GetContext(shouldRefresh).EstateExpenses.Where(ee => ee.Month == maxMonth &&
+                return GetContext(shouldRefresh).EstateExpenses.Where(ee => ee.Month == maxMonth && ee.Year == maxYear &&
                     ee.Id_Estate == estateId && !ee.WasDisabled && !ee.Expenses.specialType.HasValue).ToList();
             }
             else
@@ -174,7 +174,7 @@ namespace Administratoro.BL.Managers
         {
             return GetContext().EstateExpenses.Where(ee => ee.Id_Estate == assotiationId &&
                 ee.Year != -1 && ee.Month != -1 && !ee.Expenses.specialType.HasValue)
-                .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee=>ee.Year).ToList();
+                .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee => ee.Year).ToList();
         }
 
         public static void UpdatePricePerUnitDefaultPrevieousMonth(EstateExpenses newEE, List<EstateExpenses> oldEEs)
@@ -182,7 +182,7 @@ namespace Administratoro.BL.Managers
             if (newEE != null)
             {
                 EstateExpenses oldEE = oldEEs.FirstOrDefault(ee => ee.Id_Expense == newEE.Id_Expense && !ee.Expenses.specialType.HasValue);
-                if (oldEE != null && oldEE.Id_ExpenseType == (int)ExpenseType.PerIndex )
+                if (oldEE != null && oldEE.Id_ExpenseType == (int)ExpenseType.PerIndex)
                 {
                     UpdatePricePerUnit(newEE.Id, oldEE.PricePerExpenseUnit);
                 }
@@ -205,6 +205,275 @@ namespace Administratoro.BL.Managers
         {
             return GetContext(true).EstateExpenses.FirstOrDefault(ee => ee.Id_Estate == associationId && ee.Id_Expense == expenseId
                 && ee.Year == year && ee.Month == month);
+        }
+
+        #region statusOfinvoiceFor Split -NoSplit
+
+        private static string StatusOfInvoicesForSplit(EstateExpenses estateExpense, string result, string redistributeValue, string percentage)
+        {
+            if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
+            {
+                if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count
+                    && (string.IsNullOrEmpty(percentage) || percentage == "100") && (estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00"))
+                {
+                    result = "<i class='fa fa-check'></i> 100%";
+                }
+                else if ((estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count) &&
+                    percentage != "100")
+                {
+                    result = "Adaugă facturile, cheltuielile individuale! 0%";
+                }
+                else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
+                {
+                    result = "Cheltuieli neadăugate! 20%";
+                }
+                else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
+                {
+                    result = "Facturi neadăugate! 50%";
+                }
+                else if (!string.IsNullOrEmpty(redistributeValue))
+                {
+                    result = "Redistribuie cheltuiala! 80%";
+                }
+            }
+            else
+            {
+                if ((estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count) &&
+                    (estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00"))
+                {
+                    result = "<i class='fa fa-check'></i> 100%";
+                }
+                else if (estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
+                {
+                    result = "Facturi neadăugate! 50%";
+                }
+                else if (!estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00")
+                {
+                    result = "Redistribuie cheltuiala! 80%";
+                }
+            }
+
+            return result;
+        }
+
+        private static string StatusOfInvoicesForNoSplit(string result, string redistributeValue, string percentage, EstateExpenses estateExpense)
+        {
+            if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
+            {
+                if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count > 0 && (string.IsNullOrEmpty(percentage) || percentage == "100") &&
+                    (estateExpense.RedistributeType.HasValue || string.IsNullOrEmpty(redistributeValue) || redistributeValue == "0,00"))
+                {
+                    result = "<i class='fa fa-check'></i> 100%";
+                }
+                else if (!estateExpense.RedistributeType.HasValue && estateExpense.Invoices.Any(i => !i.Value.HasValue) && percentage == "0")
+                {
+                    result = "Adaugă factura, cheltuielile! 0%";
+                }
+                else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
+                {
+                    result = "Cheltuieli neadăugate! 20%";
+                }
+                else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count == 0)
+                {
+                    result = "Facturi neadăugate! 50%";
+                }
+                else if (!estateExpense.RedistributeType.HasValue)
+                {
+                    result = "Redistribuie cheltuiala! 80%";
+                }
+            }
+            else
+            {
+                if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count > 0)
+                {
+                    result = "<i class='fa fa-check'></i> 100%";
+                }
+                else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count == 0)
+                {
+                    result = "Facturi neadăugate! 50%";
+                }
+                else if (!estateExpense.RedistributeType.HasValue)
+                {
+                    result = "Redistribuie cheltuiala! 80%";
+                }
+            }
+
+            return result;
+        }
+
+        public static ExpensesCompletedStatus StatusOfInvoicesForNoSplit2(string result, string redistributeValue, string percentage, EstateExpenses estateExpense)
+        {
+            return ExpensesCompletedStatus.All;
+        }
+
+        public static string StatusOfInvoices(EstateExpenses estateExpense, bool isExpensePerIndex)
+        {
+            string result = string.Empty;
+            var redistributeValue = RedistributionManager.CalculateRedistributeValueAsString(estateExpense.Id);
+            var percentage = string.Empty;
+
+            if (isExpensePerIndex)
+            {
+                percentage = GetPercentageAsString(estateExpense);
+            }
+
+            if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+            {
+                result = StatusOfInvoicesForSplit(estateExpense, result, redistributeValue, percentage);
+            }
+            else
+            {
+                result = StatusOfInvoicesForNoSplit(result, redistributeValue, percentage, estateExpense);
+            }
+
+            return result;
+        }
+
+        public static string GetPercentageAsString(EstateExpenses estateExpense)
+        {
+            string percentage = string.Empty;
+
+            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
+
+            if (tenantsWithCountersOfThatExpense > 0)
+            {
+                percentage = ExpensePercentageFilledInAsString(estateExpense, tenantsWithCountersOfThatExpense);
+            }
+            else
+            {
+                percentage = "100";
+            }
+
+            return percentage;
+        }
+
+        public static decimal GetPercentage(EstateExpenses estateExpense)
+        {
+            decimal percentage = 0.0m;
+
+            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
+
+            if (tenantsWithCountersOfThatExpense > 0)
+            {
+                percentage = ExpensePercentageFilledIn(estateExpense, tenantsWithCountersOfThatExpense);
+            }
+            else
+            {
+                percentage = 100m;
+            }
+
+            return percentage;
+        }
+
+        private static string ExpensePercentageFilledInAsString(EstateExpenses estateExpense, int tenantsWithCounters)
+        {
+            var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
+            var percentage = (((decimal)addedExpenses / (decimal)tenantsWithCounters) * 100).ToString("0.##");
+
+            return percentage;
+        }
+
+        private static decimal ExpensePercentageFilledIn(EstateExpenses estateExpense, int tenantsWithCounters)
+        {
+            var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
+            var percentage = (((decimal)addedExpenses / (decimal)tenantsWithCounters) * 100);
+
+            return percentage;
+        }
+
+        public static string ExpensePercentageFilledInMessage(EstateExpenses estateExpense)
+        {
+            var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
+            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
+
+            return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + tenantsWithCountersOfThatExpense + "</b> ";
+        }
+
+        private static int GetTenantsWithCountersOfThatExpense(EstateExpenses estateExpense)
+        {
+            int tenantsWithCountersOfThatExpense = 0;
+            List<Counters> allcountersOfExpense = CountersManager.GetAllByExpenseType(estateExpense.Estates.Id, estateExpense.Expenses.Id);
+            foreach (var tenant in estateExpense.Estates.Tenants)
+            {
+                if (allcountersOfExpense.Select(c => c.Id).Intersect(tenant.ApartmentCounters.Select(ac => ac.Id_Counters)).Any())
+                {
+                    tenantsWithCountersOfThatExpense++;
+                }
+            }
+            return tenantsWithCountersOfThatExpense;
+        }
+
+        #endregion
+
+
+        public static void CloseMonth(int association, int year, int month, bool shouldClose = true)
+        {
+            List<EstateExpenses> allEE = GetContext(true).EstateExpenses.Where(ee => ee.Id_Estate == association &&
+                ee.Year == year && ee.Month == month).ToList();
+            foreach (var item in allEE)
+            {
+                item.IsClosed = shouldClose;
+                GetContext().Entry(item).CurrentValues.SetValues(item);
+                GetContext().SaveChanges();
+            }
+        }
+
+
+        public static bool CanCloseMonth(int association, int year, int month)
+        {
+            bool result = true;
+
+            List<EstateExpenses> allEE = GetContext(true).EstateExpenses.Where(ee => ee.Id_Estate == association &&
+                ee.Year == year && ee.Month == month).ToList();
+            foreach (var estateExpense in allEE)
+            {
+                if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+                {
+                    if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants || estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+                    {
+                        if (estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count || estateExpense.Invoices.Any(i => !i.Value.HasValue))
+                        {
+                            result = false;
+                        }
+                    }
+                    else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
+                    {
+                        var percentage = GetPercentage(estateExpense);
+                        if (percentage != 100m)
+                        {
+                            result = false;
+                        }
+                    }
+                }
+                else
+                {
+                    if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerTenants || estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+                    {
+                        if (estateExpense.Invoices.Any(i => !i.Value.HasValue) && estateExpense.Invoices.Count != 0)
+                        {
+                            result = false;
+                        }
+                    }
+                    else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
+                    {
+                        var percentage = GetPercentage(estateExpense);
+                        if (percentage != 100m)
+                        {
+                            result = false;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static bool IsMonthClosed(int association, int year, int month)
+        {
+            List<EstateExpenses> allEE = GetContext(true).EstateExpenses.Where(ee => ee.Id_Estate == association &&
+                ee.Year == year && ee.Month == month).ToList();
+
+            return allEE.All(e => e.IsClosed.HasValue && e.IsClosed.Value);
         }
     }
 }

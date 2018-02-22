@@ -11,11 +11,13 @@ namespace Admin.Config
     using System.Web.UI;
     using System.Web.UI.WebControls;
     using Administratoro.BL.Extensions;
+    using Administrataro.BL.Models;
 
     public partial class NewMonthOpening : BasePage
     {
         protected void Page_Init(object sender, EventArgs e)
         {
+             
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -27,32 +29,28 @@ namespace Admin.Config
 
         private void InitializeMonths(int year, int month)
         {
+            var availableYearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByEstateId(Association.Id);
             drpOpeningMonth.Items.Clear();
 
-            drpOpeningMonth.Items.Add(new ListItem { Value = "1", Text = "Ianuarie", Selected = IsMonthSelected(1, month), Enabled = isMonthEnabled(1, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "2", Text = "Februarie", Selected = IsMonthSelected(2, month), Enabled = isMonthEnabled(2, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "3", Text = "Martie", Selected = IsMonthSelected(3, month), Enabled = isMonthEnabled(3, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "4", Text = "Aprilie", Selected = IsMonthSelected(4, month), Enabled = isMonthEnabled(4, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "5", Text = "Mai", Selected = IsMonthSelected(5, month), Enabled = isMonthEnabled(5, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "6", Text = "Iunie", Selected = IsMonthSelected(6, month), Enabled = isMonthEnabled(6, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "7", Text = "Iulie", Selected = IsMonthSelected(7, month), Enabled = isMonthEnabled(7, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "8", Text = "August", Selected = IsMonthSelected(8, month), Enabled = isMonthEnabled(8, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "9", Text = "Septembrie", Selected = IsMonthSelected(9, month), Enabled = isMonthEnabled(9, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "10", Text = "Octombrie", Selected = IsMonthSelected(10, month), Enabled = isMonthEnabled(10, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "11", Text = "Noiembrie", Selected = IsMonthSelected(11, month), Enabled = isMonthEnabled(11, year, month) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "12", Text = "Decembrie", Selected = IsMonthSelected(12, month), Enabled = isMonthEnabled(12, year, month) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "1", Text = "Ianuarie", Selected = IsMonthSelected(1, month), Enabled = isMonthEnabled(1, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "2", Text = "Februarie", Selected = IsMonthSelected(2, month), Enabled = isMonthEnabled(2, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "3", Text = "Martie", Selected = IsMonthSelected(3, month), Enabled = isMonthEnabled(3,  availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "4", Text = "Aprilie", Selected = IsMonthSelected(4, month), Enabled = isMonthEnabled(4, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "5", Text = "Mai", Selected = IsMonthSelected(5, month), Enabled = isMonthEnabled(5, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "6", Text = "Iunie", Selected = IsMonthSelected(6, month), Enabled = isMonthEnabled(6, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "7", Text = "Iulie", Selected = IsMonthSelected(7, month), Enabled = isMonthEnabled(7,  availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "8", Text = "August", Selected = IsMonthSelected(8, month), Enabled = isMonthEnabled(8, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "9", Text = "Septembrie", Selected = IsMonthSelected(9, month), Enabled = isMonthEnabled(9,  availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "10", Text = "Octombrie", Selected = IsMonthSelected(10, month), Enabled = isMonthEnabled(10, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "11", Text = "Noiembrie", Selected = IsMonthSelected(11, month), Enabled = isMonthEnabled(11, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "12", Text = "Decembrie", Selected = IsMonthSelected(12, month), Enabled = isMonthEnabled(12, availableYearMonths) });
         }
 
-        private bool isMonthEnabled(int month, int lastYear, int lastMonth)
+        private bool isMonthEnabled(int month, List<YearMonth> availableYearMonths)
         {
             bool result = false;
             int selectedYear = drpOpeningYear.SelectedValue.ToNullableInt().Value;
-
-            if (selectedYear > lastYear)
-            {
-                result = true;
-            }
-            else if (selectedYear == lastYear && month > lastMonth)
+            if (!availableYearMonths.Any(ee => ee.Month == month && ee.Year == selectedYear))
             {
                 result = true;
             }
@@ -89,11 +87,12 @@ namespace Admin.Config
 
             if (drpOpeningYear.Items.Count == 0)
             {
-                drpOpeningYear.Items.Add(new ListItem { Value = "2017", Text = "2017", Enabled = (year <= 2017) });
-                drpOpeningYear.Items.Add(new ListItem { Value = "2018", Text = "2018", Enabled = (year <= 2018) });
-                drpOpeningYear.Items.Add(new ListItem { Value = "2019", Text = "2019", Enabled = (year <= 2019) });
+                drpOpeningYear.Items.Add(new ListItem { Value = "2017", Text = "2017", Selected = year == 2017  });
+                drpOpeningYear.Items.Add(new ListItem { Value = "2018", Text = "2018", Selected = year == 2018 });
+                drpOpeningYear.Items.Add(new ListItem { Value = "2019", Text = "2019", Selected = year == 2019 });
                 drpOpeningYear.AutoPostBack = true;
             }
+
             InitializeMonths(year, month);
             drpOpeningYear.SelectedIndexChanged += drpOpeningYear_SelectedIndexChanged;
 
@@ -101,8 +100,6 @@ namespace Admin.Config
 
         private void drpOpeningYear_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int selectedYear = drpOpeningYear.SelectedValue.ToNullableInt().Value;
-            int selectedMonth = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
             var defaultEEs = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
             InitializeYearsAndMonths(defaultEEs);
         }
@@ -285,6 +282,7 @@ namespace Admin.Config
                 lblMessage.Attributes.Add("style", "color: red");
                 return;
             }
+            List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
 
             foreach (TableRow row in tblMonthlyExpenses.Rows)
             {
@@ -307,9 +305,6 @@ namespace Admin.Config
                             int expenseId;
                             if (int.TryParse(cbId, out expenseId))
                             {
-                                //dpExpenseType.SelectedValue
-                                List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
-
                                 EstateExpenses newEe = EstateExpensesManager.Add(Association.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
                                 EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
                             }

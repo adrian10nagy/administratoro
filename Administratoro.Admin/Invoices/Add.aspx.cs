@@ -400,7 +400,7 @@ namespace Admin.Invoices
             {
                 var invoices = InvoicesManager.GetDiverseByEstateExpense(estateExpense.Id);
 
-                InitializeValueFieldAddInvoices(invoices, true, true);
+                InitializeValueFieldAddInvoices(invoices, true, true, true);
             }
 
             Panel panelMain = new Panel
@@ -471,7 +471,7 @@ namespace Admin.Invoices
                 CssClass = "form-control"
             };
 
-            List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypes();
+            List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypesForDiverse();
             foreach (var type in eert)
             {
                 drpExpenseredistribute.Items.Add(new ListItem
@@ -492,7 +492,7 @@ namespace Admin.Invoices
 
         }
 
-        private void InitializeValueFieldAddInvoices(List<Administratoro.DAL.Invoices> invoices, bool isStairCaseEnabled, bool shouldSeeRedistribute)
+        private void InitializeValueFieldAddInvoices(List<Administratoro.DAL.Invoices> invoices, bool isStairCaseEnabled, bool shouldSeeRedistribute, bool isDiverse)
         {
             foreach (var invoice in invoices)
             {
@@ -551,7 +551,7 @@ namespace Admin.Invoices
                     {
                         Text = "Pe tot blocul",
                         Value = "",
-                        Selected = !invoice.Id_StairCase.HasValue 
+                        Selected = !invoice.Id_StairCase.HasValue
                     });
 
                     foreach (var stairCase in Association.StairCases)
@@ -584,7 +584,16 @@ namespace Admin.Invoices
                         Enabled = isStairCaseEnabled
                     };
 
-                    List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypes();
+                    List<EstateExpensesRedistributionTypes> eert;
+                    if (isDiverse)
+                    {
+                        eert = ExpensesManager.GetRedistributiontypesForDiverse();
+                    }
+                    else
+                    {
+                        eert = ExpensesManager.GetRedistributiontypes();
+                    }
+
                     foreach (var type in eert)
                     {
                         drpExpenseredistribute.Items.Add(new ListItem
@@ -668,7 +677,7 @@ namespace Admin.Invoices
                     invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month, true);
                 }
 
-                InitializeValueFieldAddInvoices(invoices, false, false);
+                InitializeValueFieldAddInvoices(invoices, false, false, false);
             }
             else
             {

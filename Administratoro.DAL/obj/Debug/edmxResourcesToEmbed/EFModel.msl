@@ -57,6 +57,7 @@
     <EntitySetMapping Name="EstateExpenses">
       <EntityTypeMapping TypeName="AdministratoroModel.EstateExpenses">
         <MappingFragment StoreEntitySet="EstateExpenses">
+          <ScalarProperty Name="IsClosed" ColumnName="IsClosed" />
           <ScalarProperty Name="RedistributeType" ColumnName="RedistributeType" />
           <ScalarProperty Name="SplitPerStairCase" ColumnName="SplitPerStairCase" />
           <ScalarProperty Name="PricePerExpenseUnit" ColumnName="PricePerExpenseUnit" />
@@ -82,6 +83,7 @@
     <EntitySetMapping Name="Estates">
       <EntityTypeMapping TypeName="AdministratoroModel.Estates">
         <MappingFragment StoreEntitySet="Estates">
+          <ScalarProperty Name="HasRoundUpColumn" ColumnName="HasRoundUpColumn" />
           <ScalarProperty Name="CotaIndivizaAparments" ColumnName="CotaIndivizaAparments" />
           <ScalarProperty Name="FiscalCode" ColumnName="FiscalCode" />
           <ScalarProperty Name="BanckAccont" ColumnName="BanckAccont" />

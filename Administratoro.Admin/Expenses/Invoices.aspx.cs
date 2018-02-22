@@ -56,10 +56,6 @@ namespace Admin.Expenses
             InitializeInvoice();
         }
 
-        protected void Page_Load(object sender, EventArgs e)
-        {
-        }
-
         private void InitializeInvoice(int? exesId = null)
         {
             if (month() != 0 && year() != 0 && estateId() != 0)
@@ -150,7 +146,7 @@ namespace Admin.Expenses
 
             if (isExpensePerIndex && estateExpense.Estates.Tenants.Count() > 0)
             {
-                var message = ExpensePercentageFilledInMessage(estateExpense);
+                var message = EstateExpensesManager.ExpensePercentageFilledInMessage(estateExpense);
                 var col5Literal = new Literal { Text = message };
                 col5.Controls.Add(col5Literal);
                 if (!message.Contains("<b>0</b> cheltuieli adăugate din <b>0</b"))
@@ -196,7 +192,7 @@ namespace Admin.Expenses
             };
 
 
-            string percentage = GetPercentage(estateExpense);
+            string percentage = EstateExpensesManager.GetPercentageAsString(estateExpense);
 
             Button btnRedistibuteRemainingExpense = new Button
             {
@@ -223,7 +219,7 @@ namespace Admin.Expenses
             {
                 if (!estateExpense.RedistributeType.HasValue)
                 {
-                    var percentage = GetPercentage(estateExpense);
+                    var percentage = EstateExpensesManager.GetPercentageAsString(estateExpense);
                     if (percentage == "100")
                     {
                         tb3.Text = RedistributionManager.RedistributeValuePerIndexAsString(estateExpense);
@@ -349,7 +345,7 @@ namespace Admin.Expenses
             var col0 = new Panel();
             Literal literal0 = new Literal
             {
-                Text = statusOfInvoices(estateExpense, isExpensePerIndex)
+                Text = EstateExpensesManager.StatusOfInvoices(estateExpense, isExpensePerIndex)
             };
             col0.Controls.Add(literal0);
             col0.CssClass = "col-md-1 col-sm-2 col-xs-6";
@@ -393,157 +389,6 @@ namespace Admin.Expenses
             headerPanel.Controls.Add(headerCol7);
             invoiceMain.Controls.Add(headerPanel);
         }
-
-        private static string ExpensePercentageFilledIn(EstateExpenses estateExpense, int tenantsWithCounters)
-        {
-            var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
-            var percentage = (((decimal)addedExpenses / (decimal)tenantsWithCounters) * 100).ToString("0.##");
-
-            return percentage;
-        }
-
-        private static string ExpensePercentageFilledInMessage(EstateExpenses estateExpense)
-        {
-            var addedExpenses = estateExpense.TenantExpenses.Count(te => te.IndexNew.HasValue);
-            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
-
-            return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + tenantsWithCountersOfThatExpense + "</b> ";
-        }
-
-        private static int GetTenantsWithCountersOfThatExpense(EstateExpenses estateExpense)
-        {
-            int tenantsWithCountersOfThatExpense = 0;
-            List<Counters> allcountersOfExpense = CountersManager.GetAllByExpenseType(estateExpense.Estates.Id, estateExpense.Expenses.Id);
-            foreach (var tenant in estateExpense.Estates.Tenants)
-            {
-                if (allcountersOfExpense.Select(c => c.Id).Intersect(tenant.ApartmentCounters.Select(ac => ac.Id_Counters)).Any())
-                {
-                    tenantsWithCountersOfThatExpense++;
-                }
-            }
-            return tenantsWithCountersOfThatExpense;
-        }
-
-        private string statusOfInvoices(EstateExpenses estateExpense, bool isExpensePerIndex)
-        {
-            string result = string.Empty;
-            var redistributeValue = RedistributionManager.CalculateRedistributeValueAsString(estateExpense.Id);
-            var percentage = string.Empty;
-
-            if (isExpensePerIndex)
-            {
-                percentage = GetPercentage(estateExpense);
-            }
-
-            if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
-            {
-                result = statusOfInvoicesForSplit(estateExpense, result, redistributeValue, percentage);
-            }
-            else
-            {
-                result = statusOfInvoicesForNoSplit(result, redistributeValue, percentage, estateExpense);
-            }
-
-            return result;
-        }
-
-        private static string GetPercentage(EstateExpenses estateExpense)
-        {
-            string percentage = string.Empty;
-
-            int tenantsWithCountersOfThatExpense = GetTenantsWithCountersOfThatExpense(estateExpense);
-
-            if (tenantsWithCountersOfThatExpense > 0)
-            {
-                percentage = ExpensePercentageFilledIn(estateExpense, tenantsWithCountersOfThatExpense);
-            }
-            else
-            {
-                percentage = "100";
-            }
-
-            return percentage;
-        }
-
-        #region statusOfinvoiceFor Split -NoSplit
-
-        private static string statusOfInvoicesForSplit(EstateExpenses estateExpense, string result, string redistributeValue, string percentage)
-        {
-            if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
-            {
-                if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count
-                    && (string.IsNullOrEmpty(percentage) || percentage == "100") && (estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00"))
-                {
-                    result = "<i class='fa fa-check'></i> 100%";
-                }
-                else if ((estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count) &&
-                    percentage != "100")
-                {
-                    result = "Adaugă facturile, cheltuielile individuale! 0%";
-                }
-                else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
-                {
-                    result = "Cheltuieli neadăugate! 20%";
-                }
-                else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count != estateExpense.Estates.StairCases.Count)
-                {
-                    result = "Facturi neadăugate! 50%";
-                }
-                else if (!string.IsNullOrEmpty(redistributeValue))
-                {
-                    result = "Redistribuie cheltuiala! 80%";
-                }
-            }
-            else
-            {
-                if ((estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count) &&
-                    (estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00"))
-                {
-                    result = "<i class='fa fa-check'></i> 100%";
-                }
-                else if (estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count == estateExpense.Estates.StairCases.Count)
-                {
-                    result = "Facturi neadăugate! 50%";
-                }
-                else if (!estateExpense.RedistributeType.HasValue || (string.IsNullOrEmpty(redistributeValue)) || redistributeValue == "0,00")
-                {
-                    result = "Redistribuie cheltuiala! 80%";
-                }
-            }
-
-            return result;
-        }
-
-        private static string statusOfInvoicesForNoSplit(string result, string redistributeValue, string percentage, EstateExpenses estateExpense)
-        {
-            if (estateExpense != null && estateExpense.Invoices.All(i => i.Value.HasValue) && estateExpense.Invoices.Count > 0 && (string.IsNullOrEmpty(percentage) || percentage == "100") &&
-                (estateExpense.RedistributeType.HasValue || string.IsNullOrEmpty(redistributeValue) || redistributeValue == "0,00"))
-            {
-                result = "<i class='fa fa-check'></i> 100%";
-            }
-            else if (!estateExpense.RedistributeType.HasValue && estateExpense.Invoices.Any(i => !i.Value.HasValue) && percentage == "0")
-            {
-                result = "Adaugă factura, cheltuielile! 0%";
-            }
-            else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
-            {
-                result = "Cheltuieli neadăugate! 20%";
-            }
-            else if (estateExpense.Invoices.Any(i => !i.Value.HasValue) || estateExpense.Invoices.Count == 0)
-            {
-                result = "Facturi neadăugate! 50%";
-            }
-            else if (!estateExpense.RedistributeType.HasValue)
-            {
-                result = "Redistribuie cheltuiala! 80%";
-            }
-
-            return result;
-        }
-
-        #endregion
-
-
 
         public void ClickablePanel1_Click(object sender, EventArgs e)
         {
@@ -652,6 +497,16 @@ namespace Admin.Expenses
         protected void lblExpenseMonthlyList_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Reports/Monthly.aspx?year=" + year() + "&month=" + month());
+        }
+
+        protected void btnCloseMonth_Click(object sender, EventArgs e)
+        {
+            bool canBeClosed =  EstateExpensesManager.CanCloseMonth(Association.Id, year(), month());
+
+            if (canBeClosed)
+            {
+                EstateExpensesManager.CloseMonth(Association.Id, year(), month());
+            }
         }
     }
 }

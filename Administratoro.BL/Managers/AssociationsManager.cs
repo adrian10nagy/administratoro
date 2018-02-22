@@ -51,6 +51,30 @@ namespace Administratoro.BL.Managers
             return GetContext(true).Estates.FirstOrDefault(e => e.Id == estateExpense.Id_Estate);
         }
 
+        public static int GetNrOfApartments(int associationId)
+        {
+            var result = 0;
+            var association = GetById(associationId);
+            if (associationId != null)
+            {
+                result = association.Tenants.Count();
+            }
+
+            return result;
+        }
+
+        public static int GetNrOfApartments(int associationId, int? stairCaseId)
+        {
+            var result = 0;
+            var association = GetById(associationId);
+            if (association != null)
+            {
+                result = association.Tenants.Where(t => t.Id_StairCase == stairCaseId).Count();
+            }
+
+            return result;
+        }
+
         public static void UpdateStairs(Estates es, bool hasStairs)
         {
             Estates estate = new Estates();
@@ -84,6 +108,20 @@ namespace Administratoro.BL.Managers
                 estate.HasStaircase = association.HasStaircase;
                 estate.Name = association.Name;
 
+                GetContext().Entry(estate).CurrentValues.SetValues(estate);
+
+                GetContext().SaveChanges();
+            }
+        }
+
+        public static void UpdateRoundUpColumn(Estates association, bool hasRoundCoulmn)
+        {
+            Estates estate = new Estates();
+            estate = GetContext().Estates.First(b => b.Id == association.Id);
+
+            if (estate != null)
+            {
+                estate.HasRoundUpColumn = hasRoundCoulmn;
                 GetContext().Entry(estate).CurrentValues.SetValues(estate);
 
                 GetContext().SaveChanges();

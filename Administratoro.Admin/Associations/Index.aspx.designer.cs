@@ -112,6 +112,15 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.Button btnEstateEqualIndiviza;
         
         /// <summary>
+        /// rbHasRoundup control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList rbHasRoundup;
+        
+        /// <summary>
         /// estateStairs control.
         /// </summary>
         /// <remarks>
@@ -202,15 +211,6 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.DropDownList drpEstateCounterTypeNew;
         
         /// <summary>
-        /// txtEstateCounterValueNew control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateCounterValueNew;
-        
-        /// <summary>
         /// drpEstateStairs control.
         /// </summary>
         /// <remarks>
@@ -218,6 +218,15 @@ namespace Admin.Associations {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList drpEstateStairs;
+        
+        /// <summary>
+        /// txtEstateCounterValueNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtEstateCounterValueNew;
         
         /// <summary>
         /// btnEstateCountersNew control.

@@ -48,8 +48,8 @@ namespace Admin.Associations
             if (!Page.IsPostBack)
             {
                 estateStairs.SelectedIndex = Association.HasStaircase ? 1 : 0;
+                rbHasRoundup.SelectedIndex = Association.HasRoundUpColumn.HasValue && Association.HasRoundUpColumn.Value ? 1 : 0;
             }
-
         }
 
         private void InitializeStairs2()
@@ -127,7 +127,7 @@ namespace Admin.Associations
             Session[SessionConstants.SelectedAssociation] = Association;
             Response.Redirect(Request.RawUrl);
         }
-        
+
         protected void btnEstateCountersNew_Click(object sender, EventArgs e)
         {
             if (!newCounter.Visible)
@@ -291,14 +291,14 @@ namespace Admin.Associations
                 {
                     Value = "",
                     Text = "Contor pe bloc"
-                }); 
+                });
                 foreach (var stairCase in Association.StairCases)
                 {
-                    ddlStairCase.Items.Add(new ListItem 
+                    ddlStairCase.Items.Add(new ListItem
                     {
                         Value = stairCase.Id.ToString(),
                         Text = stairCase.Nume
-                    });    
+                    });
                 }
                 ddlStairCase.DataBind();
 
@@ -559,5 +559,13 @@ namespace Admin.Associations
             }
         }
 
+        protected void rbHasRoundup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AssociationsManager.UpdateRoundUpColumn(Association, rbHasRoundup.SelectedIndex == 1);
+
+            Association.HasRoundUpColumn = rbHasRoundup.SelectedIndex == 1;
+            Session[SessionConstants.SelectedAssociation] = Association;
+            Response.Redirect(Request.RawUrl);
+        }
     }
 }

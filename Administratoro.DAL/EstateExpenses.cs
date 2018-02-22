@@ -31,6 +31,7 @@ namespace Administratoro.DAL
         public Nullable<decimal> PricePerExpenseUnit { get; set; }
         public Nullable<bool> SplitPerStairCase { get; set; }
         public Nullable<int> RedistributeType { get; set; }
+        public Nullable<bool> IsClosed { get; set; }
     
         public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
         public virtual Estates Estates { get; set; }

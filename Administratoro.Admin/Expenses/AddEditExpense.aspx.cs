@@ -208,8 +208,7 @@ namespace Admin.Expenses
                     var ee = EstateExpensesManager.GetById(idExpenseEstate);
                     if (ee != null)
                     {
-                        var tenants = ApartmentsManager.GetAllByEstateId(ee.Id_Estate);
-                        var allTenantDependents = tenants.Select(t => t.Dependents).Sum();
+                        var allTenantDependents = ApartmentsManager.GetDependentsNr(ee.Id_Estate);
                         var valuePerTenant = Math.Round(allvalue / allTenantDependents, 2).ToString();
                         txtExpensePerTenantEach.Text = valuePerTenant;
                         txtExpensePerTenantEachInfo.Text = string.Format(messageFormat, allTenantDependents, valuePerTenant, allvalue);

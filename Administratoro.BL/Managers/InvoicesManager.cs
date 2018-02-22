@@ -61,9 +61,16 @@ namespace Administratoro.BL.Managers
                 result.id_Redistributiontype = redistributionId;
                 GetContext().Entry(result).CurrentValues.SetValues(result);
 
-                TenantExpensesManager.UpdateTenantExpenses(invoice.EstateExpenses, value, stairCaseId);
-
+                if(invoice.Id_EstateExpense.HasValue)
+                {
+                    var ee = EstateExpensesManager.GetById(invoice.Id_EstateExpense.Value);
+                    if(ee!=null)
+                    {
+                        TenantExpensesManager.UpdateTenantExpenses(ee, value, stairCaseId);
+                    }
+                }
                 GetContext().SaveChanges();
+
             }
         }
 
