@@ -121,5 +121,33 @@ namespace Administratoro.BL.Managers
         {
             return GetContext().Tenants.Where(t => t.Estates.Id == estateId && t.Id_StairCase == stairCaseId).ToList();
         }
+
+        public static decimal? GetSumOfIndivizaForAllTenants(int associationId)
+        {
+            decimal? result = null;
+
+            var tenants = GetContext().Tenants.Where(t => t.id_Estate == associationId).ToList();
+
+            if (tenants != null && tenants.Count > 0)
+            {
+                result = tenants.Sum(s => s.CotaIndiviza);
+            }
+
+            return result;
+        }
+
+        public static decimal? GetSumOfIndivizaForAllTenants(int associationId, int? stairCase)
+        {
+            decimal? result = null;
+
+            var tenants = GetContext().Tenants.Where(t => t.id_Estate == associationId && t.Id_StairCase == stairCase).ToList();
+
+            if (tenants != null && tenants.Count > 0)
+            {
+                result = tenants.Sum(s => s.CotaIndiviza);
+            }
+
+            return result;
+        }
     }
 }

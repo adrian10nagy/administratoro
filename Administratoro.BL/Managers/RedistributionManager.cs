@@ -21,7 +21,7 @@ namespace Administratoro.BL.Managers
         public static decimal? RedistributeValueCotaIndiviza(Estates association, EstateExpenses estateExpense)
         {
             decimal? allInvoicesSum = estateExpense.Invoices.Where(i => i.Value.HasValue).Sum(i => i.Value);
-            decimal? sumOfIndiviza = TenantExpensesManager.GetSumOfIndivizaForExpense(estateExpense);
+            decimal? sumOfIndiviza = ApartmentsManager.GetSumOfIndivizaForAllTenants(estateExpense.Id_Estate);
             decimal? result = (sumOfIndiviza != null && association != null && allInvoicesSum.HasValue)
                 ? ((sumOfIndiviza.Value / association.Indiviza) * allInvoicesSum.Value)
                 : null;
@@ -29,10 +29,25 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
+        public static decimal? RedistributeValueCotaIndivizaForSpecificTenants(Tenants tenant, Invoices invoice, List<Tenants> tenants)
+        {
+            decimal? sumOfIndiviza = tenants.Sum(t => t.CotaIndiviza);
+            decimal? result = null;
+            if (invoice != null)
+            {
+                decimal? allInvoicesSum = invoice.Value;
+                result = (sumOfIndiviza != null && allInvoicesSum.HasValue && sumOfIndiviza.Value != 0)
+                ? ((allInvoicesSum.Value * tenant.CotaIndiviza) / sumOfIndiviza.Value)
+                : null;
+            }
+            
+            return result;
+        }
+
         public static decimal? RedistributeValueCotaIndiviza(Estates association, EstateExpenses estateExpense, int? stairCaseId)
         {
             decimal? allInvoicesSum = estateExpense.Invoices.Where(i => i.Value.HasValue && i.Id_StairCase == stairCaseId).Sum(i => i.Value);
-            decimal? sumOfIndiviza = TenantExpensesManager.GetSumOfIndivizaForExpense(estateExpense, stairCaseId);
+            decimal? sumOfIndiviza = ApartmentsManager.GetSumOfIndivizaForAllTenants(estateExpense.Id_Estate, stairCaseId);
             decimal? result = (sumOfIndiviza != null && association != null && allInvoicesSum.HasValue)
                 ? ((sumOfIndiviza.Value / association.Indiviza) * allInvoicesSum.Value)
                 : null;
@@ -127,10 +142,15 @@ namespace Administratoro.BL.Managers
             }
             else if (estateExpense.RedistributeType.Value == (int)RedistributionType.PerConsumption)
             {
-                result = null;
+                result = RedistributionManager.RedistributeValuePerConsumption(estateExpense, tenant, te);
             }
 
             return result;
+        }
+
+        private static decimal? RedistributeValuePerConsumption(EstateExpenses estateExpense, Tenants tenant, TenantExpenses te)
+        {
+            return null;
         }
 
         private static decimal? RedistributeValuePerTenants(EstateExpenses estateExpense, Tenants tenant, TenantExpenses te)

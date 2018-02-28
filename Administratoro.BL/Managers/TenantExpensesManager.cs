@@ -64,34 +64,6 @@ namespace Administratoro.BL.Managers
             return GetContext().TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId && te.Tenants.Id_StairCase == stairCase).Sum(s => s.IndexNew - s.IndexOld);
         }
 
-        public static decimal? GetSumOfIndivizaForExpense(EstateExpenses estateExpense)
-        {
-            decimal? result = null;
-
-            var tenants = GetContext().Tenants.Where(t => t.id_Estate == estateExpense.Id_Estate).ToList();
-
-            if (tenants != null && tenants.Count > 0)
-            {
-                result = tenants.Sum(s => s.CotaIndiviza);
-            }
-
-            return result;
-        }
-
-        public static decimal? GetSumOfIndivizaForExpense(EstateExpenses estateExpense, int? stairCase)
-        {
-            decimal? result = null;
-
-            var tenants = GetContext().Tenants.Where(t => t.id_Estate == estateExpense.Id_Estate && t.Id_StairCase == stairCase).ToList();
-
-            if (tenants != null && tenants.Count > 0)
-            {
-                result = tenants.Sum(s => s.CotaIndiviza);
-            }
-
-            return result;
-        }
-
         public static void AddTenantExpense(int apartmentid, int expenseEstateId, decimal expenseValue)
         {
             TenantExpenses te = new TenantExpenses
@@ -283,7 +255,7 @@ namespace Administratoro.BL.Managers
         public static void UpdatePerIndexValue(TenantExpenses tenantExpense, decimal? pricePerExpenseUnit)
         {
             TenantExpenses result = new TenantExpenses();
-            result = GetContext().TenantExpenses.First(b => b.Id == tenantExpense.Id);
+            result = GetContext(true).TenantExpenses.First(b => b.Id == tenantExpense.Id);
 
             if (result != null)
             {
@@ -302,14 +274,14 @@ namespace Administratoro.BL.Managers
         }
 
 
-        public static void ConfigurePerIndex(int esexId, EstateExpenses ee, Administratoro.DAL.Tenants tenant)
+        public static void ConfigurePerIndex(EstateExpenses ee, Administratoro.DAL.Tenants tenant)
         {
-            var tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(esexId, tenant.Id);
+            var tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(ee.Id, tenant.Id);
 
             if (tenantExpense == null)
             {
-                TenantExpensesManager.AddDefaultTenantExpense(tenant.Id, ee.Year, ee.Month, esexId);
-                tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(esexId, tenant.Id);
+                TenantExpensesManager.AddDefaultTenantExpense(tenant.Id, ee.Year, ee.Month, ee.Id);
+                tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(ee.Id, tenant.Id);
             }
 
             if (ee != null && ee.Id_ExpenseType == (int)ExpenseType.PerIndex)
@@ -333,7 +305,7 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void UpdateNewIndexAndValue(int tenantExpenseId, int idExpenseEstate, decimal? newIndex)
+        public static void UpdateNewIndexAndValue(int tenantExpenseId, int idExpenseEstate, decimal? newIndex, bool shouldUpdateOld, decimal? oldIndex = null)
         {
             TenantExpenses tenantExpense = TenantExpensesManager.GetById(tenantExpenseId);
             EstateExpenses estateExpenses = EstateExpensesManager.GetById(idExpenseEstate);
@@ -341,6 +313,11 @@ namespace Administratoro.BL.Managers
             if (tenantExpense != null && estateExpenses != null)
             {
                 tenantExpense.IndexNew = newIndex;
+                if (shouldUpdateOld)
+                {
+                    tenantExpense.IndexOld = oldIndex;
+                }
+
                 if (tenantExpense.IndexOld != null && newIndex.HasValue && estateExpenses.PricePerExpenseUnit.HasValue)
                 {
                     tenantExpense.Value = (tenantExpense.IndexNew - tenantExpense.IndexOld) * estateExpenses.PricePerExpenseUnit;
@@ -352,6 +329,16 @@ namespace Administratoro.BL.Managers
 
                 GetContext().Entry(tenantExpense).CurrentValues.SetValues(tenantExpense);
                 GetContext().SaveChanges();
+
+                //update previeous month old index
+                ////todo- only if the month is not closed
+                var lastMonthIndexTenantExpense = TenantExpensesManager.GetForIndexExpensPreviousMonthTenantExpense(estateExpenses.Id, tenantExpense.Id_Tenant);
+                if (lastMonthIndexTenantExpense != null && lastMonthIndexTenantExpense.IndexNew != tenantExpense.IndexOld)
+                {
+                    lastMonthIndexTenantExpense.IndexNew = tenantExpense.IndexOld;
+                    GetContext().Entry(lastMonthIndexTenantExpense).CurrentValues.SetValues(lastMonthIndexTenantExpense);
+                    GetContext().SaveChanges();
+                }
             }
         }
 
@@ -714,7 +701,8 @@ namespace Administratoro.BL.Managers
             return dt;
         }
 
-        private static void RaportPopulateExpensesList(Dictionary<int, Expense> raportDictionary, Dictionary<Expense, decimal> totalCol, List<ExpenseReport> expenseReportList, List<EstateExpenses> estateExpenses, List<Tenants> tenants,
+        private static void RaportPopulateExpensesList(Dictionary<int, Expense> raportDictionary, Dictionary<Expense, decimal> totalCol,
+            List<ExpenseReport> expenseReportList, List<EstateExpenses> estateExpenses, List<Tenants> tenants,
             Estates association, List<Invoices> invoices, out bool hasDiverse)
         {
             hasDiverse = false;
@@ -730,7 +718,7 @@ namespace Administratoro.BL.Managers
                 int counter = 0;
                 foreach (EstateExpenses estateExpense in estateExpenses)
                 {
-                    decimal? redistributionValue = null;
+                    decimal? tenantExpenseRedistributionValue = null;
                     decimal? rowValue = null;
                     raportDictionary.Add(counter, (Expense)estateExpense.Expenses.Id);
                     counter++;
@@ -743,9 +731,9 @@ namespace Administratoro.BL.Managers
                     TenantExpenses te = TenantExpensesManager.GetByExpenseYearAndMonth(tenant.Id, estateExpense.Id);
                     if (estateExpense.RedistributeType.HasValue)
                     {
-                        redistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(estateExpense.Id, tenant, te);
+                        tenantExpenseRedistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(estateExpense.Id, tenant, te);
                     }
-                    rowValue = CalculateRowValue(te, redistributionValue);
+                    rowValue = CalculateRowValue(te, tenantExpenseRedistributionValue);
 
                     switch ((Expense)estateExpense.Expenses.Id)
                     {
@@ -799,7 +787,7 @@ namespace Administratoro.BL.Managers
 
                 raportDictionary.Add(counter, Expense.Diverse);
 
-                hasDiverse = RaportPopulateExpensesListDiverse(tenant, invoices, association.Tenants.ToList(), totalCol, expenseReport) || hasDiverse;
+                hasDiverse = RaportPopulateExpensesListDiverse(tenant, invoices, association, totalCol, expenseReport) || hasDiverse;
 
                 expenseReportList.Add(expenseReport);
             }
@@ -822,9 +810,11 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        private static bool RaportPopulateExpensesListDiverse(Tenants tenant, List<Invoices> invoices, List<Tenants> tenants, Dictionary<Expense, decimal> totalCol, ExpenseReport expenseReport)
+        private static bool RaportPopulateExpensesListDiverse(Tenants tenant, List<Invoices> invoices, Estates association, 
+            Dictionary<Expense, decimal> totalCol, ExpenseReport expenseReport)
         {
             bool hasDiverse = false;
+            List<Tenants> allAssociationTenants = association.Tenants.ToList();
 
             decimal? result = null;
             foreach (Invoices invoice in invoices)
@@ -839,7 +829,7 @@ namespace Administratoro.BL.Managers
                     int? nrOfDependents = null;
                     if (invoice.Id_StairCase.HasValue)
                     {
-                        nrOfDependents = tenants.Where(t => t.Id_StairCase == invoice.Id_StairCase).Select(i => i.Dependents).Sum();
+                        nrOfDependents = allAssociationTenants.Where(t => t.Id_StairCase == invoice.Id_StairCase).Select(i => i.Dependents).Sum();
                     }
 
                     decimal? valueToAdd = null;
@@ -852,7 +842,7 @@ namespace Administratoro.BL.Managers
                     }
                     else
                     {
-                        var allDependents = tenants.Select(t => t.Dependents).Sum();
+                        var allDependents = allAssociationTenants.Select(t => t.Dependents).Sum();
 
                         if (allDependents != 0)
                         {
@@ -862,10 +852,6 @@ namespace Administratoro.BL.Managers
 
                     result = result.HasValue ? (result + valueToAdd) : valueToAdd;
 
-                }
-                else if (invoice.id_Redistributiontype == (int)RedistributionType.PerConsumption)
-                {
-                    // to do
                 }
                 else if (invoice.id_Redistributiontype == (int)RedistributionType.PerApartament)
                 {
@@ -879,7 +865,7 @@ namespace Administratoro.BL.Managers
                         continue;
                     }
 
-                    if (tenants.Count == 0)
+                    if (allAssociationTenants.Count == 0)
                     {
                         continue;
                     }
@@ -887,18 +873,43 @@ namespace Administratoro.BL.Managers
                     int? nrApartments = null;
                     if (invoice.Id_StairCase.HasValue)
                     {
-                        nrApartments = tenants.Where(t => t.Id_StairCase == invoice.Id_StairCase.Value).Count();
+                        nrApartments = allAssociationTenants.Where(t => t.Id_StairCase == invoice.Id_StairCase.Value).Count();
                     }
                     else
                     {
-                        nrApartments = tenants.Count();
+                        nrApartments = allAssociationTenants.Count();
                     }
 
                     decimal? valueToAdd = invoice.Value.Value / nrApartments;
                     result = result.HasValue ? (result + valueToAdd) : valueToAdd;
                 }
-            }
+                else if(invoice.id_Redistributiontype == (int)RedistributionType.PerCotaIndiviza)
+                {
+                    if (invoice.Id_StairCase.HasValue && !tenant.Id_StairCase.HasValue)
+                    {
+                        continue;
+                    }
 
+                    if (invoice.Id_StairCase.HasValue && tenant.Id_StairCase.HasValue && tenant.Id_StairCase.Value != invoice.Id_StairCase.Value)
+                    {
+                        continue;
+                    }
+                    var tenants = allAssociationTenants;
+                    if(invoice.Id_StairCase.HasValue)
+                    {
+                        tenants = allAssociationTenants.Where(t => t.Id_StairCase == invoice.Id_StairCase).ToList();
+                    }
+
+                    if (tenants.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var valueToAdd = RedistributionManager.RedistributeValueCotaIndivizaForSpecificTenants(tenant, invoice, tenants);
+                    
+                    result = result.HasValue ? (result + valueToAdd) : valueToAdd;
+                }
+            }
 
             if (result.HasValue)
             {
@@ -989,10 +1000,10 @@ namespace Administratoro.BL.Managers
                 row.Add(string.Empty);
                 row.Add(string.Empty);
                 row.Add(generalSum.ToString());
-                
+
                 if (hasRoundUpColumn)
                 {
-                    var value = (DecimalExtensions.RoundUp((double)generalSum,0));
+                    var value = (DecimalExtensions.RoundUp((double)generalSum, 0));
                     row.Add(value.ToString());
                 }
 

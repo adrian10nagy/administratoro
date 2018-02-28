@@ -36,7 +36,7 @@
         <asp:GridView ID="gvExpensesPerIndex" runat="server" AutoGenerateColumns="true" AutoGenerateEditButton="true"
             OnRowEditing="gvExpensesPerIndex_RowEditing" OnRowUpdating="gvExpensesPerIndex_RowUpdating"
             OnRowCancelingEdit="gvExpensesPerIndex_RowCancelingEdit" OnRowDataBound="gvExpensesPerIndex_RowDataBound"
-            DataKeyNames="Id, Apartament, Index vechi, Valoare" CssClass="table table-striped table-bordered dt-responsive nowrap">
+            CssClass="table table-striped table-bordered dt-responsive nowrap">
         </asp:GridView>
     </div>
 </asp:Content>

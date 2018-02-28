@@ -11,6 +11,7 @@ namespace Administratoro.BL.Constants
         Unknown = 0,
         PerApartament = 1,
         PerTenants = 2,
-        PerConsumption = 3
+        PerConsumption = 3,
+        PerCotaIndiviza = 4
     }
 }

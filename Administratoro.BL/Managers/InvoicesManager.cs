@@ -206,8 +206,10 @@ namespace Administratoro.BL.Managers
         public static List<Invoices> GetDiverseByAssociationYearMonth(int association, int year, int month)
         {
             var result = new List<Invoices>();
+            int divereId = 24;
 
-            var esExpense = GetContext(true).EstateExpenses.FirstOrDefault(ee=>ee.Id_Expense == 24 && ee.Id_Estate == association && ee.Year == year && ee.Month == month);
+            var esExpense = GetContext(true).EstateExpenses.FirstOrDefault(ee => ee.Id_Expense == divereId 
+                && ee.Id_Estate == association && ee.Year == year && ee.Month == month);
             if(esExpense != null)
             {
                 result = esExpense.Invoices.ToList();

@@ -77,7 +77,7 @@ namespace Admin.Expenses
             EstateExpenses ee = EstateExpensesManager.GetById(esexId);
             foreach (var tenant in tenants)
             {
-                TenantExpensesManager.ConfigurePerIndex(esexId, ee, tenant);
+                TenantExpensesManager.ConfigurePerIndex(ee, tenant);
 
                 string query = @"
                     Select 
@@ -127,7 +127,7 @@ namespace Admin.Expenses
 		                        INNER JOIN EstateExpenses as EE 
 		                        on  EE.Id_Expense = Expense.Id 
 		                        WHERE EE.Id_Estate = 1 and EE.isDefault = 0
-                                AND EE.WasDisabled = 0 and EE.Month = "+ estateExpense.Month + @" and EE.Year = " + estateExpense.Year + @"
+                                AND EE.WasDisabled = 0 and EE.Month = " + estateExpense.Month + @" and EE.Year = " + estateExpense.Year + @"
                                 AND EE.Id  = " + esexId +
                                 @"
 		                        ) as Expense
@@ -258,23 +258,41 @@ namespace Admin.Expenses
                 int tenantExpenseId;
                 if (int.TryParse(gvExpensesPerIndex.DataKeys[e.RowIndex].Value.ToString(), out tenantExpenseId))
                 {
-                    foreach (TableCell cell in row.Cells)
+                    if (row.Cells.Count > 5 && 
+                        row.Cells[4].Controls.Count > 0 && row.Cells[4].Controls[0] is TextBox &&
+                        row.Cells[3].Controls.Count > 0 && row.Cells[3].Controls[0] is TextBox)
                     {
-                        if (cell.Controls.Count > 0 && cell.Controls[0] is TextBox)
+                        var cellOld = row.Cells[3].Controls[0] as TextBox;
+                        var cellNew = row.Cells[4].Controls[0] as TextBox;
+
+                        decimal newIndexValue;
+                        decimal oldIndexValue;
+
+                        if (!string.IsNullOrEmpty(cellNew.Text) && decimal.TryParse(cellNew.Text, out newIndexValue) &&
+                            !string.IsNullOrEmpty(cellOld.Text) && decimal.TryParse(cellOld.Text, out oldIndexValue))
                         {
-                            var theCell = (TextBox)cell.Controls[0];
+                            decimal? newValue=newIndexValue;
+                            decimal? oldValue=oldIndexValue;
+                            TenantExpensesManager.UpdateNewIndexAndValue(tenantExpenseId, idExpenseEstate, newValue, true, oldValue);
+                        }
+                        else
+                        {
+                            TenantExpensesManager.UpdateNewIndexAndValue(tenantExpenseId, idExpenseEstate, null, true, null);
+                        }
+                    }
+                    else if (row.Cells.Count > 5 && row.Cells[5].Controls.Count > 0 && row.Cells[5].Controls[0] is TextBox)
+                    {
+                        var cellNew = row.Cells[5].Controls[0] as TextBox;
 
-                            decimal newIndexValue;
+                        decimal newIndexValue;
 
-                            if (string.IsNullOrEmpty(theCell.Text) || !decimal.TryParse(theCell.Text, out newIndexValue))
-                            {
-                                TenantExpensesManager.UpdateNewIndexAndValue(tenantExpenseId, idExpenseEstate, null);
-                            }
-                            else
-                            {
-                                TenantExpensesManager.UpdateNewIndexAndValue(tenantExpenseId, idExpenseEstate, newIndexValue);
-                            }
-
+                        if (string.IsNullOrEmpty(cellNew.Text) || !decimal.TryParse(cellNew.Text, out newIndexValue))
+                        {
+                            TenantExpensesManager.UpdateNewIndexAndValue(tenantExpenseId, idExpenseEstate, null, false);
+                        }
+                        else
+                        {
+                            TenantExpensesManager.UpdateNewIndexAndValue(tenantExpenseId, idExpenseEstate, newIndexValue, false);
                         }
                     }
                 }
@@ -293,6 +311,15 @@ namespace Admin.Expenses
 
         protected void gvExpensesPerIndex_RowDataBound(object sender, GridViewRowEventArgs e)
         {
+            if (true)
+            {
+                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare" };
+            }
+            else
+            {
+                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare", "Index vechi" };
+            }
+
             e.Row.Cells[1].Visible = false;
         }
 

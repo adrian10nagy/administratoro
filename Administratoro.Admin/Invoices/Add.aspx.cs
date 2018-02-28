@@ -196,7 +196,8 @@ namespace Admin.Invoices
                             // get value
                             decimal? theValue = null;
                             decimal tempValue;
-                            if (decimal.TryParse(theInvoiceValue.Text, out tempValue))
+                            var valueAltered = theInvoiceValue.Text.Replace(".", ",");
+                            if (decimal.TryParse(valueAltered, out tempValue))
                             {
                                 theValue = tempValue;
                             }
@@ -288,7 +289,8 @@ namespace Admin.Invoices
 
                                 decimal? theValue = null;
                                 decimal tempValue;
-                                if (decimal.TryParse(theInvoiceValue.Text, out tempValue))
+                                var valueAltered = theInvoiceValue.Text.Replace(".", ",");
+                                if (decimal.TryParse(valueAltered, out tempValue))
                                 {
                                     theValue = tempValue;
                                 }
@@ -324,7 +326,8 @@ namespace Admin.Invoices
                         decimal value;
                         if (!string.IsNullOrEmpty(theControl.Text))
                         {
-                            if (decimal.TryParse(theControl.Text, out value))
+                            var valueAltered = theControl.Text.Replace(".", ",");
+                            if (decimal.TryParse(valueAltered, out value))
                             {
                                 upladValue = value;
                             }
@@ -439,7 +442,8 @@ namespace Admin.Invoices
 
             DropDownList drpStairCase = new DropDownList
             {
-                CssClass = "form-control"
+                CssClass = "form-control",
+                ID = "drpStairCase-1"
             };
 
             drpStairCase.Items.Add(new ListItem
@@ -457,7 +461,6 @@ namespace Admin.Invoices
                     Value = stairCase.Id.ToString()
                 });
             }
-            drpStairCase.ID = "scarCaseID";
 
             panel5.Controls.Add(drpStairCase);
 
@@ -468,7 +471,8 @@ namespace Admin.Invoices
 
             DropDownList drpExpenseredistribute = new DropDownList
             {
-                CssClass = "form-control"
+                CssClass = "form-control",
+                ID = "drpExpenseredistribute-1"
             };
 
             List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypesForDiverse();
@@ -489,7 +493,6 @@ namespace Admin.Invoices
             panelMain.Controls.Add(panel6);
 
             pnInvoiceValues.Controls.Add(panelMain);
-
         }
 
         private void InitializeValueFieldAddInvoices(List<Administratoro.DAL.Invoices> invoices, bool isStairCaseEnabled, bool shouldSeeRedistribute, bool isDiverse)
@@ -537,7 +540,7 @@ namespace Admin.Invoices
                     CssClass = "form-control",
                     Enabled = isStairCaseEnabled
                 };
-                if (invoice.StairCases != null)
+                if (invoice.StairCases != null && !isDiverse)
                 {
                     drpStairCase.Items.Add(new ListItem
                     {
