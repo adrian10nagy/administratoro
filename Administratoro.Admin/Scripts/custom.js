@@ -277,3 +277,14 @@ if (typeof NProgress != 'undefined') {
         NProgress.done();
     });
 }
+
+$(document).ready(function () {
+
+    var options = $.extend({}, // empty object    
+        $.datepicker.regional['ro'], {
+            dateFormat: "dd/mm/yy"
+        } // your custom options    
+    );
+
+    $(".datepicker").datepicker(options);
+});

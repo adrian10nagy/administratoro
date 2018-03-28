@@ -50,13 +50,13 @@ namespace Admin
             }
 
             drpMainEstate.Items.Clear();
-            foreach (var item in estates)
+            foreach (var itemEstate in estates)
             {
                 drpMainEstate.Items.Add(new ListItem
                 {
-                    Text = item.Name,
-                    Value = item.Id.ToString(),
-                    Selected = (item.Id == estate.Id)
+                    Text = itemEstate.Name,
+                    Value = itemEstate.Id.ToString(),
+                    Selected = (itemEstate.Id == estate.Id)
                 });
             }
 
@@ -80,6 +80,7 @@ namespace Admin
                 if (existingEstate != null)
                 {
                     Session[SessionConstants.SelectedAssociation] = existingEstate;
+                    Response.Redirect("~/");
                 }
                 else
                 {

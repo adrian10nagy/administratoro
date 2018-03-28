@@ -103,6 +103,15 @@ namespace Admin.Tenants {
         protected global::System.Web.UI.HtmlControls.HtmlInputText userPhone;
         
         /// <summary>
+        /// userHeatHelp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList userHeatHelp;
+        
+        /// <summary>
         /// userExtraInfo control.
         /// </summary>
         /// <remarks>

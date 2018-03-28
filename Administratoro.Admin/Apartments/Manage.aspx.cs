@@ -36,7 +36,7 @@ namespace Admin.Tenants
             var sessionUser = Session[SessionConstants.LoginUser] as Tenants;
             var estate = Session[SessionConstants.SelectedAssociation] as Estates;
 
-            var apartments = ApartmentsManager.GetAllByEstateId(estate.Id);
+            var apartments = ApartmentsManager.GetAllByAssociationId(estate.Id);
 
             foreach (Tenants ap in apartments)
             {

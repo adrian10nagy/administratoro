@@ -17,18 +17,18 @@ namespace Admin.Reports
         {
             var estate = (Estates)Session[SessionConstants.SelectedAssociation];
             var defaultCssClass = "col-md-2 col-sm-3 col-xs-12";
-            List<YearMonth> yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByEstateId(estate.Id);
+            List<YearMonth> yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
             if (yearMonths.Count != 0)
             {
-                foreach (var item in yearMonths)
+                foreach (var yearMonth in yearMonths)
                 {
                     var month = new Panel
                     {
                         CssClass = defaultCssClass
                     };
-                    var link = new LinkButton { Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Month) + " " + item.Year.ToString() };
+                    var link = new LinkButton { Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(yearMonth.Month) + " " + yearMonth.Year.ToString() };
                     link.Click += link_Click;
-                    link.CommandArgument = item.Year.ToString() + item.Month.ToString();
+                    link.CommandArgument = yearMonth.Year.ToString() + yearMonth.Month.ToString();
                     link.CssClass = "monthsMainItem";
                     month.Controls.Add(link);
                     monthsMain.Controls.Add(month);

@@ -79,7 +79,7 @@ namespace Admin.Config
 
                     var expenses = ExpensesManager.GetAllExpenses();
 
-                    foreach (var item in expenses)
+                    foreach (var expense in expenses)
                     {
                         TableRow row = new TableRow();
 
@@ -87,46 +87,57 @@ namespace Admin.Config
                         TableCell expenseExists = new TableCell();
                         CheckBox esexExists = new CheckBox();
                         esexExists.AutoPostBack = false;
-                        esexExists.ID = String.Format("esateExpense{0}", item.Id);
-                        esexExists.Checked = isExpenseSelected(item, ee, _year, month);
+                        esexExists.ID = String.Format("esateExpense{0}", expense.Id);
+                        esexExists.Checked = isExpenseSelected(expense, ee, _year, month);
                         expenseExists.Controls.Add(esexExists);
                         row.Cells.Add(expenseExists);
 
                         // add expense name
                         TableCell expenseName = new TableCell
                         {
-                            Text = item.Name
+                            Text = expense.Name
                         };
                         row.Cells.Add(expenseName);
 
                         // add expense type
                         TableCell expenseType = new TableCell();
+                        EstateExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == expense.Id && s.Month == month && s.Year == _year && s.Id_Estate == estate.Id);
+
                         DropDownList dp = new DropDownList();
-                        EstateExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == item.Id && s.Month == month && s.Year == _year && s.Id_Estate == estate.Id);
-
-                        var selected1 = isDplExpenseTypesSelected(esex, ExpenseType.PerIndex);
-                        dp.Items.Add(new ListItem
+                        if (expense.Id != (int)Expense.AjutorÎncălzire)
                         {
-                            Value = "1",
-                            Text = "Individuală prin indecși",
-                            Selected = selected1
-                        });
+                            var selected1 = isDplExpenseTypesSelected(esex, ExpenseType.PerIndex);
+                            dp.Items.Add(new ListItem
+                            {
+                                Value = "1",
+                                Text = "Individuală prin indecși",
+                                Selected = selected1
+                            });
 
-                        var selected2 = isDplExpenseTypesSelected(esex, ExpenseType.PerCotaIndiviza);
-                        dp.Items.Add(new ListItem
-                        {
-                            Value = "2",
-                            Text = "Cotă indiviză de proprietate",
-                            Selected = selected2
-                        });
+                            var selected2 = isDplExpenseTypesSelected(esex, ExpenseType.PerCotaIndiviza);
+                            dp.Items.Add(new ListItem
+                            {
+                                Value = "2",
+                                Text = "Cotă indiviză de proprietate",
+                                Selected = selected2
+                            });
 
-                        var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerTenants);
-                        dp.Items.Add(new ListItem
+                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerTenants);
+                            dp.Items.Add(new ListItem
+                            {
+                                Value = "3",
+                                Text = "Per număr locatari imobil",
+                                Selected = selected3
+                            });
+                        }
+                        else
                         {
-                            Value = "3",
-                            Text = "Per număr locatari imobil",
-                            Selected = selected3
-                        });
+                            dp.Items.Add(new ListItem
+                            {
+                                Value = "6",
+                                Text = "Individual",
+                            });
+                        }
                         expenseType.Controls.Add(dp);
                         row.Cells.Add(expenseType);
 
@@ -135,7 +146,7 @@ namespace Admin.Config
                             TableCell tcStairCase = new TableCell();
                             CheckBox stairCaseSplit = new CheckBox();
                             stairCaseSplit.AutoPostBack = false;
-                            stairCaseSplit.Checked = isStairCaseSplitSelected(item, ee, _year, month);
+                            stairCaseSplit.Checked = isStairCaseSplitSelected(expense, ee, _year, month);
                             tcStairCase.Controls.Add(stairCaseSplit);
                             row.Cells.Add(tcStairCase);
                         }
@@ -191,7 +202,7 @@ namespace Admin.Config
             var estate = (Estates)Session[SessionConstants.SelectedAssociation];
             if (estate != null)
             {
-                var yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByEstateId(estate.Id);
+                var yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
                 foreach (var ym in yearMonths)
                 {
                     drpExpenseMonth.Items.Add(new ListItem
@@ -300,7 +311,7 @@ namespace Admin.Config
                                     {
                                         if (ee == null)
                                         {
-                                            ee = EstateExpensesManager.GetEstateExpenses(estate.Id, expenseId, _year, _month);
+                                            ee = EstateExpensesManager.GetEstateExpense(estate.Id, expenseId, _year, _month);
                                         }
 
                                         if (ee != null && (ExpenseType)ee.ExpenseTypes.Id != selectedExpenseType)

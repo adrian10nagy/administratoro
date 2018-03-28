@@ -6,6 +6,7 @@ namespace Administratoro.BL.Constants
         Unknown = 0,
         PerIndex = 1,
         PerCotaIndiviza = 2,
-        PerTenants = 3
+        PerTenants = 3,
+        Individual = 6
     }
 }

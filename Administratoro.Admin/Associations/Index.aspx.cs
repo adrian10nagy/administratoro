@@ -37,7 +37,7 @@ namespace Admin.Associations
 
         private void InitializeCounters2()
         {
-            gvCounters.DataSource = Association.Counters;
+            gvCounters.DataSource = Association.Counters.OrderBy(ac=>ac.Id_Expense);
             gvCounters.DataBind();
         }
 

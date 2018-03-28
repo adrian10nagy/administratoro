@@ -53,6 +53,7 @@ namespace Admin.Tenants
                             btnSave.Text = "Actualizează datele proprietatății";
                             lblUserId.Text = Request["apartmentid"];
                             userStairCase.SelectedValue = (apartment.Id_StairCase != null) ? apartment.Id_StairCase.ToString() : null;
+                            userHeatHelp.SelectedValue = (apartment.HasHeatHelp.HasValue && apartment.HasHeatHelp.Value? "1" : "0");
                         }
                         else
                         {
@@ -183,12 +184,12 @@ namespace Admin.Tenants
                 userStairCase.Items.Add(defaultNull);
                 divStaircase.Visible = true;
 
-                foreach (var item in staircases)
+                foreach (var stairCase in staircases)
                 {
                     ListItem li = new ListItem
                     {
-                        Text = item.Nume,
-                        Value = item.Id.ToString()
+                        Text = stairCase.Nume,
+                        Value = stairCase.Id.ToString()
                     };
                     userStairCase.Items.Add(li);
                 }
@@ -215,7 +216,8 @@ namespace Admin.Tenants
                 CreatedDate = DateTime.Now,
                 id_Estate = Association.Id,
                 Password = "dasd",
-                Id_StairCase = userStairCase.SelectedValue.ToNullableInt()
+                Id_StairCase = userStairCase.SelectedValue.ToNullableInt(),
+                HasHeatHelp = userHeatHelp.SelectedIndex == 1
             };
 
             if (!string.IsNullOrEmpty(lblUserId.Text) && lblUserId.Text.ToNullableInt() != 0)
@@ -228,7 +230,6 @@ namespace Admin.Tenants
                 tenant = ApartmentsManager.Add(tenant);
                 lblStatus.Text = FlowMessages.TenantAddSuccess;
                 lblStatus.CssClass = "SuccessBox";
-                //CleanFields();
             }
 
             ProcessSaveCounters(tenant);
@@ -336,14 +337,6 @@ namespace Admin.Tenants
             }
 
             return isValid;
-        }
-
-        private void CleanFields()
-        {
-            userName.Value = string.Empty;
-            userDependents.Value = string.Empty;
-            userPhone.Value = string.Empty;
-            userEmail.Value = string.Empty;
         }
     }
 }

@@ -38,7 +38,7 @@
     <Property Name="Month" Type="int" Nullable="false" />
     <Property Name="Year" Type="int" Nullable="false" />
     <Property Name="WasDisabled" Type="bit" Nullable="false" />
-    <Property Name="PricePerExpenseUnit" Type="decimal" Precision="20" Scale="2" />
+    <Property Name="PricePerExpenseUnit" Type="decimal" Precision="24" Scale="6" />
     <Property Name="SplitPerStairCase" Type="bit" />
     <Property Name="RedistributeType" Type="int" />
     <Property Name="IsClosed" Type="bit" />
@@ -72,6 +72,7 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
     <Property Name="specialType" Type="bit" />
+    <Property Name="LegalType" Type="int" />
   </EntityType>
   <EntityType Name="ExpenseTypes">
     <Key>
@@ -87,16 +88,28 @@
     <Property Name="Id" Type="int" Nullable="false" />
     <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
   </EntityType>
+  <EntityType Name="InvoiceIndexes">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
+    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
+    <Property Name="Id_Invoice" Type="int" Nullable="false" />
+    <Property Name="Id_Counter" Type="int" />
+  </EntityType>
   <EntityType Name="Invoices">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Value" Type="decimal" Precision="20" Scale="2" />
+    <Property Name="Value" Type="decimal" Precision="24" Scale="4" />
     <Property Name="Id_EstateExpense" Type="int" />
     <Property Name="Id_StairCase" Type="int" />
     <Property Name="Description" Type="nvarchar" MaxLength="150" />
     <Property Name="id_Redistributiontype" Type="int" />
+    <Property Name="issueDate" Type="date" />
+    <Property Name="issueNumber" Type="nvarchar" MaxLength="50" />
   </EntityType>
   <EntityType Name="Localities">
     <Key>
@@ -172,11 +185,11 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Value" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="Value" Type="decimal" Precision="30" Scale="10" />
     <Property Name="Id_Tenant" Type="int" Nullable="false" />
     <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
-    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="0" />
-    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
+    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
   </EntityType>
   <EntityType Name="TenantPersons">
     <Key>
@@ -202,6 +215,7 @@
     <Property Name="CotaIndiviza" Type="decimal" Precision="14" Scale="4" />
     <Property Name="Number" Type="int" Nullable="false" />
     <Property Name="Id_StairCase" Type="int" />
+    <Property Name="HasHeatHelp" Type="bit" />
   </EntityType>
   <Association Name="FK__Apartment__Id_Ap__1B9317B3">
     <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
@@ -320,6 +334,42 @@
       </Principal>
       <Dependent Role="Estates">
         <PropertyRef Name="Id_Partner" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Expenses__LegalT__52E34C9D">
+    <End Role="ExpenseTypes" Type="Self.ExpenseTypes" Multiplicity="0..1" />
+    <End Role="Expenses" Type="Self.Expenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ExpenseTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Expenses">
+        <PropertyRef Name="LegalType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__InvoiceIn__Id_Co__6ABAD62E">
+    <End Role="Counters" Type="Self.Counters" Multiplicity="0..1" />
+    <End Role="InvoiceIndexes" Type="Self.InvoiceIndexes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Counters">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="InvoiceIndexes">
+        <PropertyRef Name="Id_Counter" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__InvoiceIn__Id_In__67DE6983">
+    <End Role="Invoices" Type="Self.Invoices" Multiplicity="1" />
+    <End Role="InvoiceIndexes" Type="Self.InvoiceIndexes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Invoices">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="InvoiceIndexes">
+        <PropertyRef Name="Id_Invoice" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -532,6 +582,7 @@
     <EntitySet Name="Expenses" EntityType="Self.Expenses" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ExpenseTypes" EntityType="Self.ExpenseTypes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Functionalities" EntityType="Self.Functionalities" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="InvoiceIndexes" EntityType="Self.InvoiceIndexes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Invoices" EntityType="Self.Invoices" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Localities" EntityType="Self.Localities" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="PartnerRights" EntityType="Self.PartnerRights" Schema="dbo" store:Type="Tables" />
@@ -582,6 +633,18 @@
     <AssociationSet Name="FK__Estates__Id_Part__5CD6CB2B" Association="Self.FK__Estates__Id_Part__5CD6CB2B">
       <End Role="Partners" EntitySet="Partners" />
       <End Role="Estates" EntitySet="Estates" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Expenses__LegalT__52E34C9D" Association="Self.FK__Expenses__LegalT__52E34C9D">
+      <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
+      <End Role="Expenses" EntitySet="Expenses" />
+    </AssociationSet>
+    <AssociationSet Name="FK__InvoiceIn__Id_Co__6ABAD62E" Association="Self.FK__InvoiceIn__Id_Co__6ABAD62E">
+      <End Role="Counters" EntitySet="Counters" />
+      <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
+    </AssociationSet>
+    <AssociationSet Name="FK__InvoiceIn__Id_In__67DE6983" Association="Self.FK__InvoiceIn__Id_In__67DE6983">
+      <End Role="Invoices" EntitySet="Invoices" />
+      <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
     </AssociationSet>
     <AssociationSet Name="FK__Invoices__Id_Est__3FD07829" Association="Self.FK__Invoices__Id_Est__3FD07829">
       <End Role="EstateExpenses" EntitySet="EstateExpenses" />

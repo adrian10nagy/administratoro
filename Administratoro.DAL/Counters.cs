@@ -17,6 +17,7 @@ namespace Administratoro.DAL
         public Counters()
         {
             this.ApartmentCounters = new HashSet<ApartmentCounters>();
+            this.InvoiceIndexes = new HashSet<InvoiceIndexes>();
         }
     
         public int Id { get; set; }
@@ -29,5 +30,6 @@ namespace Administratoro.DAL
         public virtual Estates Estates { get; set; }
         public virtual Expenses Expenses { get; set; }
         public virtual StairCases StairCases { get; set; }
+        public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }
     }
 }

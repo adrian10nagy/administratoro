@@ -8,6 +8,7 @@
     <h3 runat="server" id="mainHeader">Facturi</h3>
     <asp:LinkButton ID="lblExpenseMeessageConfigure" CssClass="expenseMeessageConfigure" OnClick="lblExpenseMeessageConfigure_Click" runat="server">Configurează(<i class="fa fa-wrench"></i>)</asp:LinkButton>
     <asp:LinkButton ID="lblExpenseMonthlyList" CssClass="expenseMeessageConfigure" OnClick="lblExpenseMonthlyList_Click" runat="server">Vezi lista de plată(<i class="fa fa-table"></i>)</asp:LinkButton>
+    <asp:LinkButton ID="lblInvoiceList" CssClass="expenseMeessageConfigure" OnClick="lblInvoiceList_Click" runat="server">Vezi listă facturi(<i class="fa fa-table"></i>)</asp:LinkButton>
     <br />
     <br />
     <asp:Panel ID="pnlMessage" runat="server" Visible="false">

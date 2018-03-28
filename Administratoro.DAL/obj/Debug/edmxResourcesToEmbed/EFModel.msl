@@ -99,6 +99,7 @@
     <EntitySetMapping Name="Expenses">
       <EntityTypeMapping TypeName="AdministratoroModel.Expenses">
         <MappingFragment StoreEntitySet="Expenses">
+          <ScalarProperty Name="LegalType" ColumnName="LegalType" />
           <ScalarProperty Name="specialType" ColumnName="specialType" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Id" ColumnName="Id" />
@@ -121,9 +122,22 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="InvoiceIndexes">
+      <EntityTypeMapping TypeName="AdministratoroModel.InvoiceIndexes">
+        <MappingFragment StoreEntitySet="InvoiceIndexes">
+          <ScalarProperty Name="Id_Counter" ColumnName="Id_Counter" />
+          <ScalarProperty Name="Id_Invoice" ColumnName="Id_Invoice" />
+          <ScalarProperty Name="IndexNew" ColumnName="IndexNew" />
+          <ScalarProperty Name="IndexOld" ColumnName="IndexOld" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="Invoices">
       <EntityTypeMapping TypeName="AdministratoroModel.Invoices">
         <MappingFragment StoreEntitySet="Invoices">
+          <ScalarProperty Name="issueNumber" ColumnName="issueNumber" />
+          <ScalarProperty Name="issueDate" ColumnName="issueDate" />
           <ScalarProperty Name="id_Redistributiontype" ColumnName="id_Redistributiontype" />
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
@@ -233,6 +247,7 @@
     <EntitySetMapping Name="Tenants">
       <EntityTypeMapping TypeName="AdministratoroModel.Tenants">
         <MappingFragment StoreEntitySet="Tenants">
+          <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
           <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
           <ScalarProperty Name="Number" ColumnName="Number" />
           <ScalarProperty Name="CotaIndiviza" ColumnName="CotaIndiviza" />

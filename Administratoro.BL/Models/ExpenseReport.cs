@@ -21,7 +21,7 @@ namespace Administratoro.BL.Models
         public decimal? WatherWarm { get; set; }
         public decimal? Cleaning { get; set; }
         public decimal? Gas { get; set; }
-        public decimal? Heat { get; set; }
+        public decimal? HeatRAT { get; set; }
         public decimal? Trash { get; set; }
         public decimal? Electricity { get; set; }
         public decimal? Elevator { get; set; }
@@ -31,5 +31,6 @@ namespace Administratoro.BL.Models
         public decimal? Fireman { get; set; }
         public decimal? ElevatorUtility { get; set; }
         public decimal? Diverse { get; set; }
+        public decimal? HeatHelp { get; set; }
     }
 }

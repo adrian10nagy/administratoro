@@ -43,7 +43,7 @@
           <Property Name="Month" Type="int" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
           <Property Name="WasDisabled" Type="bit" Nullable="false" />
-          <Property Name="PricePerExpenseUnit" Type="decimal" Precision="20" Scale="2" />
+          <Property Name="PricePerExpenseUnit" Type="decimal" Precision="24" Scale="6" />
           <Property Name="SplitPerStairCase" Type="bit" />
           <Property Name="RedistributeType" Type="int" />
           <Property Name="IsClosed" Type="bit" />
@@ -77,6 +77,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
           <Property Name="specialType" Type="bit" />
+          <Property Name="LegalType" Type="int" />
         </EntityType>
         <EntityType Name="ExpenseTypes">
           <Key>
@@ -92,16 +93,28 @@
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
         </EntityType>
+        <EntityType Name="InvoiceIndexes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
+          <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
+          <Property Name="Id_Invoice" Type="int" Nullable="false" />
+          <Property Name="Id_Counter" Type="int" />
+        </EntityType>
         <EntityType Name="Invoices">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Value" Type="decimal" Precision="20" Scale="2" />
+          <Property Name="Value" Type="decimal" Precision="24" Scale="4" />
           <Property Name="Id_EstateExpense" Type="int" />
           <Property Name="Id_StairCase" Type="int" />
           <Property Name="Description" Type="nvarchar" MaxLength="150" />
           <Property Name="id_Redistributiontype" Type="int" />
+          <Property Name="issueDate" Type="date" />
+          <Property Name="issueNumber" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Localities">
           <Key>
@@ -177,11 +190,11 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Value" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Value" Type="decimal" Precision="30" Scale="10" />
           <Property Name="Id_Tenant" Type="int" Nullable="false" />
           <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
-          <Property Name="IndexOld" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="IndexNew" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
+          <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
         </EntityType>
         <EntityType Name="TenantPersons">
           <Key>
@@ -207,6 +220,7 @@
           <Property Name="CotaIndiviza" Type="decimal" Precision="14" Scale="4" />
           <Property Name="Number" Type="int" Nullable="false" />
           <Property Name="Id_StairCase" Type="int" />
+          <Property Name="HasHeatHelp" Type="bit" />
         </EntityType>
         <Association Name="FK__Apartment__Id_Ap__1B9317B3">
           <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
@@ -325,6 +339,42 @@
             </Principal>
             <Dependent Role="Estates">
               <PropertyRef Name="Id_Partner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Expenses__LegalT__52E34C9D">
+          <End Role="ExpenseTypes" Type="Self.ExpenseTypes" Multiplicity="0..1" />
+          <End Role="Expenses" Type="Self.Expenses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExpenseTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Expenses">
+              <PropertyRef Name="LegalType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__InvoiceIn__Id_Co__6ABAD62E">
+          <End Role="Counters" Type="Self.Counters" Multiplicity="0..1" />
+          <End Role="InvoiceIndexes" Type="Self.InvoiceIndexes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Counters">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceIndexes">
+              <PropertyRef Name="Id_Counter" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__InvoiceIn__Id_In__67DE6983">
+          <End Role="Invoices" Type="Self.Invoices" Multiplicity="1" />
+          <End Role="InvoiceIndexes" Type="Self.InvoiceIndexes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Invoices">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceIndexes">
+              <PropertyRef Name="Id_Invoice" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -537,6 +587,7 @@
           <EntitySet Name="Expenses" EntityType="Self.Expenses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ExpenseTypes" EntityType="Self.ExpenseTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Functionalities" EntityType="Self.Functionalities" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InvoiceIndexes" EntityType="Self.InvoiceIndexes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Invoices" EntityType="Self.Invoices" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Localities" EntityType="Self.Localities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PartnerRights" EntityType="Self.PartnerRights" Schema="dbo" store:Type="Tables" />
@@ -587,6 +638,18 @@
           <AssociationSet Name="FK__Estates__Id_Part__5CD6CB2B" Association="Self.FK__Estates__Id_Part__5CD6CB2B">
             <End Role="Partners" EntitySet="Partners" />
             <End Role="Estates" EntitySet="Estates" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Expenses__LegalT__52E34C9D" Association="Self.FK__Expenses__LegalT__52E34C9D">
+            <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
+            <End Role="Expenses" EntitySet="Expenses" />
+          </AssociationSet>
+          <AssociationSet Name="FK__InvoiceIn__Id_Co__6ABAD62E" Association="Self.FK__InvoiceIn__Id_Co__6ABAD62E">
+            <End Role="Counters" EntitySet="Counters" />
+            <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__InvoiceIn__Id_In__67DE6983" Association="Self.FK__InvoiceIn__Id_In__67DE6983">
+            <End Role="Invoices" EntitySet="Invoices" />
+            <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
           </AssociationSet>
           <AssociationSet Name="FK__Invoices__Id_Est__3FD07829" Association="Self.FK__Invoices__Id_Est__3FD07829">
             <End Role="EstateExpenses" EntitySet="EstateExpenses" />
@@ -689,6 +752,7 @@
           <EntitySet Name="Expenses" EntityType="AdministratoroModel.Expenses" />
           <EntitySet Name="ExpenseTypes" EntityType="AdministratoroModel.ExpenseTypes" />
           <EntitySet Name="Functionalities" EntityType="AdministratoroModel.Functionalities" />
+          <EntitySet Name="InvoiceIndexes" EntityType="AdministratoroModel.InvoiceIndexes" />
           <EntitySet Name="Invoices" EntityType="AdministratoroModel.Invoices" />
           <EntitySet Name="Localities" EntityType="AdministratoroModel.Localities" />
           <EntitySet Name="PartnerRights" EntityType="AdministratoroModel.PartnerRights" />
@@ -719,6 +783,10 @@
           <AssociationSet Name="FK__Counters__Id_Sta__0C50D423" Association="AdministratoroModel.FK__Counters__Id_Sta__0C50D423">
             <End Role="StairCases" EntitySet="StairCases" />
             <End Role="Counters" EntitySet="Counters" />
+          </AssociationSet>
+          <AssociationSet Name="FK__InvoiceIn__Id_Co__6ABAD62E" Association="AdministratoroModel.FK__InvoiceIn__Id_Co__6ABAD62E">
+            <End Role="Counters" EntitySet="Counters" />
+            <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
           </AssociationSet>
           <AssociationSet Name="FK__EstateExp__Redis__44952D46" Association="AdministratoroModel.FK__EstateExp__Redis__44952D46">
             <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
@@ -760,9 +828,17 @@
             <End Role="Estates" EntitySet="Estates" />
             <End Role="Tenants" EntitySet="Tenants" />
           </AssociationSet>
+          <AssociationSet Name="FK__Expenses__LegalT__52E34C9D" Association="AdministratoroModel.FK__Expenses__LegalT__52E34C9D">
+            <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
+            <End Role="Expenses" EntitySet="Expenses" />
+          </AssociationSet>
           <AssociationSet Name="FK__UserRight__Id_fu__5629CD9C" Association="AdministratoroModel.FK__UserRight__Id_fu__5629CD9C">
             <End Role="Functionalities" EntitySet="Functionalities" />
             <End Role="PartnerRights" EntitySet="PartnerRights" />
+          </AssociationSet>
+          <AssociationSet Name="FK__InvoiceIn__Id_In__67DE6983" Association="AdministratoroModel.FK__InvoiceIn__Id_In__67DE6983">
+            <End Role="Invoices" EntitySet="Invoices" />
+            <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
           </AssociationSet>
           <AssociationSet Name="FK__Invoices__Id_sta__42ACE4D4" Association="AdministratoroModel.FK__Invoices__Id_sta__42ACE4D4">
             <End Role="StairCases" EntitySet="StairCases" />
@@ -831,6 +907,7 @@
           <NavigationProperty Name="Estates" Relationship="AdministratoroModel.FK__Counters__Id_Est__0B5CAFEA" FromRole="Counters" ToRole="Estates" />
           <NavigationProperty Name="Expenses" Relationship="AdministratoroModel.FK__Counters__Id_Exp__0D44F85C" FromRole="Counters" ToRole="Expenses" />
           <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__Counters__Id_Sta__0C50D423" FromRole="Counters" ToRole="StairCases" />
+          <NavigationProperty Name="InvoiceIndexes" Relationship="AdministratoroModel.FK__InvoiceIn__Id_Co__6ABAD62E" FromRole="Counters" ToRole="InvoiceIndexes" />
         </EntityType>
         <EntityType Name="ErrorLogs">
           <Key>
@@ -852,7 +929,7 @@
           <Property Name="Month" Type="Int32" Nullable="false" />
           <Property Name="Year" Type="Int32" Nullable="false" />
           <Property Name="WasDisabled" Type="Boolean" Nullable="false" />
-          <Property Name="PricePerExpenseUnit" Type="Decimal" Precision="20" Scale="2" />
+          <Property Name="PricePerExpenseUnit" Type="Decimal" Precision="24" Scale="6" />
           <Property Name="SplitPerStairCase" Type="Boolean" />
           <Property Name="RedistributeType" Type="Int32" />
           <Property Name="IsClosed" Type="Boolean" />
@@ -899,8 +976,10 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="specialType" Type="Boolean" />
+          <Property Name="LegalType" Type="Int32" />
           <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__Counters__Id_Exp__0D44F85C" FromRole="Expenses" ToRole="Counters" />
           <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Ex__778AC167" FromRole="Expenses" ToRole="EstateExpenses" />
+          <NavigationProperty Name="ExpenseTypes" Relationship="AdministratoroModel.FK__Expenses__LegalT__52E34C9D" FromRole="Expenses" ToRole="ExpenseTypes" />
         </EntityType>
         <EntityType Name="ExpenseTypes">
           <Key>
@@ -909,6 +988,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Ex__787EE5A0" FromRole="ExpenseTypes" ToRole="EstateExpenses" />
+          <NavigationProperty Name="Expenses" Relationship="AdministratoroModel.FK__Expenses__LegalT__52E34C9D" FromRole="ExpenseTypes" ToRole="Expenses" />
         </EntityType>
         <EntityType Name="Functionalities">
           <Key>
@@ -918,18 +998,33 @@
           <Property Name="Name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="PartnerRights" Relationship="AdministratoroModel.FK__UserRight__Id_fu__5629CD9C" FromRole="Functionalities" ToRole="PartnerRights" />
         </EntityType>
+        <EntityType Name="InvoiceIndexes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IndexOld" Type="Decimal" Precision="18" Scale="1" />
+          <Property Name="IndexNew" Type="Decimal" Precision="18" Scale="1" />
+          <Property Name="Id_Invoice" Type="Int32" Nullable="false" />
+          <Property Name="Id_Counter" Type="Int32" />
+          <NavigationProperty Name="Counters" Relationship="AdministratoroModel.FK__InvoiceIn__Id_Co__6ABAD62E" FromRole="InvoiceIndexes" ToRole="Counters" />
+          <NavigationProperty Name="Invoices" Relationship="AdministratoroModel.FK__InvoiceIn__Id_In__67DE6983" FromRole="InvoiceIndexes" ToRole="Invoices" />
+        </EntityType>
         <EntityType Name="Invoices">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Value" Type="Decimal" Precision="20" Scale="2" />
+          <Property Name="Value" Type="Decimal" Precision="24" Scale="4" />
           <Property Name="Id_EstateExpense" Type="Int32" />
           <Property Name="Id_StairCase" Type="Int32" />
           <Property Name="Description" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="id_Redistributiontype" Type="Int32" />
+          <Property Name="issueDate" Type="DateTime" Precision="0" />
+          <Property Name="issueNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__Invoices__Id_Est__3FD07829" FromRole="Invoices" ToRole="EstateExpenses" />
           <NavigationProperty Name="EstateExpensesRedistributionTypes" Relationship="AdministratoroModel.FK__Invoices__id_Red__4589517F" FromRole="Invoices" ToRole="EstateExpensesRedistributionTypes" />
+          <NavigationProperty Name="InvoiceIndexes" Relationship="AdministratoroModel.FK__InvoiceIn__Id_In__67DE6983" FromRole="Invoices" ToRole="InvoiceIndexes" />
           <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__Invoices__Id_sta__42ACE4D4" FromRole="Invoices" ToRole="StairCases" />
         </EntityType>
         <EntityType Name="Localities">
@@ -1019,11 +1114,11 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Value" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Value" Type="Decimal" Precision="30" Scale="10" />
           <Property Name="Id_Tenant" Type="Int32" Nullable="false" />
           <Property Name="Id_EstateExpense" Type="Int32" Nullable="false" />
-          <Property Name="IndexOld" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="IndexNew" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="IndexOld" Type="Decimal" Precision="18" Scale="1" />
+          <Property Name="IndexNew" Type="Decimal" Precision="18" Scale="1" />
           <NavigationProperty Name="EstateExpenses" Relationship="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" FromRole="TenantExpenses" ToRole="EstateExpenses" />
           <NavigationProperty Name="Tenants" Relationship="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" FromRole="TenantExpenses" ToRole="Tenants" />
         </EntityType>
@@ -1053,6 +1148,7 @@
           <Property Name="CotaIndiviza" Type="Decimal" Precision="14" Scale="4" />
           <Property Name="Number" Type="Int32" Nullable="false" />
           <Property Name="Id_StairCase" Type="Int32" />
+          <Property Name="HasHeatHelp" Type="Boolean" />
           <NavigationProperty Name="ApartmentCounters" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__1B9317B3" FromRole="Tenants" ToRole="ApartmentCounters" />
           <NavigationProperty Name="Estates" Relationship="AdministratoroModel.FK__Tenants__id_Esta__5DCAEF64" FromRole="Tenants" ToRole="Estates" />
           <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__Tenants__Id_Stai__51300E55" FromRole="Tenants" ToRole="StairCases" />
@@ -1116,6 +1212,18 @@
             </Principal>
             <Dependent Role="Counters">
               <PropertyRef Name="Id_StairCase" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__InvoiceIn__Id_Co__6ABAD62E">
+          <End Type="AdministratoroModel.Counters" Role="Counters" Multiplicity="0..1" />
+          <End Type="AdministratoroModel.InvoiceIndexes" Role="InvoiceIndexes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Counters">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceIndexes">
+              <PropertyRef Name="Id_Counter" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1239,6 +1347,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__Expenses__LegalT__52E34C9D">
+          <End Type="AdministratoroModel.ExpenseTypes" Role="ExpenseTypes" Multiplicity="0..1" />
+          <End Type="AdministratoroModel.Expenses" Role="Expenses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExpenseTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Expenses">
+              <PropertyRef Name="LegalType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__UserRight__Id_fu__5629CD9C">
           <End Type="AdministratoroModel.Functionalities" Role="Functionalities" Multiplicity="1" />
           <End Type="AdministratoroModel.PartnerRights" Role="PartnerRights" Multiplicity="*" />
@@ -1248,6 +1368,18 @@
             </Principal>
             <Dependent Role="PartnerRights">
               <PropertyRef Name="Id_functionality" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__InvoiceIn__Id_In__67DE6983">
+          <End Type="AdministratoroModel.Invoices" Role="Invoices" Multiplicity="1" />
+          <End Type="AdministratoroModel.InvoiceIndexes" Role="InvoiceIndexes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Invoices">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoiceIndexes">
+              <PropertyRef Name="Id_Invoice" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1451,6 +1583,7 @@
           <EntitySetMapping Name="Expenses">
             <EntityTypeMapping TypeName="AdministratoroModel.Expenses">
               <MappingFragment StoreEntitySet="Expenses">
+                <ScalarProperty Name="LegalType" ColumnName="LegalType" />
                 <ScalarProperty Name="specialType" ColumnName="specialType" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -1473,9 +1606,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="InvoiceIndexes">
+            <EntityTypeMapping TypeName="AdministratoroModel.InvoiceIndexes">
+              <MappingFragment StoreEntitySet="InvoiceIndexes">
+                <ScalarProperty Name="Id_Counter" ColumnName="Id_Counter" />
+                <ScalarProperty Name="Id_Invoice" ColumnName="Id_Invoice" />
+                <ScalarProperty Name="IndexNew" ColumnName="IndexNew" />
+                <ScalarProperty Name="IndexOld" ColumnName="IndexOld" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Invoices">
             <EntityTypeMapping TypeName="AdministratoroModel.Invoices">
               <MappingFragment StoreEntitySet="Invoices">
+                <ScalarProperty Name="issueNumber" ColumnName="issueNumber" />
+                <ScalarProperty Name="issueDate" ColumnName="issueDate" />
                 <ScalarProperty Name="id_Redistributiontype" ColumnName="id_Redistributiontype" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
@@ -1585,6 +1731,7 @@
           <EntitySetMapping Name="Tenants">
             <EntityTypeMapping TypeName="AdministratoroModel.Tenants">
               <MappingFragment StoreEntitySet="Tenants">
+                <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
                 <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
                 <ScalarProperty Name="Number" ColumnName="Number" />
                 <ScalarProperty Name="CotaIndiviza" ColumnName="CotaIndiviza" />

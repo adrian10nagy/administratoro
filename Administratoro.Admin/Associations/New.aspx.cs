@@ -224,11 +224,11 @@ namespace Admin.Associations
             Partners partner = Session[SessionConstants.LoggedPartner] as Partners;
             _step = 2;
             decimal? indivizaAparmentsResult = null;
-            
-            if(estateStairs.SelectedIndex == 1)
+
+            if (estateStairs.SelectedIndex == 1)
             {
                 decimal indivizaAparments;
-                if(decimal.TryParse(estateCotaIndivizaApartments.Text, out indivizaAparments))
+                if (decimal.TryParse(estateCotaIndivizaApartments.Text, out indivizaAparments))
                 {
                     indivizaAparmentsResult = indivizaAparments;
                 }
@@ -298,18 +298,18 @@ namespace Admin.Associations
             var estate = Session[SessionConstants.SelectedAssociation] as Estates;
             List<Counters> cnts = new List<Counters>();
 
-            foreach (var item in countersConfiguration.Controls)
+            foreach (var control in countersConfiguration.Controls)
             {
-                if (item is Panel)
+                if (control is Panel)
                 {
-                    var thePanel = (Panel)item;
+                    var thePanel = (Panel)control;
 
-                    if (thePanel.Controls.Count > 1 && thePanel.Controls[0] is DropDownList && thePanel.Controls[1] is TextBox )
+                    if (thePanel.Controls.Count > 1 && thePanel.Controls[0] is DropDownList && thePanel.Controls[1] is TextBox)
                     {
                         var expenseControl = (DropDownList)thePanel.Controls[0];
                         var expenseCleaned = expenseControl.SelectedValue.Remove(expenseControl.SelectedValue.IndexOf("dummyExpense"));
                         var valueControl = (TextBox)thePanel.Controls[1];
-                       
+
                         int? stairIdResult = null;
                         if (thePanel.Controls.Count == 3 && thePanel.Controls[2] is DropDownList)
                         {
@@ -357,7 +357,7 @@ namespace Admin.Associations
 
         private void Step2PopulateExpenses()
         {
-            var expenses = ExpensesManager.GetAllExpenses();
+            var expenses = ExpensesManager.GetAllExpenses().OrderBy(e=>e.LegalType);
 
             foreach (var expense in expenses)
             {
@@ -367,6 +367,7 @@ namespace Admin.Associations
                 };
                 // add expense that were added
                 CheckBox esexExists = new CheckBox();
+
                 esexExists.AutoPostBack = false;
                 esexExists.ID = String.Format("expense{0}", expense.Id);
                 panel.Controls.Add(esexExists);
@@ -381,23 +382,38 @@ namespace Admin.Associations
                 // add expense type
                 DropDownList dp = new DropDownList();
 
-                dp.Items.Add(new ListItem
+                if (expense.Id != (int)Expense.AjutorÎncălzire)
                 {
-                    Value = "1",
-                    Text = "Individuală prin indecși"
-                });
+                    dp.Items.Add(new ListItem
+                    {
+                        Value = ((int)ExpenseType.PerIndex).ToString(),
+                        Text = "Individuală prin indecși",
+                        Selected = expense.LegalType == (int)ExpenseType.PerIndex
+                    });
 
-                dp.Items.Add(new ListItem
-                {
-                    Value = "2",
-                    Text = "Cotă indiviză de proprietate"
-                });
+                    dp.Items.Add(new ListItem
+                    {
+                        Value = ((int)ExpenseType.PerCotaIndiviza).ToString(),
+                        Text = "Cotă indiviză de proprietate",
+                        Selected = expense.LegalType == (int)ExpenseType.PerCotaIndiviza
+                    });
 
-                dp.Items.Add(new ListItem
+                    dp.Items.Add(new ListItem
+                    {
+                        Value = ((int)ExpenseType.PerTenants).ToString(),
+                        Text = "Per număr locatari imobil",
+                        Selected = expense.LegalType == (int)ExpenseType.PerTenants
+                    });
+                }
+                else
                 {
-                    Value = "3",
-                    Text = "Per număr locatari imobil"
-                });
+                    dp.Items.Add(new ListItem
+                    {
+                        Value = ((int)ExpenseType.Individual).ToString(),
+                        Text = "Individual",
+                        Selected = expense.LegalType == (int)ExpenseType.Individual
+                    });
+                }
                 panel.Controls.Add(dp);
                 expensesDefault.Controls.Add(panel);
             }
@@ -425,12 +441,12 @@ namespace Admin.Associations
             result[i] = defaultExpense;
             i++;
 
-            foreach (var item in estate.StairCases)
+            foreach (var srairCase in estate.StairCases)
             {
                 var stair = new ListItem
                 {
-                    Value = item.Id + "dummyStair" + controlId,
-                    Text = "Scara " + item.Nume
+                    Value = srairCase.Id + "dummyStair" + controlId,
+                    Text = "Scara " + srairCase.Nume
                 };
                 result[i] = stair;
                 i++;
@@ -441,21 +457,21 @@ namespace Admin.Associations
 
         private ListItem[] GetExpensesAsListItemsWithExtradummyValue(int controlID)
         {
-            Dictionary<int, int> dictionary = GetSelectdExpenses();
+            Dictionary<int, int> expenses = GetSelectdExpenses();
 
-            ListItem[] result = new ListItem[dictionary.Count];
+            ListItem[] result = new ListItem[expenses.Count];
             int i = 0;
 
-            foreach (var item in dictionary)
+            foreach (var expense in expenses)
             {
-                var ex = ExpensesManager.GetById(item.Key);
-                var expense = new ListItem
+                var ex = ExpensesManager.GetById(expense.Key);
+                var theExpense = new ListItem
                 {
                     Value = ex.Id + "dummyExpense" + controlID,
                     Text = ex.Name
                 };
 
-                result[i] = expense;
+                result[i] = theExpense;
                 i++;
             }
 
@@ -466,11 +482,11 @@ namespace Admin.Associations
         {
             Dictionary<int, int> dictionary = new Dictionary<int, int>();
 
-            foreach (var item in expensesDefault.Controls)
+            foreach (var control in expensesDefault.Controls)
             {
-                if (item is Panel)
+                if (control is Panel)
                 {
-                    var thePanel = (Panel)item;
+                    var thePanel = (Panel)control;
                     if (thePanel.Controls.Count >= 3 && thePanel.Controls[0] is CheckBox && thePanel.Controls[2] is DropDownList)
                     {
                         var chb = (CheckBox)thePanel.Controls[0];

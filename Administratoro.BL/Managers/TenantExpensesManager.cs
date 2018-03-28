@@ -32,9 +32,11 @@ namespace Administratoro.BL.Managers
             var ee = EstateExpensesManager.GetById(idExpenseEstateCurentMonth);
             if (ee != null)
             {
+                //todo -1 does not work for month 1(january)
                 var lastMonthEE = GetContext(true).EstateExpenses.FirstOrDefault(e => e.Month == ee.Month - 1 &&
                     e.Id_Estate == ee.Id_Estate && e.Id_Expense == ee.Id_Expense && e.Id_ExpenseType == ee.Id_ExpenseType &&
                     e.isDefault == ee.isDefault && e.Year == ee.Year && e.WasDisabled == ee.WasDisabled);
+
                 if (lastMonthEE != null)
                 {
                     result = GetByExpenseEstateIdAndapartmentid(lastMonthEE.Id, idTenant);
@@ -80,7 +82,7 @@ namespace Administratoro.BL.Managers
         public static void UpdateTenantExpense(int idExpenseEstate, int apartmentid, decimal value)
         {
             TenantExpenses result = new TenantExpenses();
-            result = GetContext().TenantExpenses.First(b => b.Id_EstateExpense == idExpenseEstate && b.Id_Tenant == apartmentid);
+            result = GetContext().TenantExpenses.FirstOrDefault(b => b.Id_EstateExpense == idExpenseEstate && b.Id_Tenant == apartmentid);
 
             if (result != null)
             {
@@ -162,7 +164,7 @@ namespace Administratoro.BL.Managers
                 TenantExpenses tte = GetContext().TenantExpenses.FirstOrDefault(tee => tee.Id_EstateExpense == expenseEstate.Id && tee.Id_Tenant == tenant.Id);
                 if (valuePerCotaUnit.HasValue && tenant.CotaIndiviza.HasValue)
                 {
-                    theValue = DecimalExtensions.RoundUp((double)(tenant.CotaIndiviza.Value * valuePerCotaUnit.Value), 2);
+                    theValue = tenant.CotaIndiviza.Value * valuePerCotaUnit.Value;
                 }
 
                 if (tte != null)
@@ -196,7 +198,7 @@ namespace Administratoro.BL.Managers
 
                 if (tenants == null)
                 {
-                    allTenants = ApartmentsManager.GetAllByEstateId(ee.Id_Estate);
+                    allTenants = ApartmentsManager.GetAllByAssociationId(ee.Id_Estate);
                 }
                 else
                 {
@@ -288,25 +290,38 @@ namespace Administratoro.BL.Managers
             {
                 var lastMonthIndexTenantExpense = TenantExpensesManager.GetForIndexExpensPreviousMonthTenantExpense(ee.Id, tenant.Id);
 
-                if (lastMonthIndexTenantExpense == null && tenantExpense.IndexOld == null)
+                if (lastMonthIndexTenantExpense != null && !lastMonthIndexTenantExpense.EstateExpenses.IsClosed.HasValue)
                 {
-                    TenantExpensesManager.UpdateOldIndexAndValue(tenantExpense, 0, ee.PricePerExpenseUnit);
-                }
-                else if (lastMonthIndexTenantExpense != null && tenantExpense != null)
-                {
-                    if (lastMonthIndexTenantExpense.IndexNew != tenantExpense.IndexOld
-                        || !tenantExpense.IndexOld.HasValue)
+                    if (lastMonthIndexTenantExpense == null && tenantExpense.IndexOld == null)
                     {
-                        TenantExpensesManager.UpdateOldIndexAndValue(tenantExpense, lastMonthIndexTenantExpense.IndexNew, ee.PricePerExpenseUnit);
+                        TenantExpensesManager.UpdateOldIndexAndValue(tenantExpense, 0, ee.PricePerExpenseUnit);
                     }
-                }
+                    else if (lastMonthIndexTenantExpense != null && tenantExpense != null)
+                    {
+                        if (lastMonthIndexTenantExpense.IndexNew != tenantExpense.IndexOld
+                            || !tenantExpense.IndexOld.HasValue)
+                        {
+                            TenantExpensesManager.UpdateOldIndexAndValue(tenantExpense, lastMonthIndexTenantExpense.IndexNew, ee.PricePerExpenseUnit);
+                        }
+                    }
 
-                TenantExpensesManager.UpdatePerIndexValue(tenantExpense, ee.PricePerExpenseUnit);
+                    TenantExpensesManager.UpdatePerIndexValue(tenantExpense, ee.PricePerExpenseUnit);
+                }
             }
         }
 
         public static void UpdateNewIndexAndValue(int tenantExpenseId, int idExpenseEstate, decimal? newIndex, bool shouldUpdateOld, decimal? oldIndex = null)
         {
+            if (newIndex.HasValue)
+            {
+                newIndex = Math.Round(newIndex.Value, ConfigConstants.IndexPrecision);
+            }
+
+            if (oldIndex.HasValue)
+            {
+                oldIndex = Math.Round(oldIndex.Value, ConfigConstants.IndexPrecision);
+            }
+
             TenantExpenses tenantExpense = TenantExpensesManager.GetById(tenantExpenseId);
             EstateExpenses estateExpenses = EstateExpensesManager.GetById(idExpenseEstate);
 
@@ -331,9 +346,9 @@ namespace Administratoro.BL.Managers
                 GetContext().SaveChanges();
 
                 //update previeous month old index
-                ////todo- only if the month is not closed
                 var lastMonthIndexTenantExpense = TenantExpensesManager.GetForIndexExpensPreviousMonthTenantExpense(estateExpenses.Id, tenantExpense.Id_Tenant);
-                if (lastMonthIndexTenantExpense != null && lastMonthIndexTenantExpense.IndexNew != tenantExpense.IndexOld)
+                if (lastMonthIndexTenantExpense != null && tenantExpense.IndexOld != null &&
+                    lastMonthIndexTenantExpense.IndexNew != tenantExpense.IndexOld && !lastMonthIndexTenantExpense.EstateExpenses.IsClosed.HasValue)
                 {
                     lastMonthIndexTenantExpense.IndexNew = tenantExpense.IndexOld;
                     GetContext().Entry(lastMonthIndexTenantExpense).CurrentValues.SetValues(lastMonthIndexTenantExpense);
@@ -351,11 +366,7 @@ namespace Administratoro.BL.Managers
 
         public static void UpdateTenantExpenses(EstateExpenses estateExpense, decimal? value, int? stairCase = null)
         {
-            if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
-            {
-                // no update needed
-            }
-            else if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+            if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
             {
                 TenantExpensesManager.AddCotaIndivizaTenantExpenses(estateExpense, value, stairCase);
             }
@@ -366,7 +377,7 @@ namespace Administratoro.BL.Managers
 
                 if (stairCase == null || !stairCase.HasValue)
                 {
-                    tenants = ApartmentsManager.GetAllByEstateId(estateExpense.Id_Estate);
+                    tenants = ApartmentsManager.GetAllByAssociationId(estateExpense.Id_Estate);
                 }
                 else
                 {
@@ -376,7 +387,7 @@ namespace Administratoro.BL.Managers
                 var allTenantDependents = tenants.Sum(t => t.Dependents);
                 if (value.HasValue && allTenantDependents != 0)
                 {
-                    valuePerTenant = DecimalExtensions.RoundUp((double)(value.Value / allTenantDependents), 2);
+                    valuePerTenant = value.Value / allTenantDependents;
                 }
 
                 TenantExpensesManager.AddPerTenantExpenses(estateExpense.Id, valuePerTenant, tenants);
@@ -433,11 +444,18 @@ namespace Administratoro.BL.Managers
             {
                 decimal? value = null;
                 decimal? oldIndex = null;
-                if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
+                var te = TenantExpensesManager.GetForIndexExpensPreviousMonthTenantExpense(estateExpenseId, apartmentid);
+                if (te != null)
                 {
-                    var te = TenantExpensesManager.GetForIndexExpensPreviousMonthTenantExpense(estateExpenseId, apartmentid);
-                    oldIndex = (te != null) ? te.IndexNew : 0;
-                    value = 100;
+                    if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
+                    {
+                        oldIndex = te.IndexNew;
+                        //value = te.Value;
+                    }
+                    else if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.Individual)
+                    {
+                        value = te.Value;
+                    }
                 }
 
                 TenantExpenses tenantExpense = new TenantExpenses
@@ -446,24 +464,6 @@ namespace Administratoro.BL.Managers
                     Id_Tenant = apartmentid,
                     Id_EstateExpense = estateExpenseId,
                     IndexOld = oldIndex
-                };
-
-                GetContext().TenantExpenses.Add(tenantExpense);
-                GetContext().SaveChanges();
-            }
-        }
-
-        public static void AddDefaultTenantExpense(Tenants tenant, int year, int month)
-        {
-            List<EstateExpenses> estateExpenses = GetContext().EstateExpenses.Where(ee => ee.Id_Estate == tenant.id_Estate
-                && ee.Month == month && ee.Year == year && !ee.Expenses.specialType.HasValue).ToList();
-            if (estateExpenses != null && estateExpenses.Count > 0)
-            {
-                TenantExpenses tenantExpense = new TenantExpenses
-                {
-                    Value = null,
-                    Id_Tenant = tenant.Id,
-                    Id_EstateExpense = estateExpenses[0].Id
                 };
 
                 GetContext().TenantExpenses.Add(tenantExpense);
@@ -496,163 +496,6 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static DataTable GetAllExpensesAsDatatable(int estateId, int year, int month)
-        {
-            DataTable dt = new DataTable();
-
-            // todo
-            var tenants = ApartmentsManager.GetAllByEstateId(estateId);
-
-            foreach (var tenant in tenants)
-            {
-                var expenses = TenantExpensesManager.GetAllExpensesByTenantAndMonth(tenant.Id, year, month);
-                string query = string.Empty;
-                if (expenses.Count == 0)
-                {
-                    TenantExpensesManager.AddDefaultTenantExpense(tenant, year, month);
-                }
-                query = @"USE administratoro DECLARE @DynamicPivotQuery AS NVARCHAR(MAX)
-                                DECLARE @ColumnName AS NVARCHAR(MAX)
-                                DECLARE @query  AS NVARCHAR(MAX)
-
-                                SELECT @ColumnName= ISNULL(@ColumnName + ',','') 
-		                                + QUOTENAME(Name)
-                                FROM (SELECT DISTINCT Name 
-                                FROM Expenses AS Expense
-		                        INNER JOIN EstateExpenses as EE 
-		                        on  EE.Id_Expense = Expense.Id 
-		                        WHERE EE.Id_Estate = " + estateId + @" and EE.isDefault = 0
-                                AND EE.WasDisabled = 0 and EE.Month = " + month + @" and EE.Year = " + year + @"
-		                        ) as Expense
-
-                                set @DynamicPivotQuery = 
-                                'select 
-                                *
-                                FROM(
-                                select 	
-                                T.Number as NrAp,
-                                T.Dependents as NrPers,   	
-                                E.Name as ename,
-                                TE.Value as tevalue,
-
-                                T.Number as Ap
-                                FROM EstateExpenses EE
-                                LEFT JOIN TenantExpenses TE
-                                ON TE.Id_EstateExpense = EE.Id
-                                LEFT Join Tenants T
-                                ON T.Id = TE.Id_tenant
-                                LEFT Join Expenses E
-                                ON E.Id = EE.Id_Expense
-                                WHERE T.ID = 
-		                        " + tenant.Id + @"
-		                         AND EE.year = " + year + @"
-                                AND EE.month = " + month + @"
-                                AND EE.WasDisabled = 0
-                                )
-                                AS P
-                                pivot
-                                (
-	                                sum(P.tevalue)
-	                                for P.ename in (' + @ColumnName + ')
-
-                                )as PIV
-                                '
-
-                                EXEC sp_executesql @DynamicPivotQuery";
-                SqlConnection cnn = new SqlConnection("data source=HOME\\SQLEXPRESS;initial catalog=Administratoro;integrated security=True;MultipleActiveResultSets=True;");
-                SqlCommand cmd = new SqlCommand(query, cnn);
-                SqlDataAdapter adp = new SqlDataAdapter(cmd);
-                adp.Fill(dt);
-            }
-
-            return dt;
-        }
-
-        public static DataTable GetAllEpensesAsList(int estateId, int year, int month)
-        {
-            var rowData = GetAllExpensesAsDatatable(estateId, year, month);
-
-            List<ExpenseReport> expenseReportList = new List<ExpenseReport>();
-            for (int i = 0; i < rowData.Rows.Count; i++)
-            {
-                ExpenseReport expenseReport = new ExpenseReport();
-
-                expenseReport.NrPers = (rowData.Rows[i]["NrPers"] != null) ? Convert.ToInt32(rowData.Rows[i]["NrPers"]) : 0;
-                expenseReport.Ap = (rowData.Rows[i]["Ap"] != null) ? rowData.Rows[i]["Ap"].ToString() : string.Empty;
-                var admin = rowData.Rows[i]["Administrare"];
-                decimal? adminResult = null;
-                if (admin != null && !string.IsNullOrEmpty(admin.ToString()))
-                {
-                    adminResult = Convert.ToDecimal(admin.ToString());
-                }
-                expenseReport.Administrator = adminResult;
-
-                var coldWather = rowData.Rows[i]["Apă rece"];
-                decimal? coldWatherResult = null;
-                if (coldWather != null && !string.IsNullOrEmpty(coldWather.ToString()))
-                {
-                    coldWatherResult = Convert.ToDecimal(coldWather.ToString());
-                }
-                expenseReport.WatherCold = coldWatherResult;
-
-                var cleaning = rowData.Rows[i]["Curățenie"];
-                decimal? cleaningResult = null;
-                if (cleaning != null && !string.IsNullOrEmpty(cleaning.ToString()))
-                {
-                    cleaningResult = Convert.ToDecimal(cleaning.ToString());
-                }
-                expenseReport.Cleaning = cleaningResult;
-
-
-                var gas = rowData.Rows[i]["Gaz"];
-                decimal? gasResult = null;
-                if (gas != null && !string.IsNullOrEmpty(gas.ToString()))
-                {
-                    gasResult = Convert.ToDecimal(gas.ToString());
-                }
-                expenseReport.Gas = gasResult;
-
-                var heat = rowData.Rows[i]["Încălzire"];
-                decimal? heatResult = null;
-                if (heat != null && !string.IsNullOrEmpty(heat.ToString()))
-                {
-                    heatResult = Convert.ToDecimal(heat.ToString());
-                }
-                expenseReport.Heat = heatResult;
-
-                var trash = rowData.Rows[i]["Salubritate"];
-                decimal? trashResult = null;
-                if (trash != null && !string.IsNullOrEmpty(trash.ToString()))
-                {
-                    trashResult = Convert.ToDecimal(trash.ToString());
-                }
-                expenseReport.Trash = trashResult;
-
-                expenseReportList.Add(expenseReport);
-            }
-
-            DataTable dt = new DataTable();
-
-            dt.Columns.AddRange(new DataColumn[9] 
-            { 
-                new DataColumn("Ap", typeof(int)),
-                new DataColumn("NrPers", typeof(int)),
-                new DataColumn("Administrare",typeof(decimal)),
-                new DataColumn("Apă rece",typeof(decimal)), 
-                new DataColumn("Curățenie",typeof(decimal)), 
-                new DataColumn("Gaz",typeof(decimal)), 
-                new DataColumn("Încălzire",typeof(decimal)), 
-                new DataColumn("Salubritate",typeof(decimal)), 
-                new DataColumn("Ap.",typeof(int)) 
-            });
-            foreach (var item in expenseReportList)
-            {
-                dt.Rows.Add(item.Ap, item.NrPers, item.Administrator, item.WatherCold, item.Cleaning, item.Gas, item.Heat, item.Trash, item.Ap);
-            }
-
-            return dt;
-        }
-
         public static DataTable GetMonthlyRaportAsDataTable(int associationId, int year, int month, int? stairCase)
         {
             DataTable dt = new DataTable();
@@ -665,7 +508,7 @@ namespace Administratoro.BL.Managers
             {
                 return dt;
             }
-            var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, year, month);
+            var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, year, month).OrderBy(ee => ee.Id_ExpenseType).ToList();
             List<Tenants> apartments;
             if (!stairCase.HasValue)
             {
@@ -755,8 +598,8 @@ namespace Administratoro.BL.Managers
                         case Expense.PersonalServiciu:
                             expenseReport.Cleaning = rowValue;
                             break;
-                        case Expense.Incalzire:
-                            expenseReport.Heat = rowValue;
+                        case Expense.IncalzireRAT:
+                            expenseReport.HeatRAT = rowValue;
                             break;
                         case Expense.EnergieElectrica:
                             expenseReport.Electricity = rowValue;
@@ -778,6 +621,9 @@ namespace Administratoro.BL.Managers
                             break;
                         case Expense.IntretinereAscensor:
                             expenseReport.ElevatorUtility = rowValue;
+                            break;
+                        case Expense.AjutorÎncălzire:
+                            expenseReport.HeatHelp = rowValue;
                             break;
                     }
 
@@ -810,7 +656,7 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        private static bool RaportPopulateExpensesListDiverse(Tenants tenant, List<Invoices> invoices, Estates association, 
+        private static bool RaportPopulateExpensesListDiverse(Tenants tenant, List<Invoices> invoices, Estates association,
             Dictionary<Expense, decimal> totalCol, ExpenseReport expenseReport)
         {
             bool hasDiverse = false;
@@ -883,7 +729,7 @@ namespace Administratoro.BL.Managers
                     decimal? valueToAdd = invoice.Value.Value / nrApartments;
                     result = result.HasValue ? (result + valueToAdd) : valueToAdd;
                 }
-                else if(invoice.id_Redistributiontype == (int)RedistributionType.PerCotaIndiviza)
+                else if (invoice.id_Redistributiontype == (int)RedistributionType.PerCotaIndiviza)
                 {
                     if (invoice.Id_StairCase.HasValue && !tenant.Id_StairCase.HasValue)
                     {
@@ -895,7 +741,7 @@ namespace Administratoro.BL.Managers
                         continue;
                     }
                     var tenants = allAssociationTenants;
-                    if(invoice.Id_StairCase.HasValue)
+                    if (invoice.Id_StairCase.HasValue)
                     {
                         tenants = allAssociationTenants.Where(t => t.Id_StairCase == invoice.Id_StairCase).ToList();
                     }
@@ -906,8 +752,12 @@ namespace Administratoro.BL.Managers
                     }
 
                     var valueToAdd = RedistributionManager.RedistributeValueCotaIndivizaForSpecificTenants(tenant, invoice, tenants);
-                    
+
                     result = result.HasValue ? (result + valueToAdd) : valueToAdd;
+                }
+                else if (invoice.id_Redistributiontype == (int)RedistributionType.PerCotaIndiviza)
+                {
+
                 }
             }
 
@@ -945,7 +795,6 @@ namespace Administratoro.BL.Managers
             }
 
             dt.Columns.Add(new DataColumn("Total lună", typeof(string)));
-            dt.Columns.Add(new DataColumn("Ajutor încălzire", typeof(string)));
             dt.Columns.Add(new DataColumn("Fond rulment", typeof(string)));
             dt.Columns.Add(new DataColumn("Fond reparații", typeof(string)));
 
@@ -981,21 +830,29 @@ namespace Administratoro.BL.Managers
                     if (item.Value != 0)
                     {
                         decimal? result = GetExpenseFromRaportListOnOrder(item.Value, raportList);
-                        displayedText = result != null ? result.ToString() : string.Empty;
                         if (result.HasValue)
                         {
-                            monthSum = monthSum + result.Value;
+                            if (item.Value == Expense.AjutorÎncălzire)
+                            {
+                                monthSum = monthSum - result.Value;
+                            }
+                            else
+                            {
+                                monthSum = monthSum + result.Value;
+                            }
                         }
+
+                        displayedText = result != null ? Math.Round(result.Value, 2).ToString() : string.Empty;
                     }
 
                     row.Add(displayedText);
                 }
 
                 generalMonthSum = generalMonthSum + monthSum;
+                monthSum = Math.Round(monthSum, 2);
                 generalSum = monthSum;
                 generalSum = generalSum + 0 + 0 + 0 + 0;
                 row.Add(monthSum.ToString());
-                row.Add(string.Empty);
                 row.Add(string.Empty);
                 row.Add(string.Empty);
                 row.Add(string.Empty);
@@ -1023,21 +880,26 @@ namespace Administratoro.BL.Managers
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
-            foreach (var item in totalCol)
+
+            foreach (var col in totalCol)
             {
-                rowTotal.Add(item.Value);
+                var value = Math.Round(col.Value, 2);
+                rowTotal.Add(value);
             }
+
+            generalMonthSum = Math.Round(generalMonthSum, 2);
             rowTotal.Add(generalMonthSum.ToString());
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
-            rowTotal.Add(string.Empty);
             rowTotal.Add(generalMonthSum.ToString());
+
             if (hasRoundUpColumn)
             {
                 var value = DecimalExtensions.RoundUp((double)generalMonthSum, 0);
                 rowTotal.Add(value.ToString());
             }
+
             rowTotal.Add(string.Empty);
 
             dt.Rows.Add(rowTotal.ToArray());
@@ -1070,8 +932,8 @@ namespace Administratoro.BL.Managers
                 case Expense.Gaz:
                     result = raportList.Gas.HasValue ? raportList.Gas : null;
                     break;
-                case Expense.Incalzire:
-                    result = raportList.Heat.HasValue ? raportList.Heat : null;
+                case Expense.IncalzireRAT:
+                    result = raportList.HeatRAT.HasValue ? raportList.HeatRAT : null;
                     break;
                 case Expense.IntretinereInstalatii:
                     result = raportList.Utilities.HasValue ? raportList.Utilities : null;
@@ -1091,10 +953,65 @@ namespace Administratoro.BL.Managers
                 case Expense.Diverse:
                     result = raportList.Diverse.HasValue ? raportList.Diverse : null;
                     break;
+                case Expense.AjutorÎncălzire:
+                    result = raportList.HeatHelp.HasValue ? raportList.HeatHelp : null;
+                    break;
             }
 
-
             return result;
+        }
+
+        public static void ConfigureIndividual(EstateExpenses ee, Tenants tenant)
+        {
+            var tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(ee.Id, tenant.Id);
+
+            if (tenantExpense == null)
+            {
+                TenantExpensesManager.AddDefaultTenantExpense(tenant.Id, ee.Year, ee.Month, ee.Id);
+                tenantExpense = TenantExpensesManager.GetByExpenseEstateIdAndapartmentid(ee.Id, tenant.Id);
+            }
+        }
+
+        public static void UpdateTenantExpense(int tenantExpenseId, decimal? newValue)
+        {
+            TenantExpenses result = new TenantExpenses();
+            result = GetContext().TenantExpenses.First(b => b.Id == tenantExpenseId);
+
+            if (result != null)
+            {
+                result.Value = newValue;
+                GetContext().Entry(result).CurrentValues.SetValues(result);
+
+                GetContext().SaveChanges();
+            }
+        }
+
+        internal static void UpdateValueForPriceUpdate(int estateExpenseId, decimal? newPricePerUnit)
+        {
+            IEnumerable<TenantExpenses> tenantExpenses = GetTenantsExpenseByEstateExpenseId(estateExpenseId).ToList();
+
+            foreach (var tenantExpense in tenantExpenses)
+            {
+                decimal? newValue = null;
+                decimal? consumption = null;
+
+                if(tenantExpense.IndexOld.HasValue && tenantExpense.IndexNew.HasValue)
+                {
+                    consumption = tenantExpense.IndexNew.Value - tenantExpense.IndexOld.Value;
+                }
+                
+                if(consumption.HasValue && newPricePerUnit.HasValue)
+                {
+                    newValue = consumption.Value * newPricePerUnit.Value;
+                }
+                
+                UpdateTenantExpense(tenantExpense.Id, newValue);
+            }
+        }
+
+        public static IEnumerable<TenantExpenses> GetTenantsExpenseByEstateExpenseId(int estateExpenseId)
+        {
+            return GetContext(true).TenantExpenses.Where(te => te.Id_EstateExpense == estateExpenseId);
         }
     }
 }

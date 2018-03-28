@@ -36,6 +36,7 @@ namespace Administratoro.DAL
         public virtual DbSet<Expenses> Expenses { get; set; }
         public virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
         public virtual DbSet<Functionalities> Functionalities { get; set; }
+        public virtual DbSet<InvoiceIndexes> InvoiceIndexes { get; set; }
         public virtual DbSet<Invoices> Invoices { get; set; }
         public virtual DbSet<Localities> Localities { get; set; }
         public virtual DbSet<PartnerRights> PartnerRights { get; set; }

@@ -99,9 +99,9 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static List<Counters> GetAllByExpenseType(int estateId, int expense)
+        public static List<Counters> GetAllByExpenseType(int associationId, int expense)
         {
-            return GetContext(true).Counters.Where(c => c.Id_Estate == estateId && c.Id_Expense == expense).ToList();
+            return GetContext(true).Counters.Where(c => c.Id_Estate == associationId && c.Id_Expense == expense).ToList();
         }
 
         public static List<Counters> GetByApartment(int apartmentId)

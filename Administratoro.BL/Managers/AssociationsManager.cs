@@ -55,7 +55,7 @@ namespace Administratoro.BL.Managers
         {
             var result = 0;
             var association = GetById(associationId);
-            if (associationId != null)
+            if (association != null)
             {
                 result = association.Tenants.Count();
             }

@@ -21,9 +21,9 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static IEnumerable<StairCases> GetAllByEstate(int estateId)
+        public static IEnumerable<StairCases> GetAllByEstate(int associationId)
         {
-            return GetContext().StairCases.Where(c => c.Id_Estate == estateId);
+            return GetContext().StairCases.Where(c => c.Id_Estate == associationId);
         }
 
         public static void AddNew(Estates estate, string name, decimal? indiviza)

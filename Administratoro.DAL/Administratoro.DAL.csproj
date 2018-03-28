@@ -72,6 +72,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EFModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="EFModel1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ErrorLogs.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
@@ -91,6 +96,9 @@
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Functionalities.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InvoiceIndexes.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Invoices.cs">
@@ -157,7 +165,7 @@
     <Content Include="EFModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>EFModel.edmx</DependentUpon>
-      <LastGenOutput>EFModel.cs</LastGenOutput>
+      <LastGenOutput>EFModel1.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

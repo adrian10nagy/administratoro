@@ -145,12 +145,21 @@
     <Content Include="Content\Images\logo.png" />
     <Content Include="Content\Images\logo5.png" />
     <Content Include="Content\Images\Preloader.gif" />
+    <Content Include="Content\Images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\Images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\Images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\Images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\Images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\Images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\jquery-ui.min.css" />
     <Content Include="Content\responsive.bootstrap.min.css" />
     <Content Include="Content\select2.min.css" />
     <Content Include="Error.aspx" />
     <Content Include="Expenses\AddEditExpense.aspx" />
+    <Content Include="Expenses\AddEditHeatHelp.aspx" />
     <Content Include="Expenses\Invoices.aspx" />
     <Content Include="Invoices\Add.aspx" />
+    <Content Include="Invoices\List.aspx" />
     <Content Include="Reports\Index.aspx" />
     <Content Include="Reports\Monthly.aspx" />
     <Content Include="Expenses\Dashboard.aspx" />
@@ -176,6 +185,7 @@
     <Content Include="Scripts\Datatables\jquery.dataTables.min.js" />
     <Content Include="Scripts\Datatables\responsive.bootstrap.js" />
     <Content Include="Scripts\date.js" />
+    <Content Include="Scripts\datepicker-ro.js" />
     <Content Include="Scripts\daterangepicker.js" />
     <Content Include="Scripts\fastclick.js" />
     <Content Include="Scripts\Flot\jquery.flot.js" />
@@ -352,6 +362,13 @@
     <Compile Include="Expenses\AddEditExpense.aspx.designer.cs">
       <DependentUpon>AddEditExpense.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Expenses\AddEditHeatHelp.aspx.cs">
+      <DependentUpon>AddEditHeatHelp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Expenses\AddEditHeatHelp.aspx.designer.cs">
+      <DependentUpon>AddEditHeatHelp.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Expenses\Invoices.aspx.cs">
       <DependentUpon>Invoices.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -365,6 +382,13 @@
     </Compile>
     <Compile Include="Invoices\Add.aspx.designer.cs">
       <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Invoices\List.aspx.cs">
+      <DependentUpon>List.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Invoices\List.aspx.designer.cs">
+      <DependentUpon>List.aspx</DependentUpon>
     </Compile>
     <Compile Include="Reports\Index.aspx.cs">
       <DependentUpon>Index.aspx</DependentUpon>

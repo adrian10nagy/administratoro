@@ -12,17 +12,30 @@
             <label>Cheltuială</label>
             <asp:DropDownList runat="server" ID="drpInvoiceExpenses" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="drpInvoiceExpenses_SelectedIndexChanged"></asp:DropDownList>
         </div>
-        <div class="form-group">
-            <label>Valoare</label>
-            <asp:Panel runat="server" ID="pnInvoiceValues">
-            </asp:Panel>          
+        <div class="form-group" runat="server" id="pnlInvoiceBody">
+            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
+                <label>Denumire factură</label>
+                <asp:TextBox runat="server" ID="txtInvoiceDescription"></asp:TextBox>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
+                <label>Valoare</label>
+                <asp:TextBox runat="server" ID="txtInvoiceValue"></asp:TextBox>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
+                <label>Data prezentării</label>
+                <asp:TextBox runat="server" ID="txtInvoiceDate" CssClass="datepicker"></asp:TextBox>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
+                <label>Număr</label>
+                <asp:TextBox runat="server" ID="txtInvoiceNumber"></asp:TextBox>
+            </div>
         </div>
-        <div class="form-group" runat="server" id="expensesOnIndex">
-            <label>Index nou</label>
-            <asp:TextBox runat="server" ID="txtInvoiceIndex" Visible="false" CssClass="form-control"></asp:TextBox>
-        </div>
+        <asp:Panel runat="server" ID="pnInvoiceValues" EnableViewState="false" >
+        </asp:Panel>
+        <asp:Panel runat="server" ID="pnlInvoiceDiverseValues" EnableViewState="false">
+        </asp:Panel>
         <div class="form-group" runat="server">
-            <asp:Button runat="server" ID="btnCancel" Text="Anulează" OnClick="btnCancel_Click" CausesValidation="false"/>
+            <asp:Button runat="server" ID="btnCancel" Text="Anulează" OnClick="btnCancel_Click" CausesValidation="false" />
             <asp:Button runat="server" ID="btnSave" Text="Salvează" OnClick="btnSave_Click" />
         </div>
     </div>

@@ -23,9 +23,9 @@ namespace Administratoro.BL.Managers
         }
 
 
-        public static List<Tenants> GetAllByEstateId(int estateId)
+        public static List<Tenants> GetAllByAssociationId(int associationId)
         {
-            return GetContext().Tenants.Where(t => t.Estates.Id == estateId).OrderBy(a=>a.Number).ToList();
+            return GetContext().Tenants.Where(t => t.Estates.Id == associationId).OrderBy(a=>a.Number).ToList();
         }
 
         public static int GetDependentsNr(int associationId)
@@ -54,7 +54,7 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static DbSet<Tenants> GetAllAsDbSet(int estateId)
+        public static DbSet<Tenants> GetAllAsDbSet(int associationId)
         {
             return GetContext().Tenants;
         }
@@ -94,14 +94,14 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static List<Tenants> GetAllThatAreRegisteredWithSpecificCounters(int estateId, int esexId)
+        public static List<Tenants> GetAllThatAreRegisteredWithSpecificCounters(int associationId, int esexId)
         {
             var result = new List<Tenants>();
 
             EstateExpenses estateExpense = EstateExpensesManager.GetById(esexId);
             if (estateExpense != null)
             {
-                List<Tenants> allTenants = GetAllByEstateId(estateId);
+                List<Tenants> allTenants = GetAllByAssociationId(associationId);
                 foreach (var tenant in allTenants)
                 {
                     List<Counters> counters = CountersManager.GetByApartment(tenant.Id);
@@ -117,9 +117,9 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static List<Tenants> GetAllByEstateIdAndStairCase(int estateId, int stairCaseId)
+        public static List<Tenants> GetAllByEstateIdAndStairCase(int associationId, int stairCaseId)
         {
-            return GetContext().Tenants.Where(t => t.Estates.Id == estateId && t.Id_StairCase == stairCaseId).ToList();
+            return GetContext().Tenants.Where(t => t.Estates.Id == associationId && t.Id_StairCase == stairCaseId).ToList();
         }
 
         public static decimal? GetSumOfIndivizaForAllTenants(int associationId)
@@ -148,6 +148,11 @@ namespace Administratoro.BL.Managers
             }
 
             return result;
+        }
+
+        public static IEnumerable<Tenants> GetAllEnabledForHeatHelp(int associationId)
+        {
+           return GetContext(true).Tenants.Where(t=>t.id_Estate == associationId && t.HasHeatHelp.HasValue && t.HasHeatHelp.Value);
         }
     }
 }

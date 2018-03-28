@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ConfigConstants.cs" />
     <Compile Include="Constants\Expense.cs" />
     <Compile Include="Constants\ExpensesCompletedStatus.cs" />
     <Compile Include="Constants\ExpenseType.cs" />
@@ -62,9 +63,11 @@
     <Compile Include="Managers\EstateExpensesManager.cs" />
     <Compile Include="Managers\AssociationsManager.cs" />
     <Compile Include="Managers\ExpensesManager.cs" />
+    <Compile Include="Managers\InvoiceIndexesManager.cs" />
     <Compile Include="Managers\InvoicesManager.cs" />
     <Compile Include="Managers\PartnerRightsManager.cs" />
     <Compile Include="Managers\PartnersManager.cs" />
+    <Compile Include="Managers\RecalculationManager.cs" />
     <Compile Include="Managers\RedistributionManager.cs" />
     <Compile Include="Managers\StairCasesManager.cs" />
     <Compile Include="Managers\TenantExpensesManager.cs" />

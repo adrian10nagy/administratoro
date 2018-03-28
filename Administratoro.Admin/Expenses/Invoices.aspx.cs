@@ -11,21 +11,10 @@ namespace Admin.Expenses
     using System.Globalization;
     using System.Web.UI;
     using System.Collections.Generic;
+    using System.Text;
 
     public partial class Invoice : BasePage
     {
-        private int estateId()
-        {
-            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
-
-            if (estate == null)
-            {
-                Response.Redirect("..\\Expenses\\Dashboard.aspx", true);
-            }
-
-            return estate.Id;
-        }
-
         private int month()
         {
             var monthId = Request.QueryString["month"];
@@ -52,15 +41,15 @@ namespace Admin.Expenses
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            mainHeader.InnerText = "Facturi pentru luna " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month());
+            mainHeader.InnerText = "Facturi pentru luna " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month()) + " " + year();
             InitializeInvoice();
         }
 
         private void InitializeInvoice(int? exesId = null)
         {
-            if (month() != 0 && year() != 0 && estateId() != 0)
+            if (month() != 0 && year() != 0 && Association.Id != 0)
             {
-                InitializeInvoice(estateId(), year(), month(), exesId);
+                InitializeInvoice(Association.Id, year(), month(), exesId);
             }
             else
             {
@@ -68,20 +57,33 @@ namespace Admin.Expenses
             }
         }
 
-        private void InitializeInvoice(int estateId, int yearNr, int monthNr, int? exesId)
+        private void InitializeInvoice(int associationId, int yearNr, int monthNr, int? exesId)
         {
-            AddHeaderPanels();
-            AddBodyPanels(estateId, yearNr, monthNr);
+            bool isMonthClosed = EstateExpensesManager.IsMonthClosed(Association.Id, yearNr, monthNr);
+            if (!isMonthClosed)
+            {
+                AddHeaderPanels();
+                AddBodyPanels(associationId, yearNr, monthNr);
+            }
+            else
+            {
+                Label lbMessage = new Label();
+                lbMessage.Attributes.CssStyle.Add("color", "red");
+                lbMessage.Text = "Luna este închisă, nu se mai pot face modificări. Pentru a redeschide luna contactează administratorul asociației";
+                pnlMessage.Controls.Add(lbMessage);
+                pnlMessage.Visible = true;
+                btnCloseMonth.Visible = false;
+                lblExpenseMeessageConfigure.Visible = false;
+            }
         }
 
-        private void AddBodyPanels(int estateId, int yearNr, int monthNr)
+        private void AddBodyPanels(int associationId, int yearNr, int monthNr)
         {
             string mainRowCssFormat = "col-md-12 col-sm-12 xs-12 cashBokItemsRow {0}";
             bool even = false;
 
             var allExpenses = ExpensesManager.GetAllExpenses();
-            var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estateId, yearNr, monthNr);
-
+            var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, yearNr, monthNr).OrderBy(ee => ee.Id_ExpenseType);
 
             // add expense panels
             foreach (Expenses expense in allExpenses)
@@ -137,23 +139,37 @@ namespace Admin.Expenses
             {
                 CssClass = "col-md-3 col-sm-2 col-xs-6"
             };
-            Button btnAddExpense = new Button
-            {
-                PostBackUrl = "AddEditExpense.aspx?id_exes=" + estateExpense.Id,
-                Text = "Adaugă/Modifică",
-                Visible = isExpensePerIndex
-            };
 
-            if (isExpensePerIndex && estateExpense.Estates.Tenants.Count() > 0)
+            if (estateExpense.Id_Expense != (int)Expense.AjutorÎncălzire)
             {
-                var message = EstateExpensesManager.ExpensePercentageFilledInMessage(estateExpense);
-                var col5Literal = new Literal { Text = message };
-                col5.Controls.Add(col5Literal);
-                if (!message.Contains("<b>0</b> cheltuieli adăugate din <b>0</b"))
+                if (isExpensePerIndex && estateExpense.Estates.Tenants.Count() > 0)
                 {
-                    col5.Controls.Add(btnAddExpense);
+                    var message = EstateExpensesManager.ExpensePercentageFilledInMessage(estateExpense);
+                    var col5Literal = new Literal { Text = message };
+                    col5.Controls.Add(col5Literal);
+                    if (!message.Contains("<b>0</b> cheltuieli adăugate din <b>0</b"))
+                    {
+                        Button btnAddExpense = new Button
+                        {
+                            PostBackUrl = "AddEditExpense.aspx?id_exes=" + estateExpense.Id,
+                            Text = "Adaugă/Modifică",
+                            Visible = isExpensePerIndex
+                        };
+                        col5.Controls.Add(btnAddExpense);
+                    }
                 }
             }
+            else
+            {
+                Button btnAddHeatHelp = new Button
+                {
+                    PostBackUrl = "AddEditHeatHelp.aspx?id_exes=" + estateExpense.Id,
+                    Text = "Adaugă/Modifică"
+                };
+
+                col5.Controls.Add(btnAddHeatHelp);
+            }
+
             return col5;
         }
 
@@ -178,6 +194,7 @@ namespace Admin.Expenses
 
             btn4.Click += ClickablePanel1_Click;
             btn4.CommandArgument = estateExpense.Id.ToString();
+            btn4.Visible = estateExpense.Id_Expense != (int)Expense.AjutorÎncălzire;
             col4.Controls.Add(btn4);
 
             return col4;
@@ -191,17 +208,20 @@ namespace Admin.Expenses
                 CssClass = "col-md-2 col-sm-2 col-xs-6"
             };
 
-
-            string percentage = EstateExpensesManager.GetPercentageAsString(estateExpense);
-
-            Button btnRedistibuteRemainingExpense = new Button
+            if (estateExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
             {
-                Visible = (tb3.Text != string.Empty && (percentage == "100" || percentage == string.Empty)) ? true : false,
-                Text = (!estateExpense.RedistributeType.HasValue) ? "Redistribuie" : "Redistibuit " + estateExpense.EstateExpensesRedistributionTypes.Value + ", MODIFICĂ",
-                CommandArgument = estateExpense.Id.ToString()
-            };
-            btnRedistibuteRemainingExpense.Click += btnRedistibuteRemainingExpense_Click;
-            col6.Controls.Add(btnRedistibuteRemainingExpense);
+                string percentage = EstateExpensesManager.GetPercentageAsString(estateExpense);
+
+                Button btnRedistibuteRemainingExpense = new Button
+                {
+                    CssClass = "btnRedistibuteRemainingExpense",
+                    Visible = (percentage == "100" || percentage == string.Empty) && !string.IsNullOrEmpty(tb3.Text) ? true : false,
+                    Text = (!estateExpense.RedistributeType.HasValue) ? "Redistribuie" : "Redistibuit " + estateExpense.EstateExpensesRedistributionTypes.Value + ", MODIFICĂ",
+                    CommandArgument = estateExpense.Id.ToString()
+                };
+                btnRedistibuteRemainingExpense.Click += btnRedistibuteRemainingExpense_Click;
+                col6.Controls.Add(btnRedistibuteRemainingExpense);
+            }
             return col6;
         }
 
@@ -213,7 +233,6 @@ namespace Admin.Expenses
                 CssClass = "col-md-1 col-sm-4 col-xs-6"
             };
             tb3 = new TextBox { Enabled = false, CssClass = "invoiceItemTextbox" };
-            // tb3.Attributes.Add("eeId", estateExpense.Id.ToString());
 
             if (estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
             {
@@ -224,7 +243,8 @@ namespace Admin.Expenses
                     {
                         tb3.Text = RedistributionManager.RedistributeValuePerIndexAsString(estateExpense);
                     }
-                    if (tb3.Text == "0,00")
+
+                    if (tb3.Text == "0,0000000")
                     {
                         tb3.Text = string.Empty;
                     }
@@ -271,55 +291,61 @@ namespace Admin.Expenses
 
             tb2 = new TextBox { Enabled = false, CssClass = "invoiceItemTextbox" };
 
-            if (Association.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+            if (estateExpense.Id_Expense == (int)Expense.AjutorÎncălzire)
             {
-                decimal? sumOfInvoices = null;
-
-                foreach (StairCases stairCase in Association.StairCases)
-                {
-                    var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_EstateExpense == estateExpense.Id);
-                    var lit = new Literal
-                    {
-                        Text = "Scara: " + stairCase.Nume + "  "
-                    };
-
-                    var tb = new TextBox
-                    {
-                        Enabled = false,
-                        CssClass = "invoiceItemTextbox",
-                        Text = ((invoice != null) ? invoice.Value.ToString() : string.Empty)
-                    };
-                    tb.Attributes.Add("eeId", estateExpense.Id.ToString());
-                    tb.Attributes.Add("sc", stairCase.Id.ToString());
-                    col2.Controls.Add(lit);
-                    col2.Controls.Add(tb);
-                    col2.Controls.Add(new Literal { Text = "<br>" });
-
-                    if (invoice != null && invoice.Value.HasValue)
-                    {
-                        if (!sumOfInvoices.HasValue)
-                        {
-                            sumOfInvoices = 0m;
-                        }
-                        sumOfInvoices = sumOfInvoices + invoice.Value.Value;
-                    }
-                }
-
-                tb2.Text = (sumOfInvoices.HasValue) ? sumOfInvoices.Value.ToString() : string.Empty;
+                return col2;
             }
-            else
+
+            //if (Association.HasStaircase && estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
+            //{
+            //    decimal? sumOfInvoices = null;
+
+            //    foreach (StairCases stairCase in Association.StairCases)
+            //    {
+            //        var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_EstateExpense == estateExpense.Id);
+            //        var lit = new Literal
+            //        {
+            //            Text = "Scara: " + stairCase.Nume + "  "
+            //        };
+
+            //        var tb = new TextBox
+            //        {
+            //            Enabled = false,
+            //            CssClass = "invoiceItemTextbox",
+            //            Text = ((invoice != null) ? invoice.Value.ToString() : string.Empty),
+            //            Visible = estateExpense.Id_Expense != (int)Expense.AjutorÎncălzire
+            //        };
+            //        tb.Attributes.Add("eeId", estateExpense.Id.ToString());
+            //        tb.Attributes.Add("sc", stairCase.Id.ToString());
+            //        col2.Controls.Add(lit);
+            //        col2.Controls.Add(tb);
+            //        col2.Controls.Add(new Literal { Text = "<br>" });
+
+            //        if (invoice != null && invoice.Value.HasValue)
+            //        {
+            //            if (!sumOfInvoices.HasValue)
+            //            {
+            //                sumOfInvoices = 0m;
+            //            }
+            //            sumOfInvoices = sumOfInvoices + invoice.Value.Value;
+            //        }
+            //    }
+
+            //    tb2.Text = (sumOfInvoices.HasValue) ? sumOfInvoices.Value.ToString() : string.Empty;
+            //}
+            //else
+            //{
+            tb2.Attributes.Add("eeId", estateExpense.Id.ToString());
+            var invoice = estateExpense.Invoices.FirstOrDefault(i => i.Id_EstateExpense == estateExpense.Id && i.Id_StairCase == null);
+
+            string message = string.Empty;
+            if (invoice != null && invoice.Value.HasValue)
             {
-                tb2.Attributes.Add("eeId", estateExpense.Id.ToString());
-                var invoice = estateExpense.Invoices.FirstOrDefault(i => i.Id_EstateExpense == estateExpense.Id && i.Id_StairCase == null);
-
-                string message = string.Empty;
-                if (invoice != null && invoice.Value.HasValue)
-                {
-                    message = invoice.Value.Value.ToString();
-                }
-                tb2.Text = message;
-                col2.Controls.Add(tb2);
+                message = invoice.Value.Value.ToString();
             }
+            tb2.Text = message;
+            col2.Controls.Add(tb2);
+            //}
 
             return col2;
         }
@@ -390,6 +416,8 @@ namespace Admin.Expenses
             invoiceMain.Controls.Add(headerPanel);
         }
 
+        #region click events
+
         public void ClickablePanel1_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
@@ -435,11 +463,13 @@ namespace Admin.Expenses
             if (decimal.TryParse(redistributeValue, out redistributeVal))
             {
                 Estates estate = AssociationsManager.GetByEstateExpenseId(estateExpenseId);
-                txtInvoiceRedistributeEqualApartment.Text = estate.Tenants.Count + " apartamente, alocă <b>" +
-                    Math.Round(redistributeVal / estate.Tenants.Count, 2) + "</b> la fiecare apartament";
+                List<Tenants> apartments = EstateExpensesManager.GetApartmentsNrThatShouldRedistributeTo(estateExpenseId);
 
-                var tenants = ApartmentsManager.GetAllByEstateId(estate.Id);
-                var allTenantDependents = tenants.Sum(t => t.Dependents);
+                txtInvoiceRedistributeEqualApartment.Text = apartments.Count() + " apartamente, alocă <b>" +
+                    Math.Round(redistributeVal / apartments.Count(), 2) + "</b> la fiecare apartament";
+
+                var tenants = ApartmentsManager.GetAllByAssociationId(estate.Id);
+                var allTenantDependents = apartments.Sum(t => t.Dependents);
                 var valuePerTenant = "0";
                 if (allTenantDependents != 0)
                 {
@@ -460,7 +490,7 @@ namespace Admin.Expenses
             int estateExpenseId;
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-                EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 3);
+                EstateExpensesManager.UpdateRedistributeMethod(estateExpenseId, 3);
                 Response.Redirect(Request.RawUrl);
             }
         }
@@ -471,7 +501,7 @@ namespace Admin.Expenses
             int estateExpenseId;
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-                EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 2);
+                EstateExpensesManager.UpdateRedistributeMethod(estateExpenseId, 2);
                 Response.Redirect(Request.RawUrl);
             }
         }
@@ -482,7 +512,7 @@ namespace Admin.Expenses
             int estateExpenseId;
             if (int.TryParse(btn.CommandArgument, out estateExpenseId))
             {
-                EstateExpensesManager.UpdateRedistributeMethodAndValue(estateExpenseId, 1);
+                EstateExpensesManager.UpdateRedistributeMethod(estateExpenseId, 1);
                 Response.Redirect(Request.RawUrl);
             }
         }
@@ -501,12 +531,40 @@ namespace Admin.Expenses
 
         protected void btnCloseMonth_Click(object sender, EventArgs e)
         {
-            bool canBeClosed =  EstateExpensesManager.CanCloseMonth(Association.Id, year(), month());
+            var expenses = EstateExpensesManager.CheckCloseMonth(Association.Id, year(), month());
 
-            if (canBeClosed)
+            if (expenses.Any())
+            {
+                pnlMessage.Visible = true;
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("Luna nu poate fi închisă. <br> Cheltuielile care nu sunt complete: ");
+
+                foreach (var expense in expenses)
+                {
+                    sb.Append(expense.ToString() + ", ");
+                }
+
+                string result = sb.ToString().Substring(0, sb.ToString().Length - 2);
+
+                Label lbMessage = new Label();
+                lbMessage.Attributes.CssStyle.Add("color", "red");
+                lbMessage.Text = result;
+                pnlMessage.Controls.Add(lbMessage);
+
+            }
+            else
             {
                 EstateExpensesManager.CloseMonth(Association.Id, year(), month());
+                Response.Redirect(Request.RawUrl);
             }
         }
+
+        protected void lblInvoiceList_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Invoices/List.aspx?year=" + year() + "&month=" + month());
+        }
+
+        #endregion
     }
 }

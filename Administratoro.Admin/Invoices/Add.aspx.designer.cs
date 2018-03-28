@@ -31,6 +31,51 @@ namespace Admin.Invoices {
         protected global::System.Web.UI.WebControls.DropDownList drpInvoiceExpenses;
         
         /// <summary>
+        /// pnlInvoiceBody control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlInvoiceBody;
+        
+        /// <summary>
+        /// txtInvoiceDescription control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtInvoiceDescription;
+        
+        /// <summary>
+        /// txtInvoiceValue control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtInvoiceValue;
+        
+        /// <summary>
+        /// txtInvoiceDate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtInvoiceDate;
+        
+        /// <summary>
+        /// txtInvoiceNumber control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtInvoiceNumber;
+        
+        /// <summary>
         /// pnInvoiceValues control.
         /// </summary>
         /// <remarks>
@@ -40,22 +85,13 @@ namespace Admin.Invoices {
         protected global::System.Web.UI.WebControls.Panel pnInvoiceValues;
         
         /// <summary>
-        /// expensesOnIndex control.
+        /// pnlInvoiceDiverseValues control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl expensesOnIndex;
-        
-        /// <summary>
-        /// txtInvoiceIndex control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtInvoiceIndex;
+        protected global::System.Web.UI.WebControls.Panel pnlInvoiceDiverseValues;
         
         /// <summary>
         /// btnCancel control.

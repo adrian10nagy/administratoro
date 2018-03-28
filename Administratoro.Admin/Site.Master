@@ -173,7 +173,9 @@
 
         <script src='<%= ResolveUrl("~/Scripts/moment.min.js")%>'></script>
         <script src='<%= ResolveUrl("~/Scripts/daterangepicker.js")%>'></script>
+        
         <script src='<%= ResolveUrl("~/Scripts/jquery-ui.min.js")%>'></script>
+        <script src='<%= ResolveUrl("~/Scripts/datepicker-ro.js")%>'></script>
 
         <script src='<%= ResolveUrl("~/Scripts/custom.js")%>'></script>
         <script src='<%= ResolveUrl("~/Scripts/general.js")%>'></script>

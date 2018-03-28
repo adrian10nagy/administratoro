@@ -406,7 +406,6 @@ body .container.body .right_col {
 .nav-md .container.body .right_col {
     padding: 10px 20px 0;
     margin-left: 230px;
-    
 }
 
 .nav_title {
@@ -578,7 +577,6 @@ body {
 .main_container .top_nav {
     display: block;
     margin-left: 230px;
-    
 }
 
 .no-padding {
@@ -5068,6 +5066,7 @@ ul.notifications {
 
 .cashBokItemsRow {
     padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 /*
@@ -5112,6 +5111,7 @@ input#MainContent_estateStairs_1 {
 /* invoice */
 .invoiceItemTextbox {
     width: 85px;
+    margin-bottom: 5px;
 }
 
 .evenRow {
@@ -5160,7 +5160,21 @@ input#MainContent_estateStairs_1 {
     padding-right: 10%;
 }
 
-#monthlyMainContent{
-    overflow-x:scroll;
-    width:100%;
+#monthlyMainContent {
+    overflow-x: scroll;
+    width: 100%;
+}
+
+.btnRedistibuteRemainingExpense {
+    white-space: normal;
+}
+
+.invoicesRow{
+    padding-bottom:7px;
+}
+
+.invoicesListHeader{
+    background-color: #2a3f54;
+    color: white;
+    padding: 5px; 
 }

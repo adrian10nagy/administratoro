@@ -33,6 +33,7 @@ namespace Administratoro.DAL
         public Nullable<decimal> CotaIndiviza { get; set; }
         public int Number { get; set; }
         public Nullable<int> Id_StairCase { get; set; }
+        public Nullable<bool> HasHeatHelp { get; set; }
     
         public virtual ICollection<ApartmentCounters> ApartmentCounters { get; set; }
         public virtual Estates Estates { get; set; }

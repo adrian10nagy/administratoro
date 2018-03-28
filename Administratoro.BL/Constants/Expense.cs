@@ -14,7 +14,7 @@ namespace Administratoro.BL.Constants
         Gaz = 4,
         Administrator = 5,
         PersonalServiciu = 6,
-        Incalzire = 7,
+        IncalzireRAT = 7,
         EnergieElectrica = 8,
         Lift = 9,
         IntretinereInstalatii = 10,
@@ -26,6 +26,7 @@ namespace Administratoro.BL.Constants
         FondReparatii = 21,
         Restante = 22,
         Penalizări = 22,
-        Diverse = 24
+        Diverse = 24,
+        AjutorÎncălzire = 25
     }
 }

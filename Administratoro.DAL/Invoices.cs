@@ -14,15 +14,23 @@ namespace Administratoro.DAL
     
     public partial class Invoices
     {
+        public Invoices()
+        {
+            this.InvoiceIndexes = new HashSet<InvoiceIndexes>();
+        }
+    
         public int Id { get; set; }
         public Nullable<decimal> Value { get; set; }
         public Nullable<int> Id_EstateExpense { get; set; }
         public Nullable<int> Id_StairCase { get; set; }
         public string Description { get; set; }
         public Nullable<int> id_Redistributiontype { get; set; }
+        public Nullable<System.DateTime> issueDate { get; set; }
+        public string issueNumber { get; set; }
     
         public virtual EstateExpenses EstateExpenses { get; set; }
         public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
+        public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }
         public virtual StairCases StairCases { get; set; }
     }
 }

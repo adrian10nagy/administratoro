@@ -12,6 +12,7 @@ namespace Admin.Expenses
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Web.UI;
     using System.Web.UI.WebControls;
 
     public partial class CurrentMonth : BasePage
@@ -88,13 +89,12 @@ namespace Admin.Expenses
 
         private void InitializeGridView(DataTable dt, int? stairCase = null)
         {
-            var year = _year;
-            var month = _month;
-
             var estate = Session[SessionConstants.SelectedAssociation] as Estates;
 
-            dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
+            RecalculationManager.RecalculateMonthlyExpenses(Association.Id, _year, _month);
 
+            dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
+           
             ViewState["dt"] = dt;
             GridView1.DataSource = dt;
             GridView1.DataBind();
@@ -107,16 +107,42 @@ namespace Admin.Expenses
             if(int.TryParse(drpDisplayMode.SelectedValue, out stairCase))
             {
                 dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
+                dt.Rows.Add(new TableCell());
             }
             else
             {
                 dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, null);
             }
 
-
             using (XLWorkbook wb = new XLWorkbook())
             {
-                wb.Worksheets.Add(dt, "Carti");
+                var ws = wb.Worksheets.Add(dt, "Cheltuieli");
+                ws.Row(1).InsertRowsAbove(1);
+
+                ws.Cells("A1").Value = ws.Cell(2, 1).Value; 
+                ws.Range("A1:A2").Merge();
+                
+                ws.Cells("B1").Value = ws.Cell(2, 2).Value;
+                ws.Range("B1:B2").Merge();
+
+                ws.Cells("C1").Value = ws.Cell(3, 2).Value;
+                ws.Range("C1:C2").Merge();
+
+                ws.Cells("D1").Value = ws.Cell(4, 2).Value;
+                ws.Range("D1:D2").Merge();
+
+                var expenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
+                char position = 'E';
+                foreach (var expense in expenses)
+                {
+                    var tempPosition = position;
+                    position = (char)(((int)position) + expense.ToList().Count-1);
+                    var range = string.Format("{0}1:{1}1",tempPosition.ToString(), position.ToString());
+                    ws.Cells(tempPosition + "1").Value = expense.FirstOrDefault().ExpenseTypes.Name;
+                    ws.Range(range).Merge();
+                    position = (char)(((int)position+1)); 
+                }
+
                 string myName = Server.UrlEncode("Cheltuieli" + "_" + DateTime.Now.ToShortDateString() + ".xlsx");
                 MemoryStream stream = GetStream(wb);
                 Response.Clear();
@@ -153,6 +179,51 @@ namespace Admin.Expenses
                     this.InitializeGridView(dt, result);
                 }
             }
+        }
+
+        protected void GridView1_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+        }
+
+        protected void GridView1_DataBinding(object sender, EventArgs e)
+        {
+
+            GridViewRow HeaderGridRow = new GridViewRow(0, 0, DataControlRowType.Header,
+                                                        DataControlRowState.Insert);  //creating new Header Type 
+            TableCell HeaderCell = new TableCell(); //creating HeaderCell
+            HeaderCell.ColumnSpan = 4;
+            HeaderGridRow.Cells.Add(HeaderCell);//Adding HeaderCell to header.
+
+            var expenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
+            foreach (var expense in expenses)
+            {
+                var HeaderCell2 = new TableCell();
+                HeaderCell2.Text = expense.FirstOrDefault().ExpenseTypes.Name;
+                HeaderCell2.ColumnSpan = expense.ToList().Count;
+                HeaderGridRow.Cells.Add(HeaderCell2);//Adding HeaderCell to header.
+            }
+
+            TableCell HeaderCell3 = new TableCell(); //creating HeaderCell
+            HeaderCell3.ColumnSpan = GridView1.Rows[0].Cells.Count - 4 - expenses.Select(c => c.ToList()).Count();
+            HeaderGridRow.Cells.Add(HeaderCell3);//Adding HeaderCell to header.
+
+            GridView1.Controls[0].Controls.AddAt(0, HeaderGridRow);
+        }
+        public override void VerifyRenderingInServerForm(Control control)
+        {
+            /* Confirms that an HtmlForm control is rendered for the specified ASP.NET
+               server control at run time. */
+        }
+        protected void lblExpenseMeessageDownload_Click1(object sender, EventArgs e)
+        {
+            Response.ClearContent();
+            Response.AddHeader("content-disposition", "attachment; filename=gvtoexcel.xls");
+            Response.ContentType = "application/excel";
+            System.IO.StringWriter sw = new System.IO.StringWriter();
+            HtmlTextWriter htw = new HtmlTextWriter(sw);
+            GridView1.RenderControl(htw);
+            Response.Write(sw.ToString());
+            Response.End();
         }
     }
 }
