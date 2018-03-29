@@ -27,12 +27,15 @@ namespace Administratoro.DAL
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<ApartmentCounters> ApartmentCounters { get; set; }
-        public virtual DbSet<Counters> Counters { get; set; }
+        public virtual DbSet<ApartmentExpenses> ApartmentExpenses { get; set; }
+        public virtual DbSet<ApartmentPersons> ApartmentPersons { get; set; }
+        public virtual DbSet<Apartments> Apartments { get; set; }
+        public virtual DbSet<AssociationCounters> AssociationCounters { get; set; }
+        public virtual DbSet<AssociationCountersApartment> AssociationCountersApartment { get; set; }
+        public virtual DbSet<AssociationExpenses> AssociationExpenses { get; set; }
+        public virtual DbSet<AssociationExpensesRedistributionTypes> AssociationExpensesRedistributionTypes { get; set; }
+        public virtual DbSet<Associations> Associations { get; set; }
         public virtual DbSet<ErrorLogs> ErrorLogs { get; set; }
-        public virtual DbSet<EstateExpenses> EstateExpenses { get; set; }
-        public virtual DbSet<EstateExpensesRedistributionTypes> EstateExpensesRedistributionTypes { get; set; }
-        public virtual DbSet<Estates> Estates { get; set; }
         public virtual DbSet<Expenses> Expenses { get; set; }
         public virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
         public virtual DbSet<Functionalities> Functionalities { get; set; }
@@ -45,9 +48,6 @@ namespace Administratoro.DAL
         public virtual DbSet<Persons> Persons { get; set; }
         public virtual DbSet<StairCases> StairCases { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
-        public virtual DbSet<TenantExpenses> TenantExpenses { get; set; }
-        public virtual DbSet<TenantPersons> TenantPersons { get; set; }
-        public virtual DbSet<Tenants> Tenants { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

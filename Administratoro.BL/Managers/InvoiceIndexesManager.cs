@@ -68,7 +68,7 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddDefault(int invoiceId, List<Counters> counters, List<InvoiceIndexes> invoicesIndexes)
+        public static void AddDefault(int invoiceId, List<AssociationCounters> counters, List<InvoiceIndexes> invoicesIndexes)
         {
             var lastMonthIndexes = GetLastMonthIndexes(invoiceId);
 

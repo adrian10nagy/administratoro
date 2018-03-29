@@ -16,9 +16,9 @@ namespace Admin.Expenses
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
+            var estate = (Administratoro.DAL.Associations)Session[SessionConstants.SelectedAssociation];
             var defaultCssClass = "col-md-2 col-sm-3 col-xs-12";
-            List<YearMonth> yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
+            List<YearMonth> yearMonths = AssociationExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
             foreach (var yearMonth in yearMonths)
             {
                 var month = new Panel

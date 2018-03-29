@@ -28,14 +28,14 @@ namespace Administratoro.BL.Managers
 
         public static IEnumerable<Invoices> GetAllByAssotiationYearMonthExpenseId(int associationId, int expenseId, int year, int month)
         {
-            return GetContext().Invoices.Where(i => i.EstateExpenses.Id_Estate == associationId &&
-                i.EstateExpenses.Month == month && i.EstateExpenses.Year == year && i.EstateExpenses.Id_Expense == expenseId);
+            return GetContext().Invoices.Where(i => i.AssociationExpenses.Id_Estate == associationId &&
+                i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year && i.AssociationExpenses.Id_Expense == expenseId);
         }
 
         public static Invoices GetAllByAssotiationYearMonthExpenseIdstairCase(int associationId, int expenseId, int year, int month, int stairsCaseId)
         {
-            return GetContext().Invoices.FirstOrDefault(i => i.EstateExpenses.Id_Estate == associationId &&
-                i.EstateExpenses.Month == month && i.EstateExpenses.Year == year && i.EstateExpenses.Id_Expense == expenseId
+            return GetContext().Invoices.FirstOrDefault(i => i.AssociationExpenses.Id_Estate == associationId &&
+                i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year && i.AssociationExpenses.Id_Expense == expenseId
                 && i.Id_StairCase == stairsCaseId);
         }
 
@@ -58,10 +58,10 @@ namespace Administratoro.BL.Managers
 
                 if (invoice.Id_EstateExpense.HasValue)
                 {
-                    var ee = EstateExpensesManager.GetById(invoice.Id_EstateExpense.Value);
+                    var ee = AssociationExpensesManager.GetById(invoice.Id_EstateExpense.Value);
                     if (ee != null)
                     {
-                        TenantExpensesManager.UpdateTenantExpenses(ee, value, stairCaseId);
+                        ApartmentExpensesManager.UpdateApartmentExpenses(ee, value, stairCaseId);
                     }
                 }
                 GetContext().SaveChanges();
@@ -69,10 +69,10 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddOrUpdate(EstateExpenses estateExpense, decimal? value, string description = null)
+        public static void AddOrUpdate(AssociationExpenses associationExpense, decimal? value, string description = null)
         {
             Invoices result = new Invoices();
-            result = GetContext(true).Invoices.FirstOrDefault(c => c.Id_EstateExpense == estateExpense.Id && c.Id_StairCase == null);
+            result = GetContext(true).Invoices.FirstOrDefault(c => c.Id_EstateExpense == associationExpense.Id && c.Id_StairCase == null);
 
             if (result != null)
             {
@@ -84,7 +84,7 @@ namespace Administratoro.BL.Managers
             {
                 result = new Invoices
                 {
-                    Id_EstateExpense = estateExpense.Id,
+                    Id_EstateExpense = associationExpense.Id,
                     Value = value,
                     Id_StairCase = null,
                     Description = description
@@ -92,7 +92,7 @@ namespace Administratoro.BL.Managers
                 GetContext().Invoices.Add(result);
             }
 
-            TenantExpensesManager.UpdateTenantExpenses(estateExpense, value);
+            ApartmentExpensesManager.UpdateApartmentExpenses(associationExpense, value);
 
             GetContext().SaveChanges();
         }
@@ -109,18 +109,18 @@ namespace Administratoro.BL.Managers
                 GetContext().Entry(theInvoice).CurrentValues.SetValues(theInvoice);
 
 
-                TenantExpensesManager.UpdateTenantExpenses(invoice.EstateExpenses, value, stairCaseId);
+                ApartmentExpensesManager.UpdateApartmentExpenses(invoice.AssociationExpenses, value, stairCaseId);
 
                 GetContext().SaveChanges();
             }
         }
 
-        public static void AddOrUpdate(EstateExpenses estateExpense, decimal? value, int? stairCaseId, string description = null,
+        public static void AddOrUpdate(AssociationExpenses associationExpense, decimal? value, int? stairCaseId, string description = null,
             string issueNumber = null, DateTime? issueDate = null)
         {
             Invoices invoice = new Invoices();
 
-            invoice = GetContext(true).Invoices.FirstOrDefault(c => c.Id_StairCase == stairCaseId && c.Id_EstateExpense == estateExpense.Id);
+            invoice = GetContext(true).Invoices.FirstOrDefault(c => c.Id_StairCase == stairCaseId && c.Id_EstateExpense == associationExpense.Id);
 
             if (invoice != null)
             {
@@ -136,32 +136,32 @@ namespace Administratoro.BL.Managers
                 {
                     Id_StairCase = stairCaseId,
                     Value = value,
-                    Id_EstateExpense = estateExpense.Id,
+                    Id_EstateExpense = associationExpense.Id,
                     Description = description
                 };
                 GetContext().Invoices.Add(invoice);
             }
 
-            TenantExpensesManager.UpdateTenantExpenses(estateExpense, value, stairCaseId);
+            ApartmentExpensesManager.UpdateApartmentExpenses(associationExpense, value, stairCaseId);
 
             GetContext().SaveChanges();
         }
 
         public static void Add(decimal? theValue, int year, int month, int expenseId, int? stairCaseId, int associationId)
         {
-            var estateExpense = EstateExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+            var associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
 
-            if (estateExpense != null)
+            if (associationExpense != null)
             {
-                AddOrUpdate(estateExpense, theValue, stairCaseId);
+                AddOrUpdate(associationExpense, theValue, stairCaseId);
             }
         }
 
         public static void AddDefault(int associationId, int expenseId, int year, int month)
         {
-            var estateExpense = EstateExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+            var associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
 
-            if (estateExpense != null)
+            if (associationExpense != null)
             {
                 //if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
                 //{
@@ -180,7 +180,7 @@ namespace Administratoro.BL.Managers
                 //{
                 var result = new Invoices
                 {
-                    Id_EstateExpense = estateExpense.Id,
+                    Id_EstateExpense = associationExpense.Id,
                     Value = null,
                     Id_StairCase = null
                 };
@@ -191,9 +191,9 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static List<Invoices> GetDiverseByEstateExpense(int estateExpenseId)
+        public static List<Invoices> GetDiverseByAssociationAssociationExpense(int associationExpenseId)
         {
-            return GetContext().Invoices.Where(i => i.Id_EstateExpense == estateExpenseId).ToList();
+            return GetContext().Invoices.Where(i => i.Id_EstateExpense == associationExpenseId).ToList();
         }
 
         public static Invoices GetDiverseById(int invoiceId)
@@ -206,7 +206,7 @@ namespace Administratoro.BL.Managers
             var result = new List<Invoices>();
             int divereId = 24;
 
-            var esExpense = GetContext(true).EstateExpenses.FirstOrDefault(ee => ee.Id_Expense == divereId
+            var esExpense = GetContext(true).AssociationExpenses.FirstOrDefault(ee => ee.Id_Expense == divereId
                 && ee.Id_Estate == association && ee.Year == year && ee.Month == month);
             if (esExpense != null)
             {
@@ -216,7 +216,7 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static void AddDiverse(EstateExpenses ee, decimal? theValue, string description, int? stairCaseId, int? redistributionId = null,
+        public static void AddDiverse(AssociationExpenses ee, decimal? theValue, string description, int? stairCaseId, int? redistributionId = null,
             string issueNumber = null, DateTime? issueDate = null)
         {
             var invoice = new Invoices
@@ -263,7 +263,7 @@ namespace Administratoro.BL.Managers
 
             if (invoice != null)
             {
-                var ee = EstateExpensesManager.GetById(invoice.Id_EstateExpense.Value);
+                var ee = AssociationExpensesManager.GetById(invoice.Id_EstateExpense.Value);
                 var month = ee.Month;
                 var year = ee.Year;
 
@@ -277,10 +277,10 @@ namespace Administratoro.BL.Managers
                     month = month - 1;
                 }
 
-                var estateExpense = EstateExpensesManager.GetEstateExpense(ee.Id_Estate, ee.Id_Expense, year, month);
-                if(estateExpense != null)
+                var associationExpense = AssociationExpensesManager.GetAssociationExpense(ee.Id_Estate, ee.Id_Expense, year, month);
+                if(associationExpense != null)
                 {
-                    result = estateExpense.Invoices.FirstOrDefault();
+                    result = associationExpense.Invoices.FirstOrDefault();
                 }
             }
 
@@ -289,8 +289,8 @@ namespace Administratoro.BL.Managers
 
         public static IEnumerable<Invoices> GetAllByAssotiationYearMonth(int associationId, int year, int month)
         {
-            return GetContext().Invoices.Where(i => i.EstateExpenses.Id_Estate == associationId &&
-                            i.EstateExpenses.Month == month && i.EstateExpenses.Year == year);
+            return GetContext().Invoices.Where(i => i.AssociationExpenses.Id_Estate == associationId &&
+                            i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year);
         }
     }
 }

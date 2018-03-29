@@ -22,7 +22,7 @@ namespace Admin.Config
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
+            var defaultEE = AssociationExpensesManager.GetFromLastesOpenedMonth(Association.Id);
             if (!Page.IsPostBack)
             {
                 InitializeYearsAndMonths(defaultEE);
@@ -32,7 +32,7 @@ namespace Admin.Config
 
         private void InitializeMonths(int year, int month)
         {
-            var availableYearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(Association.Id);
+            var availableYearMonths = AssociationExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(Association.Id);
             drpOpeningMonth.Items.Clear();
 
             drpOpeningMonth.Items.Add(new ListItem { Value = "1", Text = "Ianuarie", Selected = IsMonthSelected(1, month), Enabled = isMonthEnabled(1, availableYearMonths) });
@@ -77,7 +77,7 @@ namespace Admin.Config
             return result;
         }
 
-        private void InitializeYearsAndMonths(List<EstateExpenses> defaultEE)
+        private void InitializeYearsAndMonths(List<AssociationExpenses> defaultEE)
         {
             var ee = defaultEE.LastOrDefault();
             int year = 2010;
@@ -103,7 +103,7 @@ namespace Admin.Config
 
         private void drpOpeningYear_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var defaultEEs = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
+            var defaultEEs = AssociationExpensesManager.GetFromLastesOpenedMonth(Association.Id);
             InitializeYearsAndMonths(defaultEEs);
         }
 
@@ -115,22 +115,22 @@ namespace Admin.Config
             int year = 0;
             if (int.TryParse(drpOpeningMonth.SelectedValue, out month) && int.TryParse(drpOpeningYear.SelectedValue, out year))
             {
-                var estate = (Estates)Session[SessionConstants.SelectedAssociation];
+                var estate = (Associations)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
                     int defaultYear = 2017;
                     int defaultMonth = 1;
 
-                    var defaultEE = EstateExpensesManager.GetFromLastesOpenedMonth(estate.Id);
+                    var defaultEE = AssociationExpensesManager.GetFromLastesOpenedMonth(estate.Id);
                     if (defaultEE.Count > 0)
                     {
                         defaultYear = defaultEE.FirstOrDefault().Year;
                         defaultMonth = defaultEE.FirstOrDefault().Month;
                     }
-                    var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
+                    var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
 
                     var expenses = ExpensesManager.GetAllExpenses();
-                    var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
+                    var ee = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
 
                     TableRow defaultRow = new TableRow();
 
@@ -192,7 +192,7 @@ namespace Admin.Config
                         DropDownList dp = new DropDownList();
                         if (expense.Id != (int)Expense.AjutorÎncălzire)
                         {
-                            EstateExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == expense.Id);
+                            AssociationExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == expense.Id);
 
                             var selected1 = isDplExpenseTypesSelected(esex, ExpenseType.PerIndex, expense.LegalType);
                             dp.Items.Add(new ListItem
@@ -210,10 +210,10 @@ namespace Admin.Config
                                 Selected = selected2
                             });
 
-                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerTenants, expense.LegalType);
+                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerApartments, expense.LegalType);
                             dp.Items.Add(new ListItem
                             {
-                                Value = ((int)ExpenseType.PerTenants).ToString(),
+                                Value = ((int)ExpenseType.PerApartments).ToString(),
                                 Text = "Per număr locatari imobil",
                                 Selected = selected3
                             });
@@ -247,7 +247,7 @@ namespace Admin.Config
             }
         }
 
-        private bool isStairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int year, int month)
+        private bool isStairCaseSplitSelected(Expenses expense, List<AssociationExpenses> ee, int year, int month)
         {
             bool result = false;
             if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year &&
@@ -259,13 +259,13 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isDplExpenseTypesSelected(Administratoro.DAL.EstateExpenses estateExpense, ExpenseType expenseType, int? expenseLegalType)
+        private static bool isDplExpenseTypesSelected(Administratoro.DAL.AssociationExpenses associationExpense, ExpenseType expenseType, int? expenseLegalType)
         {
             bool result = false;
 
-            if (estateExpense != null)
+            if (associationExpense != null)
             {
-                result = estateExpense.Id_ExpenseType == (int)expenseType;
+                result = associationExpense.Id_ExpenseType == (int)expenseType;
             }
             else
             {
@@ -278,7 +278,7 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, IEnumerable<EstateExpenses> ee)
+        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, IEnumerable<AssociationExpenses> ee)
         {
             bool result = false;
             if (ee.Where(e => e.Id_Expense == expense.Id).Any())
@@ -295,7 +295,7 @@ namespace Admin.Config
             int year = drpOpeningYear.SelectedValue.ToNullableInt().Value;
             int month = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
 
-            var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(Association.Id, year, month);
+            var ee = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(Association.Id, year, month);
 
             if (ee.Count != 0)
             {
@@ -303,7 +303,7 @@ namespace Admin.Config
                 lblMessage.Attributes.Add("style", "color: red");
                 return;
             }
-            List<EstateExpenses> oldEE = EstateExpensesManager.GetFromLastesOpenedMonth(Association.Id);
+            List<AssociationExpenses> oldEE = AssociationExpensesManager.GetFromLastesOpenedMonth(Association.Id);
 
             foreach (TableRow row in tblMonthlyExpenses.Rows)
             {
@@ -326,8 +326,8 @@ namespace Admin.Config
                             int expenseId;
                             if (int.TryParse(cbId, out expenseId))
                             {
-                                EstateExpenses newEe = EstateExpensesManager.Add(Association.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
-                                EstateExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
+                                AssociationExpenses newEe = AssociationExpensesManager.Add(Association.Id, expenseId, month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected.Checked);
+                                AssociationExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
                             }
                         }
                     }

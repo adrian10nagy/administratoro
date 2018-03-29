@@ -40,7 +40,7 @@ namespace Admin.Invoices
 
         private void InitializeInvoices()
         {
-            var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearwithDiverse(Association.Id, year(), month());
+            var ee = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearwithDiverse(Association.Id, year(), month());
 
             Panel pnHeader = new Panel();
             pnHeader.CssClass = "col-md-12 invoicesListHeader";
@@ -60,11 +60,11 @@ namespace Admin.Invoices
             pnHeader.Controls.Add(lbHeaderValue);
             invoiceMain.Controls.Add(pnHeader);
 
-            foreach (var estateExpense in ee)
+            foreach (var associationExpense in ee)
             {
-                if (estateExpense.Invoices.Count != 0)
+                if (associationExpense.Invoices.Count != 0)
                 {
-                    foreach (var invoice in estateExpense.Invoices)
+                    foreach (var invoice in associationExpense.Invoices)
                     {
                         Panel pn = new Panel();
                         pn.CssClass = "col-md-12";
@@ -88,7 +88,7 @@ namespace Admin.Invoices
                     pn.CssClass = "col-md-12";
 
                     Label lbName = new Label();
-                    lbName.Text = estateExpense.Expenses.Name;
+                    lbName.Text = associationExpense.Expenses.Name;
                     lbName.CssClass = "col-md-6";
                     pn.Controls.Add(lbName);
 

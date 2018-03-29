@@ -74,13 +74,13 @@ namespace Admin.Tenants
 
         }
 
-        private void PopulateCounters(Estates estate, int? apartmentId)
+        private void PopulateCounters(Associations association, int? apartmentId)
         {
             estateCounters.Visible = false;
 
-            if (estate.HasStaircase)
+            if (association.HasStaircase)
             {
-                Tenants apartment = null;
+                Apartments apartment = null;
                 if (apartmentId.HasValue)
                 {
                     apartment = ApartmentsManager.GetById(apartmentId.Value);
@@ -89,12 +89,12 @@ namespace Admin.Tenants
                 var expenses = ExpensesManager.GetAllExpenses();
                 foreach (var expense in expenses)
                 {
-                    PopulateCountersData(estate, expense, apartment);
+                    PopulateCountersData(association, expense, apartment);
                 }
             }
         }
 
-        private void PopulateCountersData(Estates estate, Expenses expense, Tenants apartment)
+        private void PopulateCountersData(Associations association, Expenses expense, Apartments apartment)
         {
             Panel mainPanel = new Panel();
 
@@ -116,17 +116,17 @@ namespace Admin.Tenants
             };
             drp.Items.Add(defaultNull);
 
-            ApartmentCounters ac = null;
-            var counters = estate.Counters.Where(c => c.Id_Expense == expense.Id).ToList();
+            AssociationCountersApartment ac = null;
+            var counters = association.AssociationCounters.Where(c => c.Id_Expense == expense.Id).ToList();
 
             if (apartment != null)
             {
                 foreach (var counter in counters)
                 {
-                    var apCounter = apartment.ApartmentCounters.FirstOrDefault(a => a.Id_Counters == counter.Id);
-                    if (apCounter != null)
+                    var assApCounter = apartment.AssociationCountersApartment.FirstOrDefault(a => a.Id_Counters == counter.Id);
+                    if (assApCounter != null)
                     {
-                        ac = apCounter;
+                        ac = assApCounter;
                     }
                 }
             }
@@ -164,18 +164,18 @@ namespace Admin.Tenants
             }
         }
 
-        private void PopulateApartmentLogic(Estates estate)
+        private void PopulateApartmentLogic(Associations association)
         {
-            if (estate.CotaIndivizaAparments.HasValue)
+            if (association.CotaIndivizaAparments.HasValue)
             {
-                apartmentCota.Value = estate.CotaIndivizaAparments.Value.ToString();
+                apartmentCota.Value = association.CotaIndivizaAparments.Value.ToString();
             }
         }
 
-        private void PopulateStairCase(Estates estate)
+        private void PopulateStairCase(Associations association)
         {
-            var staircases = StairCasesManager.GetAllByEstate(estate.Id);
-            if (estate.HasStaircase)
+            var staircases = StairCasesManager.GetAllByAssociation(association.Id);
+            if (association.HasStaircase)
             {
                 ListItem defaultNull = new ListItem
                 {
@@ -204,7 +204,7 @@ namespace Admin.Tenants
             }
 
             var cota = apartmentCota.Value.ToNullableDecimal();
-            var tenant = new Tenants
+            var apartment = new Apartments
             {
                 Name = userName.Value,
                 Dependents = userDependents.Value.ToNullableInt().Value,
@@ -222,33 +222,33 @@ namespace Admin.Tenants
 
             if (!string.IsNullOrEmpty(lblUserId.Text) && lblUserId.Text.ToNullableInt() != 0)
             {
-                tenant.Id = lblUserId.Text.ToNullableInt().Value;
-                ApartmentsManager.Update(tenant);
+                apartment.Id = lblUserId.Text.ToNullableInt().Value;
+                ApartmentsManager.Update(apartment);
             }
             else
             {
-                tenant = ApartmentsManager.Add(tenant);
-                lblStatus.Text = FlowMessages.TenantAddSuccess;
+                apartment = ApartmentsManager.Add(apartment);
+                lblStatus.Text = FlowMessages.ApartmentAddSuccess;
                 lblStatus.CssClass = "SuccessBox";
             }
 
-            ProcessSaveCounters(tenant);
+            ProcessSaveCounters(apartment);
 
-            var estate = AssociationsManager.GetById(Association.Id);
-            Session[SessionConstants.SelectedAssociation] = estate;
+            var association = AssociationsManager.GetById(Association.Id);
+            Session[SessionConstants.SelectedAssociation] = association;
 
             Response.Redirect("~/Apartments/Manage.aspx?Message=UserUpdatedSuccess");
         }
 
-        private void ProcessSaveCounters(Tenants tenant)
+        private void ProcessSaveCounters(Apartments apartment)
         {
-            List<ApartmentCounters> counters = GetAllCounters(tenant);
-            CountersManager.AddOrUpdateApartmentCounters(counters);
+            List<AssociationCountersApartment> counters = GetAllCounters(apartment);
+            CountersManager.AddOrUpdateAssociationCountersApartment(counters);
         }
 
-        private List<ApartmentCounters> GetAllCounters(Tenants tenant)
+        private List<AssociationCountersApartment> GetAllCounters(Apartments apartment)
         {
-            var result = new List<ApartmentCounters>();
+            var result = new List<AssociationCountersApartment>();
 
             for (int i = 0; i < estateCounters.Controls.Count; i++)
             {
@@ -278,11 +278,11 @@ namespace Admin.Tenants
                                 cntIdResult = cntId;
                             }
 
-                            var counter = new ApartmentCounters
+                            var counter = new AssociationCountersApartment
                             {
                                 Id = apCntIdResult,
                                 Id_Counters = cntIdResult,
-                                Id_Apartment = tenant.Id,
+                                Id_Apartment = apartment.Id,
                             };
 
                             result.Add(counter);

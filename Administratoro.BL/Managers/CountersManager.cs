@@ -19,51 +19,51 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static void Addcounter(List<Counters> counters)
+        public static void Addcounter(List<AssociationCounters> counters)
         {
-            foreach (Counters counter in counters)
+            foreach (AssociationCounters counter in counters)
             {
-                GetContext().Counters.Add(counter);
+                GetContext().AssociationCounters.Add(counter);
             }
 
             GetContext().SaveChanges();
         }
 
-        public static void AddOrUpdateApartmentCounters(List<ApartmentCounters> counters)
+        public static void AddOrUpdateAssociationCountersApartment(List<AssociationCountersApartment> counters)
         {
             // if id = -1 -> add id
             // if counterid = -1 remove id
             // else update it
-            foreach (ApartmentCounters apCounter in counters)
+            foreach (AssociationCountersApartment apCounter in counters)
             {
                 if (apCounter.Id == -1 && apCounter.Id_Counters != -1)
                 {
-                    GetContext().ApartmentCounters.Add(apCounter);
+                    GetContext().AssociationCountersApartment.Add(apCounter);
                     GetContext().SaveChanges();
                 }
                 else
                 {
-                    var ap = GetContext(true).ApartmentCounters.FirstOrDefault(a => a.Id == apCounter.Id);
+                    var ap = GetContext(true).AssociationCountersApartment.FirstOrDefault(a => a.Id == apCounter.Id);
 
                     if (ap != null && apCounter.Id_Counters == -1)
                     {
-                        var apRemove = GetContext(true).ApartmentCounters.FirstOrDefault(a => a.Id == apCounter.Id);
-                        GetContext().ApartmentCounters.Remove(apRemove);
+                        var apRemove = GetContext(true).AssociationCountersApartment.FirstOrDefault(a => a.Id == apCounter.Id);
+                        GetContext().AssociationCountersApartment.Remove(apRemove);
                         GetContext().SaveChanges();
 
                     }
                     else if (ap != null)
                     {
-                        UpdateApartmentCounters(ap.Id, apCounter);
+                        UpdateAssociationCountersApartment(ap.Id, apCounter);
                     }
                 }
             }
 
         }
 
-        private static void UpdateApartmentCounters(int apCounterId, ApartmentCounters newApCounter)
+        private static void UpdateAssociationCountersApartment(int apCounterId, AssociationCountersApartment newApCounter)
         {
-            var oldApCounter = GetContext(true).ApartmentCounters.FirstOrDefault(c => c.Id == apCounterId);
+            var oldApCounter = GetContext(true).AssociationCountersApartment.FirstOrDefault(c => c.Id == apCounterId);
 
             if (oldApCounter != null)
             {
@@ -74,21 +74,21 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void Addcounter(Counters counter)
+        public static void Addcounter(AssociationCounters counter)
         {
-            GetContext().Counters.Add(counter);
+            GetContext().AssociationCounters.Add(counter);
 
             GetContext().SaveChanges();
         }
 
-        public static Counters GetById(int counterId)
+        public static AssociationCounters GetById(int counterId)
         {
-            return GetContext().Counters.FirstOrDefault(c => c.Id == counterId);
+            return GetContext().AssociationCounters.FirstOrDefault(c => c.Id == counterId);
         }
 
-        public static void Update(Counters newCounter, int counterId)
+        public static void Update(AssociationCounters newCounter, int counterId)
         {
-            var counter = GetContext(true).Counters.FirstOrDefault(c => c.Id == counterId);
+            var counter = GetContext(true).AssociationCounters.FirstOrDefault(c => c.Id == counterId);
 
             if (counter != null)
             {
@@ -99,18 +99,18 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static List<Counters> GetAllByExpenseType(int associationId, int expense)
+        public static List<AssociationCounters> GetAllByExpenseType(int associationId, int expense)
         {
-            return GetContext(true).Counters.Where(c => c.Id_Estate == associationId && c.Id_Expense == expense).ToList();
+            return GetContext(true).AssociationCounters.Where(c => c.Id_Estate == associationId && c.Id_Expense == expense).ToList();
         }
 
-        public static List<Counters> GetByApartment(int apartmentId)
+        public static List<AssociationCounters> GetByApartment(int apartmentId)
         {
-            var result= new List<Counters>();
+            var result = new List<AssociationCounters>();
 
-            var allApartmentcounters = GetContext(true).ApartmentCounters.Where(ac=>ac.Id_Apartment == apartmentId).ToList();
+            var allAssociationCountersApartment = GetContext(true).AssociationCountersApartment.Where(ac => ac.Id_Apartment == apartmentId).ToList();
 
-            foreach (var ac in allApartmentcounters)
+            foreach (var ac in allAssociationCountersApartment)
 	        {
                 var counter = GetById(ac.Id_Counters);
 

@@ -14,7 +14,7 @@ namespace Admin.Tenants
     using Administratoro.BL.Managers;
 
 
-    public partial class Manage : TenantsBase
+    public partial class Manage : ApartmentsBase
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -33,12 +33,12 @@ namespace Admin.Tenants
         
         private void InitializeUsersTable()
         {
-            var sessionUser = Session[SessionConstants.LoginUser] as Tenants;
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
+            var sessionUser = Session[SessionConstants.LoginUser] as Apartments;
+            var estate = Session[SessionConstants.SelectedAssociation] as Associations;
 
             var apartments = ApartmentsManager.GetAllByAssociationId(estate.Id);
 
-            foreach (Tenants ap in apartments)
+            foreach (Apartments ap in apartments)
             {
                 TableRow row = new TableRow();
 

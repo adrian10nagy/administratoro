@@ -21,7 +21,7 @@ namespace Admin.Expenses
             int idExpenseEstate;
             if (int.TryParse(id_exes, out idExpenseEstate))
             {
-                EstateExpenses ee = EstateExpensesManager.GetById(idExpenseEstate);
+                AssociationExpenses ee = AssociationExpensesManager.GetById(idExpenseEstate);
                 if (ee != null)
                 {
                     btnRedirect.PostBackUrl = "Invoices.aspx?year=" + ee.Year + "&month=" + ee.Month;
@@ -62,24 +62,24 @@ namespace Admin.Expenses
 
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
-            var tenants = ApartmentsManager.GetAllEnabledForHeatHelp(Association.Id);
+            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var apartments = ApartmentsManager.GetAllEnabledForHeatHelp(Association.Id);
 
-            EstateExpenses ee = EstateExpensesManager.GetById(esexId);
-            foreach (var tenant in tenants)
+            AssociationExpenses ee = AssociationExpensesManager.GetById(esexId);
+            foreach (var apartment in apartments)
             {
-                TenantExpensesManager.ConfigureIndividual(ee, tenant);
+                ApartmentExpensesManager.ConfigureIndividual(ee, apartment);
 
                 string query = @"
                     Select 
                     TE.Id as Id,
-                    T.Number as Apartament,
+                    A.Number as Apartament,
                     TE.Value as 'Valoare'
-                    from TenantExpenses TE
-                    Inner join Tenants T
-                    ON TE.Id_Tenant = T.Id
-                    where Id_EstateExpense = " + esexId + " and Id_Tenant = " + tenant.Id +
-                                               " and T.Id_Estate = " + estate.Id;
+                    from ApartmentExpenses TE
+                    Inner join Apartments A
+                    ON TE.Id_Tenant = A.Id
+                    where Id_EstateExpense = " + esexId + " and Id_Tenant = " + apartment.Id +
+                                               " and A.Id_Estate = " + estate.Id;
 
                 SqlConnection cnn = new SqlConnection("data source=HOME\\SQLEXPRESS;initial catalog=Administratoro;integrated security=True;MultipleActiveResultSets=True;");
                 SqlCommand cmd = new SqlCommand(query, cnn);
@@ -105,8 +105,8 @@ namespace Admin.Expenses
             if (int.TryParse(id_exes, out idExpenseEstate))
             {
                 var row = gvExpensesPerIndex.Rows[e.RowIndex];
-                int tenantExpenseId;
-                if (int.TryParse(gvExpensesPerIndex.DataKeys[e.RowIndex].Value.ToString(), out tenantExpenseId))
+                int apartmentExpenseId;
+                if (int.TryParse(gvExpensesPerIndex.DataKeys[e.RowIndex].Value.ToString(), out apartmentExpenseId))
                 {
                     if (row.Cells.Count > 3 && row.Cells[3].Controls.Count > 0 && row.Cells[3].Controls[0] is TextBox)
                     {
@@ -117,11 +117,11 @@ namespace Admin.Expenses
                         if (!string.IsNullOrEmpty(cellOld.Text) && decimal.TryParse(cellOld.Text, out newValue))
                         {
                             decimal? oldValue = newValue;
-                            TenantExpensesManager.UpdateTenantExpense(tenantExpenseId, newValue);
+                            ApartmentExpensesManager.UpdateApartmentExpense(apartmentExpenseId, newValue);
                         }
                         else
                         {
-                            TenantExpensesManager.UpdateTenantExpense(tenantExpenseId, null);
+                            ApartmentExpensesManager.UpdateApartmentExpense(apartmentExpenseId, null);
                         }
                     }
                 }

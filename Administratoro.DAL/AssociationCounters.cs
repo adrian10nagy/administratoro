@@ -12,11 +12,11 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class Counters
+    public partial class AssociationCounters
     {
-        public Counters()
+        public AssociationCounters()
         {
-            this.ApartmentCounters = new HashSet<ApartmentCounters>();
+            this.AssociationCountersApartment = new HashSet<AssociationCountersApartment>();
             this.InvoiceIndexes = new HashSet<InvoiceIndexes>();
         }
     
@@ -26,8 +26,8 @@ namespace Administratoro.DAL
         public Nullable<int> Id_StairCase { get; set; }
         public Nullable<int> Id_Expense { get; set; }
     
-        public virtual ICollection<ApartmentCounters> ApartmentCounters { get; set; }
-        public virtual Estates Estates { get; set; }
+        public virtual ICollection<AssociationCountersApartment> AssociationCountersApartment { get; set; }
+        public virtual Associations Associations { get; set; }
         public virtual Expenses Expenses { get; set; }
         public virtual StairCases StairCases { get; set; }
         public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }

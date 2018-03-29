@@ -23,9 +23,9 @@ namespace Administratoro.BL.Managers
         }
 
 
-        public static List<Tenants> GetAllByAssociationId(int associationId)
+        public static List<Apartments> GetAllByAssociationId(int associationId)
         {
-            return GetContext().Tenants.Where(t => t.Estates.Id == associationId).OrderBy(a=>a.Number).ToList();
+            return GetContext().Apartments.Where(t => t.Associations.Id == associationId).OrderBy(a => a.Number).ToList();
         }
 
         public static int GetDependentsNr(int associationId)
@@ -35,7 +35,7 @@ namespace Administratoro.BL.Managers
             var association =  AssociationsManager.GetById(associationId);
             if(association != null)
             {
-               result =  association.Tenants.Select(t => t.Dependents).Sum();
+                result = association.Apartments.Select(t => t.Dependents).Sum();
             }
 
             return result;
@@ -48,67 +48,66 @@ namespace Administratoro.BL.Managers
             var association = AssociationsManager.GetById(associationId);
             if (association != null)
             {
-                result = association.Tenants.Where(t=>t.Id_StairCase == stairCase).Select(t => t.Dependents).Sum();
+                result = association.Apartments.Where(t => t.Id_StairCase == stairCase).Select(t => t.Dependents).Sum();
             }
 
             return result;
         }
 
-        public static DbSet<Tenants> GetAllAsDbSet(int associationId)
+        public static DbSet<Apartments> GetAllAsDbSet(int associationId)
         {
-            return GetContext().Tenants;
+            return GetContext().Apartments;
         }
 
-        public static Tenants GetById(int id)
+        public static Apartments GetById(int id)
         {
-            return GetContext(true).Tenants.FirstOrDefault(x => x.Id == id);
+            return GetContext(true).Apartments.FirstOrDefault(x => x.Id == id);
         }
 
-        public static void Update(Tenants tenant)
+        public static void Update(Apartments apartment)
         {
-            var result = GetContext().Tenants.SingleOrDefault(b => b.Id == tenant.Id);
+            var result = GetContext().Apartments.SingleOrDefault(b => b.Id == apartment.Id);
 
             if (result != null)
             {
-                result.Email = tenant.Email;
-                result.ExtraInfo = tenant.ExtraInfo;
-                result.Telephone = tenant.Telephone;
-                result.Dependents = tenant.Dependents;
-                result.Name = tenant.Name;
-                result.Password = tenant.Password;
-                result.TenantPersons = null;
-                result.CotaIndiviza = tenant.CotaIndiviza;
-                GetContext().Entry(result).CurrentValues.SetValues(tenant);
+                result.Email = apartment.Email;
+                result.ExtraInfo = apartment.ExtraInfo;
+                result.Telephone = apartment.Telephone;
+                result.Dependents = apartment.Dependents;
+                result.Name = apartment.Name;
+                result.Password = apartment.Password;
+                result.CotaIndiviza = apartment.CotaIndiviza;
+                GetContext().Entry(result).CurrentValues.SetValues(apartment);
 
                 GetContext().SaveChanges();
             }
         }
 
-        public static Tenants Add(Tenants tenant)
+        public static Apartments Add(Apartments apartment)
         {
-            Tenants result = null;
+            Apartments result = null;
 
-            result = GetContext().Tenants.Add(tenant);
+            result = GetContext().Apartments.Add(apartment);
             GetContext().SaveChanges();
 
             return result;
         }
 
-        public static List<Tenants> GetAllThatAreRegisteredWithSpecificCounters(int associationId, int esexId)
+        public static List<Apartments> GetAllThatAreRegisteredWithSpecificCounters(int associationId, int esexId)
         {
-            var result = new List<Tenants>();
+            var result = new List<Apartments>();
 
-            EstateExpenses estateExpense = EstateExpensesManager.GetById(esexId);
-            if (estateExpense != null)
+            AssociationExpenses associationExpense = AssociationExpensesManager.GetById(esexId);
+            if (associationExpense != null)
             {
-                List<Tenants> allTenants = GetAllByAssociationId(associationId);
-                foreach (var tenant in allTenants)
+                List<Apartments> allApartments = GetAllByAssociationId(associationId);
+                foreach (var apartment in allApartments)
                 {
-                    List<Counters> counters = CountersManager.GetByApartment(tenant.Id);
+                    List<AssociationCounters> counters = CountersManager.GetByApartment(apartment.Id);
 
-                    if(counters.Any(c=>c.Id_Expense == estateExpense.Expenses.Id))
+                    if(counters.Any(c=>c.Id_Expense == associationExpense.Expenses.Id))
                     {
-                        result.Add(tenant);
+                        result.Add(apartment);
                     }
 
                 }
@@ -117,42 +116,42 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static List<Tenants> GetAllByEstateIdAndStairCase(int associationId, int stairCaseId)
+        public static List<Apartments> GetAllByEstateIdAndStairCase(int associationId, int stairCaseId)
         {
-            return GetContext().Tenants.Where(t => t.Estates.Id == associationId && t.Id_StairCase == stairCaseId).ToList();
+            return GetContext().Apartments.Where(t => t.Associations.Id == associationId && t.Id_StairCase == stairCaseId).ToList();
         }
 
-        public static decimal? GetSumOfIndivizaForAllTenants(int associationId)
+        public static decimal? GetSumOfIndivizaForAllApartments(int associationId)
         {
             decimal? result = null;
 
-            var tenants = GetContext().Tenants.Where(t => t.id_Estate == associationId).ToList();
+            var apartments = GetContext().Apartments.Where(t => t.id_Estate == associationId).ToList();
 
-            if (tenants != null && tenants.Count > 0)
+            if (apartments != null && apartments.Count > 0)
             {
-                result = tenants.Sum(s => s.CotaIndiviza);
+                result = apartments.Sum(s => s.CotaIndiviza);
             }
 
             return result;
         }
 
-        public static decimal? GetSumOfIndivizaForAllTenants(int associationId, int? stairCase)
+        public static decimal? GetSumOfIndivizaForAllApartments(int associationId, int? stairCase)
         {
             decimal? result = null;
 
-            var tenants = GetContext().Tenants.Where(t => t.id_Estate == associationId && t.Id_StairCase == stairCase).ToList();
+            var apartments = GetContext().Apartments.Where(t => t.id_Estate == associationId && t.Id_StairCase == stairCase).ToList();
 
-            if (tenants != null && tenants.Count > 0)
+            if (apartments != null && apartments.Count > 0)
             {
-                result = tenants.Sum(s => s.CotaIndiviza);
+                result = apartments.Sum(s => s.CotaIndiviza);
             }
 
             return result;
         }
 
-        public static IEnumerable<Tenants> GetAllEnabledForHeatHelp(int associationId)
+        public static IEnumerable<Apartments> GetAllEnabledForHeatHelp(int associationId)
         {
-           return GetContext(true).Tenants.Where(t=>t.id_Estate == associationId && t.HasHeatHelp.HasValue && t.HasHeatHelp.Value);
+            return GetContext(true).Apartments.Where(t => t.id_Estate == associationId && t.HasHeatHelp.HasValue && t.HasHeatHelp.Value);
         }
     }
 }

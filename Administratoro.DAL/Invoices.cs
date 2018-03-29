@@ -28,8 +28,8 @@ namespace Administratoro.DAL
         public Nullable<System.DateTime> issueDate { get; set; }
         public string issueNumber { get; set; }
     
-        public virtual EstateExpenses EstateExpenses { get; set; }
-        public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
+        public virtual AssociationExpenses AssociationExpenses { get; set; }
+        public virtual AssociationExpensesRedistributionTypes AssociationExpensesRedistributionTypes { get; set; }
         public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }
         public virtual StairCases StairCases { get; set; }
     }

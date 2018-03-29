@@ -12,12 +12,12 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class EstateExpenses
+    public partial class AssociationExpenses
     {
-        public EstateExpenses()
+        public AssociationExpenses()
         {
+            this.ApartmentExpenses = new HashSet<ApartmentExpenses>();
             this.Invoices = new HashSet<Invoices>();
-            this.TenantExpenses = new HashSet<TenantExpenses>();
         }
     
         public int Id { get; set; }
@@ -33,11 +33,11 @@ namespace Administratoro.DAL
         public Nullable<int> RedistributeType { get; set; }
         public Nullable<bool> IsClosed { get; set; }
     
-        public virtual EstateExpensesRedistributionTypes EstateExpensesRedistributionTypes { get; set; }
-        public virtual Estates Estates { get; set; }
+        public virtual ICollection<ApartmentExpenses> ApartmentExpenses { get; set; }
+        public virtual AssociationExpensesRedistributionTypes AssociationExpensesRedistributionTypes { get; set; }
+        public virtual Associations Associations { get; set; }
         public virtual Expenses Expenses { get; set; }
         public virtual ExpenseTypes ExpenseTypes { get; set; }
         public virtual ICollection<Invoices> Invoices { get; set; }
-        public virtual ICollection<TenantExpenses> TenantExpenses { get; set; }
     }
 }

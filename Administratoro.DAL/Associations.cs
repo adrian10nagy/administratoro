@@ -12,14 +12,14 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class Estates
+    public partial class Associations
     {
-        public Estates()
+        public Associations()
         {
-            this.Counters = new HashSet<Counters>();
-            this.EstateExpenses = new HashSet<EstateExpenses>();
+            this.Apartments = new HashSet<Apartments>();
+            this.AssociationCounters = new HashSet<AssociationCounters>();
+            this.AssociationExpenses = new HashSet<AssociationExpenses>();
             this.StairCases = new HashSet<StairCases>();
-            this.Tenants = new HashSet<Tenants>();
         }
     
         public int Id { get; set; }
@@ -33,10 +33,10 @@ namespace Administratoro.DAL
         public Nullable<decimal> CotaIndivizaAparments { get; set; }
         public Nullable<bool> HasRoundUpColumn { get; set; }
     
-        public virtual ICollection<Counters> Counters { get; set; }
-        public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
+        public virtual ICollection<Apartments> Apartments { get; set; }
+        public virtual ICollection<AssociationCounters> AssociationCounters { get; set; }
+        public virtual ICollection<AssociationExpenses> AssociationExpenses { get; set; }
         public virtual Partners Partners { get; set; }
         public virtual ICollection<StairCases> StairCases { get; set; }
-        public virtual ICollection<Tenants> Tenants { get; set; }
     }
 }

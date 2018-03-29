@@ -12,13 +12,13 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class ApartmentCounters
+    public partial class ApartmentPersons
     {
         public int Id { get; set; }
-        public int Id_Apartment { get; set; }
-        public int Id_Counters { get; set; }
+        public int Id_Person { get; set; }
+        public int Id_Tenent { get; set; }
     
-        public virtual Tenants Tenants { get; set; }
-        public virtual Counters Counters { get; set; }
+        public virtual Persons Persons { get; set; }
+        public virtual Apartments Apartments { get; set; }
     }
 }

@@ -21,34 +21,34 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static Estates AddNew(Estates association)
+        public static Associations AddNew(Associations association)
         {
-            GetContext(true).Estates.Add(association);
+            GetContext(true).Associations.Add(association);
             GetContext().SaveChanges();
 
             return association;
         }
 
-        public static List<Estates> GetAll()
+        public static List<Associations> GetAll()
         {
-            return GetContext(true).Estates.ToList();
+            return GetContext(true).Associations.ToList();
         }
 
-        public static List<Estates> GetAllAssociationsByPartner(int partnerId)
+        public static List<Associations> GetAllAssociationsByPartner(int partnerId)
         {
-            return GetContext(true).Estates.Where(e => e.Id_Partner == partnerId).ToList();
+            return GetContext(true).Associations.Where(e => e.Id_Partner == partnerId).ToList();
         }
 
-        public static Estates GetById(int assocId)
+        public static Associations GetById(int assocId)
         {
-            return GetContext(true).Estates.FirstOrDefault(e => e.Id == assocId);
+            return GetContext(true).Associations.FirstOrDefault(e => e.Id == assocId);
         }
 
-        public static Estates GetByEstateExpenseId(int estateExpenseId)
+        public static Associations GetByAssociationExpenseId(int associationExpenseId)
         {
-            EstateExpenses estateExpense = GetContext(true).EstateExpenses.FirstOrDefault(e => e.Id == estateExpenseId);
+            AssociationExpenses associationExpense = GetContext(true).AssociationExpenses.FirstOrDefault(e => e.Id == associationExpenseId);
 
-            return GetContext(true).Estates.FirstOrDefault(e => e.Id == estateExpense.Id_Estate);
+            return GetContext(true).Associations.FirstOrDefault(e => e.Id == associationExpense.Id_Estate);
         }
 
         public static int GetNrOfApartments(int associationId)
@@ -57,7 +57,7 @@ namespace Administratoro.BL.Managers
             var association = GetById(associationId);
             if (association != null)
             {
-                result = association.Tenants.Count();
+                result = association.Apartments.Count();
             }
 
             return result;
@@ -69,60 +69,60 @@ namespace Administratoro.BL.Managers
             var association = GetById(associationId);
             if (association != null)
             {
-                result = association.Tenants.Where(t => t.Id_StairCase == stairCaseId).Count();
+                result = association.Apartments.Where(t => t.Id_StairCase == stairCaseId).Count();
             }
 
             return result;
         }
 
-        public static void UpdateStairs(Estates es, bool hasStairs)
+        public static void UpdateStairs(Associations es, bool hasStairs)
         {
-            Estates estate = new Estates();
-            estate = GetContext().Estates.First(b => b.Id == es.Id);
+            Associations associations = new Associations();
+            associations = GetContext().Associations.First(b => b.Id == es.Id);
 
-            if (estate != null)
+            if (associations != null)
             {
-                estate.HasStaircase = hasStairs;
-                GetContext().Entry(estate).CurrentValues.SetValues(estate);
+                associations.HasStaircase = hasStairs;
+                GetContext().Entry(associations).CurrentValues.SetValues(associations);
 
                 GetContext().SaveChanges();
             }
         }
 
-        public static void Update(int id, Estates association)
+        public static void Update(int id, Associations association)
         {
             if (association == null)
             {
                 return;
             }
 
-            var estate = new Estates();
-            estate = GetContext().Estates.First(b => b.Id == association.Id);
+            var associations = new Associations();
+            associations = GetContext().Associations.First(b => b.Id == association.Id);
 
-            if (estate != null)
+            if (associations != null)
             {
-                estate.Address = association.Address;
-                estate.BanckAccont = association.BanckAccont;
-                estate.CotaIndivizaAparments = association.CotaIndivizaAparments;
-                estate.FiscalCode = association.FiscalCode;
-                estate.HasStaircase = association.HasStaircase;
-                estate.Name = association.Name;
+                associations.Address = association.Address;
+                associations.BanckAccont = association.BanckAccont;
+                associations.CotaIndivizaAparments = association.CotaIndivizaAparments;
+                associations.FiscalCode = association.FiscalCode;
+                associations.HasStaircase = association.HasStaircase;
+                associations.Name = association.Name;
 
-                GetContext().Entry(estate).CurrentValues.SetValues(estate);
+                GetContext().Entry(associations).CurrentValues.SetValues(associations);
 
                 GetContext().SaveChanges();
             }
         }
 
-        public static void UpdateRoundUpColumn(Estates association, bool hasRoundCoulmn)
+        public static void UpdateRoundUpColumn(Associations association, bool hasRoundCoulmn)
         {
-            Estates estate = new Estates();
-            estate = GetContext().Estates.First(b => b.Id == association.Id);
+            Associations associations = new Associations();
+            associations = GetContext().Associations.First(b => b.Id == association.Id);
 
-            if (estate != null)
+            if (associations != null)
             {
-                estate.HasRoundUpColumn = hasRoundCoulmn;
-                GetContext().Entry(estate).CurrentValues.SetValues(estate);
+                associations.HasRoundUpColumn = hasRoundCoulmn;
+                GetContext().Entry(associations).CurrentValues.SetValues(associations);
 
                 GetContext().SaveChanges();
             }

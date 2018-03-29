@@ -21,17 +21,16 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static IEnumerable<StairCases> GetAllByEstate(int associationId)
+        public static IEnumerable<StairCases> GetAllByAssociation(int associationId)
         {
             return GetContext().StairCases.Where(c => c.Id_Estate == associationId);
         }
 
-        public static void AddNew(Estates estate, string name, decimal? indiviza)
+        public static void AddNew(Associations association, string name, decimal? indiviza)
         {
-
             StairCases stairCase = new StairCases
             {
-                Id_Estate = estate.Id,
+                Id_Estate = association.Id,
                 Nume = name,
                 Indiviza = indiviza
             };
@@ -46,10 +45,11 @@ namespace Administratoro.BL.Managers
 
             if (staircase != null)
             {
-                foreach (var tenants in staircase.Tenants)
+                foreach (var apartments in staircase.Apartments)
                 {
-                    tenants.Id_StairCase = null;
+                    apartments.Id_StairCase = null;
                 }
+
                 GetContext().StairCases.Remove(staircase);
                 GetContext().SaveChanges();
             }

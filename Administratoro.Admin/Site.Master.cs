@@ -35,8 +35,8 @@ namespace Admin
 
         private void InitializeEsates(Partners partner)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
-            var estates = Session[SessionConstants.AllAssociations] as List<Estates>;
+            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var estates = Session[SessionConstants.AllAssociations] as List<Administratoro.DAL.Associations>;
 
             if (estate == null || estates == null)
             {

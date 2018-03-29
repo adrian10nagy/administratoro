@@ -16,7 +16,7 @@ namespace Administratoro.DAL
     {
         public Partners()
         {
-            this.Estates = new HashSet<Estates>();
+            this.Associations = new HashSet<Associations>();
             this.PartnerRights = new HashSet<PartnerRights>();
         }
     
@@ -31,7 +31,7 @@ namespace Administratoro.DAL
         public string Name { get; set; }
         public Nullable<bool> SeenTutorial { get; set; }
     
-        public virtual ICollection<Estates> Estates { get; set; }
+        public virtual ICollection<Associations> Associations { get; set; }
         public virtual Localities Localities { get; set; }
         public virtual ICollection<PartnerRights> PartnerRights { get; set; }
         public virtual PartnerTypes PartnerTypes { get; set; }

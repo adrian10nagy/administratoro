@@ -60,7 +60,7 @@
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Managers\CountersManager.cs" />
-    <Compile Include="Managers\EstateExpensesManager.cs" />
+    <Compile Include="Managers\AssociationExpensesManager.cs" />
     <Compile Include="Managers\AssociationsManager.cs" />
     <Compile Include="Managers\ExpensesManager.cs" />
     <Compile Include="Managers\InvoiceIndexesManager.cs" />
@@ -70,7 +70,7 @@
     <Compile Include="Managers\RecalculationManager.cs" />
     <Compile Include="Managers\RedistributionManager.cs" />
     <Compile Include="Managers\StairCasesManager.cs" />
-    <Compile Include="Managers\TenantExpensesManager.cs" />
+    <Compile Include="Managers\ApartmentExpensesManager.cs" />
     <Compile Include="Managers\ApartmentsManager.cs" />
     <Compile Include="Models\ExpenseReport.cs" />
     <Compile Include="Models\YearMonth.cs" />

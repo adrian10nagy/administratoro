@@ -20,7 +20,7 @@ namespace Administratoro.DAL
         public int Id_Invoice { get; set; }
         public Nullable<int> Id_Counter { get; set; }
     
-        public virtual Counters Counters { get; set; }
+        public virtual AssociationCounters AssociationCounters { get; set; }
         public virtual Invoices Invoices { get; set; }
     }
 }

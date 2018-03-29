@@ -456,7 +456,7 @@
     <Compile Include="Apartments\Manage.aspx.designer.cs">
       <DependentUpon>Manage.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apartments\TenantsBase.cs">
+    <Compile Include="Apartments\ApartmentsBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">

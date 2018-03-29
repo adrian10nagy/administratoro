@@ -6,12 +6,12 @@ namespace Admin.Tenants
     using Administratoro.DAL;
     using Administratoro.BL.Managers;
 
-    public class TenantsBase : System.Web.UI.Page
+    public class ApartmentsBase : System.Web.UI.Page
     {
         protected override void OnInit(EventArgs e)
         {
-            var tenant = Session[SessionConstants.LoginUser] as Tenants;
-            if (tenant == null || !PartnerRightsManager.CanAccesRaportModule(tenant.Id))
+            var apartment = Session[SessionConstants.LoginUser] as Apartments;
+            if (apartment == null || !PartnerRightsManager.CanAccesRaportModule(apartment.Id))
             {
                // Response.Redirect("~/");
             }

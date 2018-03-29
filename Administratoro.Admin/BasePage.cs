@@ -12,27 +12,27 @@ namespace Admin
 
     public class BasePage : Page
     {
-        public Estates Association
+        public Administratoro.DAL.Associations Association
         {
             get
             {
-                Estates result = null;
+                Administratoro.DAL.Associations result = null;
                 if (Session[SessionConstants.SelectedAssociation] != null)
                 {
-                    result = (Estates)Session[SessionConstants.SelectedAssociation];
+                    result = (Administratoro.DAL.Associations)Session[SessionConstants.SelectedAssociation];
                 }
                 return result;
             }
         }
 
-        public List<Estates> Associations
+        public List<Administratoro.DAL.Associations> Associations
         {
             get
             {
-                List<Estates> result = null;
+                List<Administratoro.DAL.Associations> result = null;
                 if (Session[SessionConstants.AllAssociations] != null)
                 {
-                    result = (List<Estates>)Session[SessionConstants.AllAssociations];
+                    result = (List<Administratoro.DAL.Associations>)Session[SessionConstants.AllAssociations];
                 }
 
                 return result;
@@ -47,7 +47,7 @@ namespace Admin
             }
         }
 
-        public void RefreshEstate()
+        public void RefreshAssociation()
         {
             Session[SessionConstants.SelectedAssociation] = AssociationsManager.GetById(Association.Id);
         }

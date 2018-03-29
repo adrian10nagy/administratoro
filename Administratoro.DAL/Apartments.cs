@@ -12,13 +12,13 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class Tenants
+    public partial class Apartments
     {
-        public Tenants()
+        public Apartments()
         {
-            this.ApartmentCounters = new HashSet<ApartmentCounters>();
-            this.TenantExpenses = new HashSet<TenantExpenses>();
-            this.TenantPersons = new HashSet<TenantPersons>();
+            this.ApartmentExpenses = new HashSet<ApartmentExpenses>();
+            this.ApartmentPersons = new HashSet<ApartmentPersons>();
+            this.AssociationCountersApartment = new HashSet<AssociationCountersApartment>();
         }
     
         public int Id { get; set; }
@@ -35,10 +35,10 @@ namespace Administratoro.DAL
         public Nullable<int> Id_StairCase { get; set; }
         public Nullable<bool> HasHeatHelp { get; set; }
     
-        public virtual ICollection<ApartmentCounters> ApartmentCounters { get; set; }
-        public virtual Estates Estates { get; set; }
+        public virtual ICollection<ApartmentExpenses> ApartmentExpenses { get; set; }
+        public virtual ICollection<ApartmentPersons> ApartmentPersons { get; set; }
+        public virtual ICollection<AssociationCountersApartment> AssociationCountersApartment { get; set; }
+        public virtual Associations Associations { get; set; }
         public virtual StairCases StairCases { get; set; }
-        public virtual ICollection<TenantExpenses> TenantExpenses { get; set; }
-        public virtual ICollection<TenantPersons> TenantPersons { get; set; }
     }
 }

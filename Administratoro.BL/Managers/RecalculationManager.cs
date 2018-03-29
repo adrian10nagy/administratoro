@@ -11,24 +11,24 @@ namespace Administratoro.BL.Managers
     {
         public static void RecalculateMonthlyExpenses(int associationId, int year, int month)
         {
-            var estateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(associationId, year, month);
+            var associationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(associationId, year, month);
 
-            foreach (var estateExpense in estateExpenses)
+            foreach (var associationExpense in associationExpenses)
             {
-                RelalculateExpense(estateExpense);
+                RelalculateExpense(associationExpense);
             }
         }
 
-        private static void RelalculateExpense(EstateExpenses item)
+        private static void RelalculateExpense(AssociationExpenses item)
         {
-            if (item.Id_ExpenseType == (int)ExpenseType.PerTenants || item.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+            if (item.Id_ExpenseType == (int)ExpenseType.PerApartments || item.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
             {
                 if(item.Invoices.Count == 1)
                 {
                     var invoice = item.Invoices.FirstOrDefault();
                     if(invoice!=null && invoice.Value.HasValue)
                     {
-                        TenantExpensesManager.UpdateTenantExpenses(invoice.EstateExpenses, invoice.Value.Value, null);
+                        ApartmentExpensesManager.UpdateApartmentExpenses(invoice.AssociationExpenses, invoice.Value.Value, null);
                     }
                 }
             }

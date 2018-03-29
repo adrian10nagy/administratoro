@@ -53,7 +53,7 @@ namespace Admin.Invoices
         private void InitializeYearMonth()
         {
             drpInvoiceYearMonth.Items.Clear();
-            var yearMonths = EstateExpensesManager.GetAllMonthsAndYearsNotClosedByAssociationId(Association.Id);
+            var yearMonths = AssociationExpensesManager.GetAllMonthsAndYearsNotClosedByAssociationId(Association.Id);
             bool hasValue = _year.HasValue && _month.HasValue;
             for (int i = 0; i < yearMonths.Count; i++)
             {
@@ -74,15 +74,15 @@ namespace Admin.Invoices
 
         private void InitializeExpenses()
         {
-            var estateExpenses = GetEstateExpenses();
+            var associationExpenses = GetAssociationExpenses();
             drpInvoiceExpenses.Items.Clear();
-            foreach (var estateExpense in estateExpenses)
+            foreach (var associationExpense in associationExpenses)
             {
                 drpInvoiceExpenses.Items.Add(new ListItem
                 {
-                    Value = estateExpense.Expenses.Id.ToString(),
-                    Text = estateExpense.Expenses.Name.ToString(),
-                    Selected = _expense.HasValue && _expense.Value == estateExpense.Id_Expense
+                    Value = associationExpense.Expenses.Id.ToString(),
+                    Text = associationExpense.Expenses.Name.ToString(),
+                    Selected = _expense.HasValue && _expense.Value == associationExpense.Id_Expense
                 });
             }
 
@@ -99,9 +99,9 @@ namespace Admin.Invoices
             }
         }
 
-        private List<EstateExpenses> GetEstateExpenses()
+        private List<AssociationExpenses> GetAssociationExpenses()
         {
-            var result = new List<EstateExpenses>();
+            var result = new List<AssociationExpenses>();
 
             if (!string.IsNullOrEmpty(drpInvoiceYearMonth.SelectedValue))
             {
@@ -113,7 +113,7 @@ namespace Admin.Invoices
 
                     if (int.TryParse(yearMonth[0], out year) && int.TryParse(yearMonth[1], out month))
                     {
-                        result = EstateExpensesManager.GetForAddPage(Association.Id, year, month);
+                        result = AssociationExpensesManager.GetForAddPage(Association.Id, year, month);
                     }
                 }
             }
@@ -253,11 +253,11 @@ namespace Admin.Invoices
                             }
                             else if (theValue.HasValue)
                             {
-                                var ee = EstateExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+                                var ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
                                 if (ee == null)
                                 {
-                                    EstateExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerTenants).ToString(), false);
-                                    ee = EstateExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+                                    AssociationExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerApartments).ToString(), false);
+                                    ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
                                 }
 
                                 InvoicesManager.AddDiverse(ee, theValue, theDescription.Text, stairCaseId, redistributionId, theNumber.Text, theDateId);
@@ -270,8 +270,8 @@ namespace Admin.Invoices
 
         private void SaveDefault(int year, int month, int associationId, int expenseId)
         {
-            EstateExpenses estateExpense = EstateExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
-            bool isIndexExpense = estateExpense != null && estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
+            AssociationExpenses associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+            bool isIndexExpense = associationExpense != null && associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
 
             decimal? theInvoideValue = null;
             decimal tempInvoideValue;
@@ -301,13 +301,13 @@ namespace Admin.Invoices
                 //error
             }
 
-            if (estateExpense != null && isIndexExpense && theInvoideValue.HasValue)
+            if (associationExpense != null && isIndexExpense && theInvoideValue.HasValue)
             {
                 decimal? addedIndices = SaveAndGetInvoicesIndices();
                 if(addedIndices.HasValue)
                 {
                     decimal pricePerUnit = theInvoideValue.Value / addedIndices.Value;
-                    EstateExpensesManager.UpdatePricePerUnit(estateExpense.Id, pricePerUnit);
+                    AssociationExpensesManager.UpdatePricePerUnit(associationExpense.Id, pricePerUnit);
                 }
             }
         }
@@ -431,35 +431,35 @@ namespace Admin.Invoices
                     int.TryParse(yearMonth[0], out year) &&
                     int.TryParse(yearMonth[1], out month))
                 {
-                    EstateExpenses estateExpenses = EstateExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
+                    AssociationExpenses associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
 
-                    if (estateExpenses == null && expenseId == (int)Expense.Diverse)
+                    if (associationExpense == null && expenseId == (int)Expense.Diverse)
                     {
-                        EstateExpensesManager.Add(Association.Id, expenseId, month, year, ((int)ExpenseType.PerTenants).ToString(), false);
-                        estateExpenses = EstateExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
+                        AssociationExpensesManager.Add(Association.Id, expenseId, month, year, ((int)ExpenseType.PerApartments).ToString(), false);
+                        associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
                     }
 
                     if (expenseId == (int)Expense.Diverse)
                     {
                         pnlInvoiceBody.Visible = false;
-                        InitializeValueFieldAddExtraControlsForDiverse(year, month, Association.Id, estateExpenses);
+                        InitializeValueFieldAddExtraControlsForDiverse(year, month, Association.Id, associationExpense);
                     }
                     else
                     {
                         pnlInvoiceBody.Visible = true;
-                        InitializeValueFieldAddcontrols(year, month, Association.Id, expenseId, estateExpenses, isPostbackFromLoadEvent);
+                        InitializeValueFieldAddcontrols(year, month, Association.Id, expenseId, associationExpense, isPostbackFromLoadEvent);
                     }
                 }
             }
         }
 
-        private void InitializeValueFieldAddExtraControlsForDiverse(int year, int month, int associationId, EstateExpenses estateExpense)
+        private void InitializeValueFieldAddExtraControlsForDiverse(int year, int month, int associationId, AssociationExpenses associationExpense)
         {
             InitializeValueFieldAddColumnHeadersForDiverse();
 
-            if (estateExpense != null)
+            if (associationExpense != null)
             {
-                var invoices = InvoicesManager.GetDiverseByEstateExpense(estateExpense.Id);
+                var invoices = InvoicesManager.GetDiverseByAssociationAssociationExpense(associationExpense.Id);
 
                 DiverseInitializeValueFieldAddInvoices(invoices, false);
             }
@@ -467,7 +467,7 @@ namespace Admin.Invoices
             DiverseInitializeValueFieldAddInvoices(new List<Administratoro.DAL.Invoices> { new Administratoro.DAL.Invoices() }, true);
         }
 
-        private void InitializeValueFieldAddInvoicesForIndexExpenses(List<Administratoro.DAL.InvoiceIndexes> invoicesIndexes, List<Administratoro.DAL.Counters> counters)
+        private void InitializeValueFieldAddInvoicesForIndexExpenses(List<Administratoro.DAL.InvoiceIndexes> invoicesIndexes, List<Administratoro.DAL.AssociationCounters> counters)
         {
             foreach (var invoicesIndexe in invoicesIndexes)
             {
@@ -487,12 +487,12 @@ namespace Admin.Invoices
                     Enabled = false,
                     ID = "drpCuntersID" + invoicesIndexe.Id
                 };
-                if (invoicesIndexe.Counters != null)
+                if (invoicesIndexe.AssociationCounters != null)
                 {
                     drpCunters.Items.Add(new ListItem
                     {
-                        Text = "Contorul " + invoicesIndexe.Counters.Value,
-                        Value = invoicesIndexe.Counters.Id.ToString()
+                        Text = "Contorul " + invoicesIndexe.AssociationCounters.Value,
+                        Value = invoicesIndexe.AssociationCounters.Id.ToString()
                     });
                 }
                 else
@@ -545,9 +545,9 @@ namespace Admin.Invoices
             }
         }
 
-        private void InitializeValueFieldAddcontrols(int year, int month, int associationId, int expenseId, EstateExpenses estateExpense, bool isPostbackFromLoadEvent)
+        private void InitializeValueFieldAddcontrols(int year, int month, int associationId, int expenseId, AssociationExpenses associationExpense, bool isPostbackFromLoadEvent)
         {
-            bool isIndexExpense = estateExpense != null && estateExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
+            bool isIndexExpense = associationExpense != null && associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
             var invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
 
             if (invoices.Count != 1)
@@ -580,9 +580,9 @@ namespace Admin.Invoices
         private void InitializeInvoiceFields(Administratoro.DAL.Invoices theInvoice)
         {
             var descriptionName = string.Empty;
-            if (theInvoice.EstateExpenses == null)
+            if (theInvoice.AssociationExpenses == null)
             {
-                var ee = EstateExpensesManager.GetById(theInvoice.Id_EstateExpense.Value);
+                var ee = AssociationExpensesManager.GetById(theInvoice.Id_EstateExpense.Value);
                 descriptionName = ee.Expenses.Name + " " + ee.Year + " " + ee.Month;
             }
             txtInvoiceValue.Text = theInvoice.Value.HasValue ? theInvoice.Value.Value.ToString() : string.Empty;
@@ -792,7 +792,7 @@ namespace Admin.Invoices
                     ID = invoice.Id != 0 ? "drpExpenseredistribute" + invoice.Id : "-1drpExpenseredistribute"
                 };
 
-                List<EstateExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypesForDiverse();
+                List<AssociationExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypesForDiverse();
 
                 foreach (var type in eert)
                 {

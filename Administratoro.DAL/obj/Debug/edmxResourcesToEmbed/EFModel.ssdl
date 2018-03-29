@@ -1,14 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="AdministratoroModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-  <EntityType Name="ApartmentCounters">
+  <EntityType Name="ApartmentExpenses">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Id_Apartment" Type="int" Nullable="false" />
-    <Property Name="Id_Counters" Type="int" Nullable="false" />
+    <Property Name="Value" Type="decimal" Precision="30" Scale="10" />
+    <Property Name="Id_Tenant" Type="int" Nullable="false" />
+    <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
+    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
+    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
   </EntityType>
-  <EntityType Name="Counters">
+  <EntityType Name="ApartmentPersons">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_Person" Type="int" Nullable="false" />
+    <Property Name="Id_Tenent" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Apartments">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ExtraInfo" Type="nvarchar(max)" />
+    <Property Name="Email" Type="nvarchar(max)" />
+    <Property Name="Telephone" Type="nvarchar(max)" />
+    <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+    <Property Name="Password" Type="nvarchar(max)" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Dependents" Type="int" Nullable="false" />
+    <Property Name="id_Estate" Type="int" Nullable="false" />
+    <Property Name="CotaIndiviza" Type="decimal" Precision="14" Scale="4" />
+    <Property Name="Number" Type="int" Nullable="false" />
+    <Property Name="Id_StairCase" Type="int" />
+    <Property Name="HasHeatHelp" Type="bit" />
+  </EntityType>
+  <EntityType Name="AssociationCounters">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
@@ -18,15 +47,16 @@
     <Property Name="Id_StairCase" Type="int" />
     <Property Name="Id_Expense" Type="int" />
   </EntityType>
-  <EntityType Name="ErrorLogs">
+  <EntityType Name="AssociationCountersApartment">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="Created" Type="datetime" Nullable="false" />
+    <Property Name="Id_Apartment" Type="int" Nullable="false" />
+    <Property Name="Id_Counters" Type="int" Nullable="false" />
+    <Property Name="CountersInsideApartment" Type="int" />
   </EntityType>
-  <EntityType Name="EstateExpenses">
+  <EntityType Name="AssociationExpenses">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
@@ -43,14 +73,14 @@
     <Property Name="RedistributeType" Type="int" />
     <Property Name="IsClosed" Type="bit" />
   </EntityType>
-  <EntityType Name="EstateExpensesRedistributionTypes">
+  <EntityType Name="AssociationExpensesRedistributionTypes">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Value" Type="nvarchar" MaxLength="200" Nullable="false" />
   </EntityType>
-  <EntityType Name="Estates">
+  <EntityType Name="Associations">
     <Key>
       <PropertyRef Name="Id" />
     </Key>
@@ -64,6 +94,14 @@
     <Property Name="FiscalCode" Type="nvarchar" MaxLength="30" />
     <Property Name="CotaIndivizaAparments" Type="decimal" Precision="14" Scale="4" />
     <Property Name="HasRoundUpColumn" Type="bit" />
+  </EntityType>
+  <EntityType Name="ErrorLogs">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Created" Type="datetime" Nullable="false" />
   </EntityType>
   <EntityType Name="Expenses">
     <Key>
@@ -180,159 +218,122 @@
     <Property Name="version" Type="int" />
     <Property Name="definition" Type="varbinary(max)" />
   </EntityType>
-  <EntityType Name="TenantExpenses">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Value" Type="decimal" Precision="30" Scale="10" />
-    <Property Name="Id_Tenant" Type="int" Nullable="false" />
-    <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
-    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
-    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
-  </EntityType>
-  <EntityType Name="TenantPersons">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="Id_Person" Type="int" Nullable="false" />
-    <Property Name="Id_Tenent" Type="int" Nullable="false" />
-  </EntityType>
-  <EntityType Name="Tenants">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="ExtraInfo" Type="nvarchar(max)" />
-    <Property Name="Email" Type="nvarchar(max)" />
-    <Property Name="Telephone" Type="nvarchar(max)" />
-    <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-    <Property Name="Password" Type="nvarchar(max)" />
-    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="Dependents" Type="int" Nullable="false" />
-    <Property Name="id_Estate" Type="int" Nullable="false" />
-    <Property Name="CotaIndiviza" Type="decimal" Precision="14" Scale="4" />
-    <Property Name="Number" Type="int" Nullable="false" />
-    <Property Name="Id_StairCase" Type="int" />
-    <Property Name="HasHeatHelp" Type="bit" />
-  </EntityType>
   <Association Name="FK__Apartment__Id_Ap__1B9317B3">
-    <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
-    <End Role="ApartmentCounters" Type="Self.ApartmentCounters" Multiplicity="*" />
+    <End Role="Apartments" Type="Self.Apartments" Multiplicity="1" />
+    <End Role="AssociationCountersApartment" Type="Self.AssociationCountersApartment" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Tenants">
+      <Principal Role="Apartments">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="ApartmentCounters">
+      <Dependent Role="AssociationCountersApartment">
         <PropertyRef Name="Id_Apartment" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Apartment__Id_Co__1C873BEC">
-    <End Role="Counters" Type="Self.Counters" Multiplicity="1" />
-    <End Role="ApartmentCounters" Type="Self.ApartmentCounters" Multiplicity="*" />
+    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="1" />
+    <End Role="AssociationCountersApartment" Type="Self.AssociationCountersApartment" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Counters">
+      <Principal Role="AssociationCounters">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="ApartmentCounters">
+      <Dependent Role="AssociationCountersApartment">
         <PropertyRef Name="Id_Counters" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Counters__Id_Est__0B5CAFEA">
-    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
-    <End Role="Counters" Type="Self.Counters" Multiplicity="*" />
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
+    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Estates">
+      <Principal Role="Associations">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Counters">
+      <Dependent Role="AssociationCounters">
         <PropertyRef Name="Id_Estate" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Counters__Id_Exp__0D44F85C">
     <End Role="Expenses" Type="Self.Expenses" Multiplicity="0..1" />
-    <End Role="Counters" Type="Self.Counters" Multiplicity="*" />
+    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="Expenses">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Counters">
+      <Dependent Role="AssociationCounters">
         <PropertyRef Name="Id_Expense" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Counters__Id_Sta__0C50D423">
     <End Role="StairCases" Type="Self.StairCases" Multiplicity="0..1" />
-    <End Role="Counters" Type="Self.Counters" Multiplicity="*" />
+    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="StairCases">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Counters">
+      <Dependent Role="AssociationCounters">
         <PropertyRef Name="Id_StairCase" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__EstateExp__Redis__44952D46">
-    <End Role="EstateExpensesRedistributionTypes" Type="Self.EstateExpensesRedistributionTypes" Multiplicity="0..1" />
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <End Role="AssociationExpensesRedistributionTypes" Type="Self.AssociationExpensesRedistributionTypes" Multiplicity="0..1" />
+    <End Role="AssociationExpenses" Type="Self.AssociationExpenses" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="EstateExpensesRedistributionTypes">
+      <Principal Role="AssociationExpensesRedistributionTypes">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="EstateExpenses">
+      <Dependent Role="AssociationExpenses">
         <PropertyRef Name="RedistributeType" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__EstateExt__Id_Es__76969D2E">
-    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
+    <End Role="AssociationExpenses" Type="Self.AssociationExpenses" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Estates">
+      <Principal Role="Associations">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="EstateExpenses">
+      <Dependent Role="AssociationExpenses">
         <PropertyRef Name="Id_Estate" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__EstateExt__Id_Ex__778AC167">
     <End Role="Expenses" Type="Self.Expenses" Multiplicity="1" />
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <End Role="AssociationExpenses" Type="Self.AssociationExpenses" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="Expenses">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="EstateExpenses">
+      <Dependent Role="AssociationExpenses">
         <PropertyRef Name="Id_Expense" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__EstateExt__Id_Ex__787EE5A0">
     <End Role="ExpenseTypes" Type="Self.ExpenseTypes" Multiplicity="1" />
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="*" />
+    <End Role="AssociationExpenses" Type="Self.AssociationExpenses" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="ExpenseTypes">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="EstateExpenses">
+      <Dependent Role="AssociationExpenses">
         <PropertyRef Name="Id_ExpenseType" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Estates__Id_Part__5CD6CB2B">
     <End Role="Partners" Type="Self.Partners" Multiplicity="1" />
-    <End Role="Estates" Type="Self.Estates" Multiplicity="*" />
+    <End Role="Associations" Type="Self.Associations" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="Partners">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Estates">
+      <Dependent Role="Associations">
         <PropertyRef Name="Id_Partner" />
       </Dependent>
     </ReferentialConstraint>
@@ -350,10 +351,10 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__InvoiceIn__Id_Co__6ABAD62E">
-    <End Role="Counters" Type="Self.Counters" Multiplicity="0..1" />
+    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="0..1" />
     <End Role="InvoiceIndexes" Type="Self.InvoiceIndexes" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Counters">
+      <Principal Role="AssociationCounters">
         <PropertyRef Name="Id" />
       </Principal>
       <Dependent Role="InvoiceIndexes">
@@ -374,10 +375,10 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Invoices__Id_Est__3FD07829">
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="0..1" />
+    <End Role="AssociationExpenses" Type="Self.AssociationExpenses" Multiplicity="0..1" />
     <End Role="Invoices" Type="Self.Invoices" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="EstateExpenses">
+      <Principal Role="AssociationExpenses">
         <PropertyRef Name="Id" />
       </Principal>
       <Dependent Role="Invoices">
@@ -386,10 +387,10 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Invoices__id_Red__4589517F">
-    <End Role="EstateExpensesRedistributionTypes" Type="Self.EstateExpensesRedistributionTypes" Multiplicity="0..1" />
+    <End Role="AssociationExpensesRedistributionTypes" Type="Self.AssociationExpensesRedistributionTypes" Multiplicity="0..1" />
     <End Role="Invoices" Type="Self.Invoices" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="EstateExpensesRedistributionTypes">
+      <Principal Role="AssociationExpensesRedistributionTypes">
         <PropertyRef Name="Id" />
       </Principal>
       <Dependent Role="Invoices">
@@ -410,10 +411,10 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__StairCase__Id_Es__4F47C5E3">
-    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
     <End Role="StairCases" Type="Self.StairCases" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Estates">
+      <Principal Role="Associations">
         <PropertyRef Name="Id" />
       </Principal>
       <Dependent Role="StairCases">
@@ -422,73 +423,73 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__TenantExp__Id_Es__0F624AF8">
-    <End Role="EstateExpenses" Type="Self.EstateExpenses" Multiplicity="1" />
-    <End Role="TenantExpenses" Type="Self.TenantExpenses" Multiplicity="*" />
+    <End Role="AssociationExpenses" Type="Self.AssociationExpenses" Multiplicity="1" />
+    <End Role="ApartmentExpenses" Type="Self.ApartmentExpenses" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="EstateExpenses">
+      <Principal Role="AssociationExpenses">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="TenantExpenses">
+      <Dependent Role="ApartmentExpenses">
         <PropertyRef Name="Id_EstateExpense" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__TenantExp__Id_Te__0E6E26BF">
-    <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
-    <End Role="TenantExpenses" Type="Self.TenantExpenses" Multiplicity="*" />
+    <End Role="Apartments" Type="Self.Apartments" Multiplicity="1" />
+    <End Role="ApartmentExpenses" Type="Self.ApartmentExpenses" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Tenants">
+      <Principal Role="Apartments">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="TenantExpenses">
+      <Dependent Role="ApartmentExpenses">
         <PropertyRef Name="Id_Tenant" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__TenantPer__Id_Pe__4BAC3F29">
     <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
-    <End Role="TenantPersons" Type="Self.TenantPersons" Multiplicity="*" />
+    <End Role="ApartmentPersons" Type="Self.ApartmentPersons" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="Persons">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="TenantPersons">
+      <Dependent Role="ApartmentPersons">
         <PropertyRef Name="Id_Person" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__TenantPer__Id_Te__4CA06362">
-    <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
-    <End Role="TenantPersons" Type="Self.TenantPersons" Multiplicity="*" />
+    <End Role="Apartments" Type="Self.Apartments" Multiplicity="1" />
+    <End Role="ApartmentPersons" Type="Self.ApartmentPersons" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Tenants">
+      <Principal Role="Apartments">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="TenantPersons">
+      <Dependent Role="ApartmentPersons">
         <PropertyRef Name="Id_Tenent" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Tenants__id_Esta__5DCAEF64">
-    <End Role="Estates" Type="Self.Estates" Multiplicity="1" />
-    <End Role="Tenants" Type="Self.Tenants" Multiplicity="*" />
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
+    <End Role="Apartments" Type="Self.Apartments" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="Estates">
+      <Principal Role="Associations">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Tenants">
+      <Dependent Role="Apartments">
         <PropertyRef Name="id_Estate" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
   <Association Name="FK__Tenants__Id_Stai__51300E55">
     <End Role="StairCases" Type="Self.StairCases" Multiplicity="0..1" />
-    <End Role="Tenants" Type="Self.Tenants" Multiplicity="*" />
+    <End Role="Apartments" Type="Self.Apartments" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="StairCases">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="Tenants">
+      <Dependent Role="Apartments">
         <PropertyRef Name="Id_StairCase" />
       </Dependent>
     </ReferentialConstraint>
@@ -573,12 +574,15 @@
   </Function>
   <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
   <EntityContainer Name="AdministratoroModelStoreContainer">
-    <EntitySet Name="ApartmentCounters" EntityType="Self.ApartmentCounters" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="Counters" EntityType="Self.Counters" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ApartmentExpenses" EntityType="Self.ApartmentExpenses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ApartmentPersons" EntityType="Self.ApartmentPersons" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Apartments" EntityType="Self.Apartments" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssociationCounters" EntityType="Self.AssociationCounters" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssociationCountersApartment" EntityType="Self.AssociationCountersApartment" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssociationExpenses" EntityType="Self.AssociationExpenses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssociationExpensesRedistributionTypes" EntityType="Self.AssociationExpensesRedistributionTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Associations" EntityType="Self.Associations" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ErrorLogs" EntityType="Self.ErrorLogs" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="EstateExpenses" EntityType="Self.EstateExpenses" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="EstateExpensesRedistributionTypes" EntityType="Self.EstateExpensesRedistributionTypes" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="Estates" EntityType="Self.Estates" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Expenses" EntityType="Self.Expenses" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ExpenseTypes" EntityType="Self.ExpenseTypes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Functionalities" EntityType="Self.Functionalities" Schema="dbo" store:Type="Tables" />
@@ -591,55 +595,52 @@
     <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="StairCases" EntityType="Self.StairCases" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="TenantExpenses" EntityType="Self.TenantExpenses" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="TenantPersons" EntityType="Self.TenantPersons" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="Tenants" EntityType="Self.Tenants" Schema="dbo" store:Type="Tables" />
     <AssociationSet Name="FK__Apartment__Id_Ap__1B9317B3" Association="Self.FK__Apartment__Id_Ap__1B9317B3">
-      <End Role="Tenants" EntitySet="Tenants" />
-      <End Role="ApartmentCounters" EntitySet="ApartmentCounters" />
+      <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="AssociationCountersApartment" EntitySet="AssociationCountersApartment" />
     </AssociationSet>
     <AssociationSet Name="FK__Apartment__Id_Co__1C873BEC" Association="Self.FK__Apartment__Id_Co__1C873BEC">
-      <End Role="Counters" EntitySet="Counters" />
-      <End Role="ApartmentCounters" EntitySet="ApartmentCounters" />
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
+      <End Role="AssociationCountersApartment" EntitySet="AssociationCountersApartment" />
     </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Est__0B5CAFEA" Association="Self.FK__Counters__Id_Est__0B5CAFEA">
-      <End Role="Estates" EntitySet="Estates" />
-      <End Role="Counters" EntitySet="Counters" />
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
     </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Exp__0D44F85C" Association="Self.FK__Counters__Id_Exp__0D44F85C">
       <End Role="Expenses" EntitySet="Expenses" />
-      <End Role="Counters" EntitySet="Counters" />
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
     </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Sta__0C50D423" Association="Self.FK__Counters__Id_Sta__0C50D423">
       <End Role="StairCases" EntitySet="StairCases" />
-      <End Role="Counters" EntitySet="Counters" />
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExp__Redis__44952D46" Association="Self.FK__EstateExp__Redis__44952D46">
-      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="AssociationExpensesRedistributionTypes" EntitySet="AssociationExpensesRedistributionTypes" />
+      <End Role="AssociationExpenses" EntitySet="AssociationExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExt__Id_Es__76969D2E" Association="Self.FK__EstateExt__Id_Es__76969D2E">
-      <End Role="Estates" EntitySet="Estates" />
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="AssociationExpenses" EntitySet="AssociationExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExt__Id_Ex__778AC167" Association="Self.FK__EstateExt__Id_Ex__778AC167">
       <End Role="Expenses" EntitySet="Expenses" />
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="AssociationExpenses" EntitySet="AssociationExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExt__Id_Ex__787EE5A0" Association="Self.FK__EstateExt__Id_Ex__787EE5A0">
       <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="AssociationExpenses" EntitySet="AssociationExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__Estates__Id_Part__5CD6CB2B" Association="Self.FK__Estates__Id_Part__5CD6CB2B">
       <End Role="Partners" EntitySet="Partners" />
-      <End Role="Estates" EntitySet="Estates" />
+      <End Role="Associations" EntitySet="Associations" />
     </AssociationSet>
     <AssociationSet Name="FK__Expenses__LegalT__52E34C9D" Association="Self.FK__Expenses__LegalT__52E34C9D">
       <End Role="ExpenseTypes" EntitySet="ExpenseTypes" />
       <End Role="Expenses" EntitySet="Expenses" />
     </AssociationSet>
     <AssociationSet Name="FK__InvoiceIn__Id_Co__6ABAD62E" Association="Self.FK__InvoiceIn__Id_Co__6ABAD62E">
-      <End Role="Counters" EntitySet="Counters" />
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
       <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
     </AssociationSet>
     <AssociationSet Name="FK__InvoiceIn__Id_In__67DE6983" Association="Self.FK__InvoiceIn__Id_In__67DE6983">
@@ -647,11 +648,11 @@
       <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
     </AssociationSet>
     <AssociationSet Name="FK__Invoices__Id_Est__3FD07829" Association="Self.FK__Invoices__Id_Est__3FD07829">
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
+      <End Role="AssociationExpenses" EntitySet="AssociationExpenses" />
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
     <AssociationSet Name="FK__Invoices__id_Red__4589517F" Association="Self.FK__Invoices__id_Red__4589517F">
-      <End Role="EstateExpensesRedistributionTypes" EntitySet="EstateExpensesRedistributionTypes" />
+      <End Role="AssociationExpensesRedistributionTypes" EntitySet="AssociationExpensesRedistributionTypes" />
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
     <AssociationSet Name="FK__Invoices__Id_sta__42ACE4D4" Association="Self.FK__Invoices__Id_sta__42ACE4D4">
@@ -659,32 +660,32 @@
       <End Role="Invoices" EntitySet="Invoices" />
     </AssociationSet>
     <AssociationSet Name="FK__StairCase__Id_Es__4F47C5E3" Association="Self.FK__StairCase__Id_Es__4F47C5E3">
-      <End Role="Estates" EntitySet="Estates" />
+      <End Role="Associations" EntitySet="Associations" />
       <End Role="StairCases" EntitySet="StairCases" />
     </AssociationSet>
     <AssociationSet Name="FK__TenantExp__Id_Es__0F624AF8" Association="Self.FK__TenantExp__Id_Es__0F624AF8">
-      <End Role="EstateExpenses" EntitySet="EstateExpenses" />
-      <End Role="TenantExpenses" EntitySet="TenantExpenses" />
+      <End Role="AssociationExpenses" EntitySet="AssociationExpenses" />
+      <End Role="ApartmentExpenses" EntitySet="ApartmentExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__TenantExp__Id_Te__0E6E26BF" Association="Self.FK__TenantExp__Id_Te__0E6E26BF">
-      <End Role="Tenants" EntitySet="Tenants" />
-      <End Role="TenantExpenses" EntitySet="TenantExpenses" />
+      <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="ApartmentExpenses" EntitySet="ApartmentExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__TenantPer__Id_Pe__4BAC3F29" Association="Self.FK__TenantPer__Id_Pe__4BAC3F29">
       <End Role="Persons" EntitySet="Persons" />
-      <End Role="TenantPersons" EntitySet="TenantPersons" />
+      <End Role="ApartmentPersons" EntitySet="ApartmentPersons" />
     </AssociationSet>
     <AssociationSet Name="FK__TenantPer__Id_Te__4CA06362" Association="Self.FK__TenantPer__Id_Te__4CA06362">
-      <End Role="Tenants" EntitySet="Tenants" />
-      <End Role="TenantPersons" EntitySet="TenantPersons" />
+      <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="ApartmentPersons" EntitySet="ApartmentPersons" />
     </AssociationSet>
     <AssociationSet Name="FK__Tenants__id_Esta__5DCAEF64" Association="Self.FK__Tenants__id_Esta__5DCAEF64">
-      <End Role="Estates" EntitySet="Estates" />
-      <End Role="Tenants" EntitySet="Tenants" />
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="Apartments" EntitySet="Apartments" />
     </AssociationSet>
     <AssociationSet Name="FK__Tenants__Id_Stai__51300E55" Association="Self.FK__Tenants__Id_Stai__51300E55">
       <End Role="StairCases" EntitySet="StairCases" />
-      <End Role="Tenants" EntitySet="Tenants" />
+      <End Role="Apartments" EntitySet="Apartments" />
     </AssociationSet>
     <AssociationSet Name="FK__UserRight__Id_fu__5629CD9C" Association="Self.FK__UserRight__Id_fu__5629CD9C">
       <End Role="Functionalities" EntitySet="Functionalities" />

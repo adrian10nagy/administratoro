@@ -16,8 +16,8 @@ namespace Administratoro.DAL
     {
         public Expenses()
         {
-            this.Counters = new HashSet<Counters>();
-            this.EstateExpenses = new HashSet<EstateExpenses>();
+            this.AssociationCounters = new HashSet<AssociationCounters>();
+            this.AssociationExpenses = new HashSet<AssociationExpenses>();
         }
     
         public int Id { get; set; }
@@ -25,8 +25,8 @@ namespace Administratoro.DAL
         public Nullable<bool> specialType { get; set; }
         public Nullable<int> LegalType { get; set; }
     
-        public virtual ICollection<Counters> Counters { get; set; }
-        public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
+        public virtual ICollection<AssociationCounters> AssociationCounters { get; set; }
+        public virtual ICollection<AssociationExpenses> AssociationExpenses { get; set; }
         public virtual ExpenseTypes ExpenseTypes { get; set; }
     }
 }

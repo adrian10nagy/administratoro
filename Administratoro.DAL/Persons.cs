@@ -16,7 +16,7 @@ namespace Administratoro.DAL
     {
         public Persons()
         {
-            this.TenantPersons = new HashSet<TenantPersons>();
+            this.ApartmentPersons = new HashSet<ApartmentPersons>();
         }
     
         public int Id { get; set; }
@@ -28,6 +28,6 @@ namespace Administratoro.DAL
         public int Id_Locality { get; set; }
         public string Name { get; set; }
     
-        public virtual ICollection<TenantPersons> TenantPersons { get; set; }
+        public virtual ICollection<ApartmentPersons> ApartmentPersons { get; set; }
     }
 }

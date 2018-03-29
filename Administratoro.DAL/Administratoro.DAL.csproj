@@ -51,10 +51,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApartmentCounters.cs">
+    <Compile Include="ApartmentExpenses.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Counters.cs">
+    <Compile Include="ApartmentPersons.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Apartments.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssociationCounters.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssociationCountersApartment.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssociationExpenses.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssociationExpensesRedistributionTypes.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Associations.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="EFModel.Context.cs">
@@ -78,15 +96,6 @@
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ErrorLogs.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EstateExpenses.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EstateExpensesRedistributionTypes.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Estates.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Expenses.cs">
@@ -130,15 +139,6 @@
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="sysdiagrams.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TenantExpenses.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TenantPersons.cs">
-      <DependentUpon>EFModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Tenants.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>

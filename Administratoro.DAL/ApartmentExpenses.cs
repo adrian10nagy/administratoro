@@ -12,13 +12,16 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class TenantPersons
+    public partial class ApartmentExpenses
     {
         public int Id { get; set; }
-        public int Id_Person { get; set; }
-        public int Id_Tenent { get; set; }
+        public Nullable<decimal> Value { get; set; }
+        public int Id_Tenant { get; set; }
+        public int Id_EstateExpense { get; set; }
+        public Nullable<decimal> IndexOld { get; set; }
+        public Nullable<decimal> IndexNew { get; set; }
     
-        public virtual Persons Persons { get; set; }
-        public virtual Tenants Tenants { get; set; }
+        public virtual AssociationExpenses AssociationExpenses { get; set; }
+        public virtual Apartments Apartments { get; set; }
     }
 }

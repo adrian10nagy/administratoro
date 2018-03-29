@@ -31,20 +31,20 @@ namespace Admin.Associations
                 btnEstateEqualIndiviza.Visible = true;
                 txtEstateCotaIndivizaApartments.Visible = true;
             }
-            InitializeCounters2();
-            InitializeStairs2();
+            InitializeCounters();
+            InitializeStairs();
         }
 
-        private void InitializeCounters2()
+        private void InitializeCounters()
         {
-            gvCounters.DataSource = Association.Counters.OrderBy(ac=>ac.Id_Expense);
+            gvCounters.DataSource = Association.AssociationCounters.OrderBy(ac => ac.Id_Expense);
             gvCounters.DataBind();
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            InitializeStairs2();
-            InitializeCounters2();
+            InitializeStairs();
+            InitializeCounters();
             if (!Page.IsPostBack)
             {
                 estateStairs.SelectedIndex = Association.HasStaircase ? 1 : 0;
@@ -52,7 +52,7 @@ namespace Admin.Associations
             }
         }
 
-        private void InitializeStairs2()
+        private void InitializeStairs()
         {
             bool estateHasStairCase = Association.HasStaircase;
 
@@ -66,45 +66,6 @@ namespace Admin.Associations
             }
         }
 
-        /*private void InitializeCounters(Estates es)
-        {
-            // add expense name header
-            Label expenseNameHeader = new Label
-            {
-                Text = "Cheltuială",
-                CssClass = "col-md-6 col-xs-6 countersHeadersNew"
-            };
-            associationcounters.Controls.Add(expenseNameHeader);
-
-            // add coounter header
-            Label expenseCounterHeader = new Label
-            {
-                Text = "Serie contor",
-                CssClass = "col-md-6 col-xs-6 countersHeadersNew"
-            };
-            associationcounters.Controls.Add(expenseCounterHeader);
-
-            foreach (Counters counter in es.Counters)
-            {
-                // add expense name header
-                Label expenseName = new Label
-                {
-                    Text = "<b>" + counter.Expenses.Name + "</b>",
-                    CssClass = "col-md-6 col-xs-6"
-                };
-                associationcounters.Controls.Add(expenseName);
-
-                // add coounter header
-                Label expenseCounter = new Label
-                {
-                    Text = counter.Value,
-                    CssClass = "col-md-6 col-xs-6"
-                };
-                associationcounters.Controls.Add(expenseCounter);
-                associationcounters.Controls.Add(new LiteralControl("<br />"));
-            }
-        }*/
-
         private void stairsRemove_Click(object sender, EventArgs e)
         {
             LinkButton btn = (LinkButton)sender;
@@ -115,7 +76,7 @@ namespace Admin.Associations
                 StairCasesManager.Remove(stairCaseId, Association.Id);
                 var es = AssociationsManager.GetById(Association.Id);
                 Session[SessionConstants.SelectedAssociation] = es;
-                InitializeStairs2();
+                InitializeStairs();
             }
         }
 
@@ -168,7 +129,7 @@ namespace Admin.Associations
             {
                 if (!string.IsNullOrEmpty(txtEstateCounterValueNew.Text))
                 {
-                    Counters counter = new Counters
+                    AssociationCounters associationCounters = new AssociationCounters
                     {
                         Id_Estate = Association.Id,
                         Value = txtEstateCounterValueNew.Text,
@@ -176,7 +137,7 @@ namespace Admin.Associations
                         Id_StairCase = drpEstateStairs.SelectedValue.ToNullableInt(),
                     };
 
-                    CountersManager.Addcounter(counter);
+                    CountersManager.Addcounter(associationCounters);
                     var newEstate = AssociationsManager.GetById(Association.Id);
                     Session[SessionConstants.SelectedAssociation] = newEstate;
                     Response.Redirect(Request.RawUrl);
@@ -336,10 +297,10 @@ namespace Admin.Associations
                 }
                 else
                 {
-                    Counters counter = CountersManager.GetById(counterId);
-                    if (counter != null && counterValue.Text != counter.Value)
+                    AssociationCounters associationCounters = CountersManager.GetById(counterId);
+                    if (associationCounters != null && counterValue.Text != associationCounters.Value)
                     {
-                        var newCounter = new Counters
+                        var newCounter = new AssociationCounters
                         {
                             Value = counterValue.Text
                         };

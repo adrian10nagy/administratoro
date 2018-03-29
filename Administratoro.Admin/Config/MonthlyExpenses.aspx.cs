@@ -71,11 +71,11 @@ namespace Admin.Config
             int _year = year().HasValue ? year().Value : 2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out month))
             {
-                var estate = (Estates)Session[SessionConstants.SelectedAssociation];
+                var estate = (Associations)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var ee = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, _year, month);
-                    var eeAlsoDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, month);
+                    var ee = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, _year, month);
+                    var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, month);
 
                     var expenses = ExpensesManager.GetAllExpenses();
 
@@ -101,7 +101,7 @@ namespace Admin.Config
 
                         // add expense type
                         TableCell expenseType = new TableCell();
-                        EstateExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == expense.Id && s.Month == month && s.Year == _year && s.Id_Estate == estate.Id);
+                        AssociationExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == expense.Id && s.Month == month && s.Year == _year && s.Id_Estate == estate.Id);
 
                         DropDownList dp = new DropDownList();
                         if (expense.Id != (int)Expense.AjutorÎncălzire)
@@ -122,7 +122,7 @@ namespace Admin.Config
                                 Selected = selected2
                             });
 
-                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerTenants);
+                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerApartments);
                             dp.Items.Add(new ListItem
                             {
                                 Value = "3",
@@ -161,7 +161,7 @@ namespace Admin.Config
             }
         }
 
-        private bool isStairCaseSplitSelected(Expenses expense, List<EstateExpenses> ee, int year, int month)
+        private bool isStairCaseSplitSelected(Expenses expense, List<AssociationExpenses> ee, int year, int month)
         {
 
             bool result = false;
@@ -173,7 +173,7 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, List<EstateExpenses> ee, int year, int month)
+        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, List<AssociationExpenses> ee, int year, int month)
         {
             bool result = false;
             if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled).Any())
@@ -184,7 +184,7 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isDplExpenseTypesSelected(Administratoro.DAL.EstateExpenses expense, ExpenseType expenseType)
+        private static bool isDplExpenseTypesSelected(Administratoro.DAL.AssociationExpenses expense, ExpenseType expenseType)
         {
             bool result = false;
 
@@ -199,10 +199,10 @@ namespace Admin.Config
         private void InitializeMonths(int? year, int? month)
         {
             drpExpenseMonth.Items.Clear();
-            var estate = (Estates)Session[SessionConstants.SelectedAssociation];
+            var estate = (Associations)Session[SessionConstants.SelectedAssociation];
             if (estate != null)
             {
-                var yearMonths = EstateExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
+                var yearMonths = AssociationExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
                 foreach (var ym in yearMonths)
                 {
                     drpExpenseMonth.Items.Add(new ListItem
@@ -246,11 +246,11 @@ namespace Admin.Config
             int _year = year().HasValue?year().Value:2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out _month))
             {
-                var estate = (Estates)Session[SessionConstants.SelectedAssociation];
+                var estate = (Associations)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var existingEstateExpenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(estate.Id, _year, _month);
-                    var existingEstateExpensesIncludingDisabled = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, _month);
+                    var existingAssociationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, _year, _month);
+                    var existingAssociationExpensesIncludingDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, _month);
 
                     foreach (TableRow row in tblMonthlyExpenses.Rows)
                     {
@@ -273,36 +273,36 @@ namespace Admin.Config
                                 int expenseId = 0;
                                 if (int.TryParse(cbExpenseSelect.ID.Replace("esateExpense", ""), out expenseId))
                                 {
-                                    bool existingEstateExpensesContainsItem = existingEstateExpenses.Select(esex => esex.Id_Expense).Contains(expenseId);
-                                    bool existingEstateExpensesContainsItemAsDisabled = existingEstateExpensesIncludingDisabled
+                                    bool existingAssociationExpensesContainsItem = existingAssociationExpenses.Select(esex => esex.Id_Expense).Contains(expenseId);
+                                    bool existingAssociationExpensesContainsItemAsDisabled = existingAssociationExpensesIncludingDisabled
                                         .Where(es => es.WasDisabled).Select(esex => esex.Id_Expense).Contains(expenseId);
-                                    EstateExpenses ee = null;
+                                    AssociationExpenses ee = null;
 
                                     // if selected and non existing in the prev. config
-                                    if (cbExpenseSelect.Checked && existingEstateExpensesContainsItemAsDisabled)
+                                    if (cbExpenseSelect.Checked && existingAssociationExpensesContainsItemAsDisabled)
                                     {
                                         // enables it
-                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, _year, _month);
-                                        EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, false, cbExpensePerStaircase);
+                                        ee = AssociationExpensesManager.GetAssociationExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, _year, _month);
+                                        AssociationExpensesManager.MarkAssociationExpensesDisableProperty(ee, false, cbExpensePerStaircase);
                                     }
-                                    else if (!cbExpenseSelect.Checked && existingEstateExpensesContainsItem)
+                                    else if (!cbExpenseSelect.Checked && existingAssociationExpensesContainsItem)
                                     {
                                         // disables it
-                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, _year, _month, false);
-                                        EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, true, cbExpensePerStaircase);
+                                        ee = AssociationExpensesManager.GetAssociationExpensesByMonthAndYearAndDisabled(estate.Id, expenseId, _year, _month, false);
+                                        AssociationExpensesManager.MarkAssociationExpensesDisableProperty(ee, true, cbExpensePerStaircase);
                                     }
-                                    else if (cbExpenseSelect.Checked && !existingEstateExpensesContainsItem)
+                                    else if (cbExpenseSelect.Checked && !existingAssociationExpensesContainsItem)
                                     {
-                                        ee = EstateExpensesManager.GetEstateExpensesByMonthAndYearAndDisabled(expenseId, estate.Id, _year, _month);
+                                        ee = AssociationExpensesManager.GetAssociationExpensesByMonthAndYearAndDisabled(expenseId, estate.Id, _year, _month);
                                         if (ee != null)
                                         {
                                             // disables it
-                                            EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, true, cbExpensePerStaircase);
+                                            AssociationExpensesManager.MarkAssociationExpensesDisableProperty(ee, true, cbExpensePerStaircase);
                                         }
                                         else
                                         {
                                             // adds it
-                                            EstateExpensesManager.Add(estate.Id, expenseId, _month, _year, dpExpenseType.SelectedValue, false);
+                                            AssociationExpensesManager.Add(estate.Id, expenseId, _month, _year, dpExpenseType.SelectedValue, false);
                                         }
                                     }
 
@@ -311,17 +311,17 @@ namespace Admin.Config
                                     {
                                         if (ee == null)
                                         {
-                                            ee = EstateExpensesManager.GetEstateExpense(estate.Id, expenseId, _year, _month);
+                                            ee = AssociationExpensesManager.GetAssociationExpense(estate.Id, expenseId, _year, _month);
                                         }
 
                                         if (ee != null && (ExpenseType)ee.ExpenseTypes.Id != selectedExpenseType)
                                         {
-                                            EstateExpensesManager.UpdateEstateExpenseType(ee, selectedExpenseType);
+                                            AssociationExpensesManager.UpdateAssociationExpenseType(ee, selectedExpenseType);
                                         }
 
                                         if (ee != null && (!ee.SplitPerStairCase.HasValue || ee.SplitPerStairCase.Value != cbExpensePerStaircase))
                                         {
-                                            EstateExpensesManager.MarkEstateExpensesDisableProperty(ee, false, cbExpensePerStaircase);
+                                            AssociationExpensesManager.MarkAssociationExpensesDisableProperty(ee, false, cbExpensePerStaircase);
                                         }
                                     }
                                 }

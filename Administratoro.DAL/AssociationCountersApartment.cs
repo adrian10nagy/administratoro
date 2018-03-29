@@ -12,18 +12,14 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class EstateExpensesRedistributionTypes
+    public partial class AssociationCountersApartment
     {
-        public EstateExpensesRedistributionTypes()
-        {
-            this.EstateExpenses = new HashSet<EstateExpenses>();
-            this.Invoices = new HashSet<Invoices>();
-        }
-    
         public int Id { get; set; }
-        public string Value { get; set; }
+        public int Id_Apartment { get; set; }
+        public int Id_Counters { get; set; }
+        public Nullable<int> CountersInsideApartment { get; set; }
     
-        public virtual ICollection<EstateExpenses> EstateExpenses { get; set; }
-        public virtual ICollection<Invoices> Invoices { get; set; }
+        public virtual Apartments Apartments { get; set; }
+        public virtual AssociationCounters AssociationCounters { get; set; }
     }
 }

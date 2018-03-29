@@ -89,11 +89,11 @@ namespace Admin.Expenses
 
         private void InitializeGridView(DataTable dt, int? stairCase = null)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
+            var association = Session[SessionConstants.SelectedAssociation] as Associations;
 
             RecalculationManager.RecalculateMonthlyExpenses(Association.Id, _year, _month);
 
-            dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
+            dt = ApartmentExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
            
             ViewState["dt"] = dt;
             GridView1.DataSource = dt;
@@ -106,12 +106,12 @@ namespace Admin.Expenses
             int stairCase;
             if(int.TryParse(drpDisplayMode.SelectedValue, out stairCase))
             {
-                dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
+                dt = ApartmentExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
                 dt.Rows.Add(new TableCell());
             }
             else
             {
-                dt = TenantExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, null);
+                dt = ApartmentExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, null);
             }
 
             using (XLWorkbook wb = new XLWorkbook())
@@ -131,7 +131,7 @@ namespace Admin.Expenses
                 ws.Cells("D1").Value = ws.Cell(4, 2).Value;
                 ws.Range("D1:D2").Merge();
 
-                var expenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
+                var expenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
                 char position = 'E';
                 foreach (var expense in expenses)
                 {
@@ -194,7 +194,7 @@ namespace Admin.Expenses
             HeaderCell.ColumnSpan = 4;
             HeaderGridRow.Cells.Add(HeaderCell);//Adding HeaderCell to header.
 
-            var expenses = EstateExpensesManager.GetAllEstateExpensesByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
+            var expenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
             foreach (var expense in expenses)
             {
                 var HeaderCell2 = new TableCell();

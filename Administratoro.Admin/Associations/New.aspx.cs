@@ -148,11 +148,11 @@ namespace Admin.Associations
 
         private void AddCounterHeader()
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
-            var estateExpenses = EstateExpensesManager.GetDefault(estate.Id);
+            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var associationExpenses = AssociationExpensesManager.GetDefault(estate.Id);
             var headerCssClass = estate.HasStaircase ? "col-md-4 col-xs-4 countersHeadersNew" : "col-md-6 col-xs-6 countersHeadersNew";
 
-            var cssClass = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
+            //var cssClass = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
 
             Panel headerPanel = new Panel { CssClass = "col-md-12 col-xs-12" };
             // add expense name header
@@ -234,7 +234,7 @@ namespace Admin.Associations
                 }
             }
 
-            var estate = new Estates
+            var estate = new Administratoro.DAL.Associations
             {
                 Name = estateName.Value,
                 Address = estateAddress.Value,
@@ -282,10 +282,10 @@ namespace Admin.Associations
 
         protected void btnSave2_Click(object sender, EventArgs e)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
+            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
             Dictionary<int, int> dictionary = GetSelectdExpenses();
 
-            EstateExpensesManager.AddEstateExpensesByTenantAndMonth(estate.Id, dictionary);
+            AssociationExpensesManager.AddAssociationExpensesByApartmentAndMonth(estate.Id, dictionary);
             estate = AssociationsManager.GetById(estate.Id);
 
             Session[SessionConstants.SelectedAssociation] = estate;
@@ -295,8 +295,8 @@ namespace Admin.Associations
 
         protected void btnSave3_Click(object sender, EventArgs e)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Estates;
-            List<Counters> cnts = new List<Counters>();
+            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            List<AssociationCounters> cnts = new List<AssociationCounters>();
 
             foreach (var control in countersConfiguration.Controls)
             {
@@ -326,7 +326,7 @@ namespace Admin.Associations
                         if (valueControl != null && !string.IsNullOrEmpty(expenseControl.Text) &&
                             int.TryParse(expenseCleaned, out expenseId))
                         {
-                            var cnt = new Counters()
+                            var cnt = new AssociationCounters()
                             {
                                 Id_Estate = estate.Id,
                                 Id_Expense = expenseId,
@@ -400,9 +400,9 @@ namespace Admin.Associations
 
                     dp.Items.Add(new ListItem
                     {
-                        Value = ((int)ExpenseType.PerTenants).ToString(),
+                        Value = ((int)ExpenseType.PerApartments).ToString(),
                         Text = "Per număr locatari imobil",
-                        Selected = expense.LegalType == (int)ExpenseType.PerTenants
+                        Selected = expense.LegalType == (int)ExpenseType.PerApartments
                     });
                 }
                 else
@@ -428,7 +428,7 @@ namespace Admin.Associations
             step3.Visible = true;
         }
 
-        private ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Estates estate, int controlId)
+        private ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations estate, int controlId)
         {
             ListItem[] result = new ListItem[estate.StairCases.Count + 1];
             int i = 0;
