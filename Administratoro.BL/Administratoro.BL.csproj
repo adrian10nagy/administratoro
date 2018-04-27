@@ -59,6 +59,7 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Managers\CountersApartmentManager.cs" />
     <Compile Include="Managers\CountersManager.cs" />
     <Compile Include="Managers\AssociationExpensesManager.cs" />
     <Compile Include="Managers\AssociationsManager.cs" />

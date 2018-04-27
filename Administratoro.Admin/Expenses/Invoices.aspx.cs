@@ -82,7 +82,7 @@ namespace Admin.Expenses
             string mainRowCssFormat = "col-md-12 col-sm-12 xs-12 cashBokItemsRow {0}";
             bool even = false;
 
-            var allExpenses = ExpensesManager.GetAllExpenses();
+            IEnumerable<Administratoro.DAL.Expenses> allExpenses = ExpensesManager.GetAllExpenses();
             var associationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(associationId, yearNr, monthNr).OrderBy(ee => ee.Id_ExpenseType);
 
             // add expense panels
@@ -464,7 +464,7 @@ namespace Admin.Expenses
             if (decimal.TryParse(redistributeValue, out redistributeVal))
             {
                 Associations estate = AssociationsManager.GetByAssociationExpenseId(associationExpenseId);
-                List<Apartments> apartmentsForRedistribute = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpenseId);
+                IEnumerable<Apartments> apartmentsForRedistribute = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpenseId);
 
                 txtInvoiceRedistributeEqualApartment.Text = apartmentsForRedistribute.Count() + " apartamente, alocă <b>" +
                     Math.Round(redistributeVal / apartmentsForRedistribute.Count(), 2) + "</b> la fiecare apartament";

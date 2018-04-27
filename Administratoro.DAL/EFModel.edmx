@@ -15,6 +15,7 @@
           <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
           <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
           <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
+          <Property Name="CounterOrder" Type="int" />
         </EntityType>
         <EntityType Name="ApartmentPersons">
           <Key>
@@ -895,6 +896,7 @@
           <Property Name="Id_EstateExpense" Type="Int32" Nullable="false" />
           <Property Name="IndexOld" Type="Decimal" Precision="18" Scale="1" />
           <Property Name="IndexNew" Type="Decimal" Precision="18" Scale="1" />
+          <Property Name="CounterOrder" Type="Int32" />
           <NavigationProperty Name="AssociationExpenses" Relationship="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" FromRole="ApartmentExpenses" ToRole="AssociationExpenses" />
           <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" FromRole="ApartmentExpenses" ToRole="Apartments" />
         </EntityType>
@@ -1514,6 +1516,7 @@
           <EntitySetMapping Name="ApartmentExpenses">
             <EntityTypeMapping TypeName="AdministratoroModel.ApartmentExpenses">
               <MappingFragment StoreEntitySet="ApartmentExpenses">
+                <ScalarProperty Name="CounterOrder" ColumnName="CounterOrder" />
                 <ScalarProperty Name="IndexNew" ColumnName="IndexNew" />
                 <ScalarProperty Name="IndexOld" ColumnName="IndexOld" />
                 <ScalarProperty Name="Id_EstateExpense" ColumnName="Id_EstateExpense" />

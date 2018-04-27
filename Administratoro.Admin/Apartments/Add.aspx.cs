@@ -50,10 +50,10 @@ namespace Admin.Tenants
                             userDependents.Value = apartment.Dependents.ToString();
                             apartmentCota.Value = apartment.CotaIndiviza.ToString();
                             userNr.Value = apartment.Number.ToString();
-                            btnSave.Text = "Actualizează datele proprietatății";
+                            btnSave.Text = "Actualizează datele";
                             lblUserId.Text = Request["apartmentid"];
                             userStairCase.SelectedValue = (apartment.Id_StairCase != null) ? apartment.Id_StairCase.ToString() : null;
-                            userHeatHelp.SelectedValue = (apartment.HasHeatHelp.HasValue && apartment.HasHeatHelp.Value? "1" : "0");
+                            userHeatHelp.SelectedValue = (apartment.HasHeatHelp.HasValue && apartment.HasHeatHelp.Value ? "1" : "0");
                         }
                         else
                         {
@@ -86,7 +86,32 @@ namespace Admin.Tenants
                     apartment = ApartmentsManager.GetById(apartmentId.Value);
                 }
 
-                var expenses = ExpensesManager.GetAllExpenses();
+                Panel headerPanel = new Panel();
+                Label lbExpense = new Label
+                {
+                    Text = "Cheltuială",
+                    CssClass = "col-md-4 col-xs-4 countersTableHeader"
+                };
+
+                Label lbName = new Label
+                {
+                    Text = "Contor alocat",
+                    CssClass = "col-md-4 col-xs-4 countersTableHeader"
+                };
+
+                Label lbNrCountersPerApartment = new Label
+                {
+                    Text = "Numărul de contoare în apartament ",
+                    CssClass = "col-md-4 col-xs-4 countersTableHeader"
+                };
+
+                headerPanel.Controls.Add(lbExpense);
+                headerPanel.Controls.Add(lbName);
+                headerPanel.Controls.Add(lbNrCountersPerApartment);
+
+                estateCounters.Controls.Add(headerPanel);
+
+                IEnumerable<Expenses> expenses = ExpensesManager.GetAllExpenses();
                 foreach (var expense in expenses)
                 {
                     PopulateCountersData(association, expense, apartment);
@@ -101,12 +126,12 @@ namespace Admin.Tenants
             Label lb = new Label
             {
                 Text = expense.Name,
-                CssClass = "col-md-6 col-xs-6"
+                CssClass = "col-md-4 col-xs-4"
             };
 
             DropDownList drp = new DropDownList()
             {
-                CssClass = "col-md-6 col-xs-6"
+                CssClass = "col-md-4 col-xs-4"
             };
 
             ListItem defaultNull = new ListItem
@@ -136,7 +161,6 @@ namespace Admin.Tenants
                 Label lbApCounter = new Label
                 {
                     Text = (ac != null) ? ac.Id.ToString() : string.Empty,
-                    CssClass = "col-md-6 col-xs-6",
                     Visible = false
                 };
 
@@ -150,13 +174,32 @@ namespace Admin.Tenants
                         Selected = (ac != null && ac.Id_Counters == counter.Id) || (apartment == null && i == 0)
                     };
                     drp.Items.Add(li);
-
+                    
                     i++;
+                }
+
+                TextBox txtNrOfCounters = new TextBox
+                {
+                    CssClass = "col-md-4 col-xs-4"
+                };
+
+                if(ac == null)
+                {
+                    txtNrOfCounters.Text = "0";
+                }
+                else if (ac.CountersInsideApartment.HasValue)
+                {
+                    txtNrOfCounters.Text = ac.CountersInsideApartment.ToString();
+                }
+                else
+                {
+                    txtNrOfCounters.Text = "1";
                 }
 
                 mainPanel.Controls.Add(lbApCounter);
                 mainPanel.Controls.Add(lb);
                 mainPanel.Controls.Add(drp);
+                mainPanel.Controls.Add(txtNrOfCounters);
                 mainPanel.Controls.Add(new LiteralControl("<br />"));
                 mainPanel.Controls.Add(new LiteralControl("<br />"));
                 estateCounters.Visible = true;
@@ -252,7 +295,7 @@ namespace Admin.Tenants
 
             for (int i = 0; i < estateCounters.Controls.Count; i++)
             {
-                if(estateCounters.Controls[i] is Panel)
+                if (estateCounters.Controls[i] is Panel)
                 {
                     var mainPanel = (Panel)estateCounters.Controls[i];
 
@@ -261,21 +304,29 @@ namespace Admin.Tenants
                     {
                         var apCounterId = (Label)mainPanel.Controls[0];
                         var counterId = (DropDownList)mainPanel.Controls[2];
-                        
-                        if (apCounterId != null  && counterId != null )
+                        var counterNr = (TextBox)mainPanel.Controls[3];
+
+                        if (apCounterId != null && counterId != null)
                         {
                             int apCntId;
                             int apCntIdResult = -1;
-                            if(int.TryParse(apCounterId.Text, out apCntId))
+                            if (int.TryParse(apCounterId.Text, out apCntId))
                             {
                                 apCntIdResult = apCntId;
                             }
 
                             int cntId;
                             int cntIdResult = -1;
-                            if(int.TryParse(counterId.Text, out cntId))
+                            if (int.TryParse(counterId.Text, out cntId))
                             {
                                 cntIdResult = cntId;
+                            }
+
+                            int nrCountersId;
+                            int? nrCountersIdResult = null;
+                            if (int.TryParse(counterNr.Text, out nrCountersId))
+                            {
+                                nrCountersIdResult = nrCountersId;
                             }
 
                             var counter = new AssociationCountersApartment
@@ -283,6 +334,7 @@ namespace Admin.Tenants
                                 Id = apCntIdResult,
                                 Id_Counters = cntIdResult,
                                 Id_Apartment = apartment.Id,
+                                CountersInsideApartment = nrCountersIdResult
                             };
 
                             result.Add(counter);

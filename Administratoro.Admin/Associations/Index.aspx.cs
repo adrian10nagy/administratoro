@@ -18,18 +18,18 @@ namespace Admin.Associations
     {
         protected void Page_Init(object sender, EventArgs e)
         {
-            var estate = Association;
-            txtEstateName.Text = estate.Name;
-            txtEstateAddress.Text = estate.Address;
-            estateIndiviza.Text = estate.Indiviza.ToString();
-            txtEstateFiscalCode.Text = estate.FiscalCode;
-            txtEstateBanckAccount.Text = estate.BanckAccont;
-            drpEstateEqualIndiviza.SelectedValue = (estate.CotaIndivizaAparments.HasValue) ? "1" : "0";
-            if (estate.CotaIndivizaAparments.HasValue)
+            var assoc = Association;
+            txtAssociationName.Text = assoc.Name;
+            txtAssociationAddress.Text = assoc.Address;
+            associationIndiviza.Text = assoc.Indiviza.ToString();
+            txtAssociationFiscalCode.Text = assoc.FiscalCode;
+            txtAssociationBanckAccount.Text = assoc.BanckAccont;
+            drpAssociationEqualIndiviza.SelectedValue = (assoc.CotaIndivizaAparments.HasValue) ? "1" : "0";
+            if (assoc.CotaIndivizaAparments.HasValue)
             {
-                txtEstateCotaIndivizaApartments.Text = estate.CotaIndivizaAparments.Value.ToString();
-                btnEstateEqualIndiviza.Visible = true;
-                txtEstateCotaIndivizaApartments.Visible = true;
+                txtAssociationCotaIndivizaApartments.Text = assoc.CotaIndivizaAparments.Value.ToString();
+                btnAssociationEqualIndiviza.Visible = true;
+                txtAssociationCotaIndivizaApartments.Visible = true;
             }
             InitializeCounters();
             InitializeStairs();
@@ -47,19 +47,19 @@ namespace Admin.Associations
             InitializeCounters();
             if (!Page.IsPostBack)
             {
-                estateStairs.SelectedIndex = Association.HasStaircase ? 1 : 0;
+                associationStairs.SelectedIndex = Association.HasStaircase ? 1 : 0;
                 rbHasRoundup.SelectedIndex = Association.HasRoundUpColumn.HasValue && Association.HasRoundUpColumn.Value ? 1 : 0;
             }
         }
 
         private void InitializeStairs()
         {
-            bool estateHasStairCase = Association.HasStaircase;
+            bool associationHasStairCase = Association.HasStaircase;
 
-            gvStaircasesMessage.Visible = estateHasStairCase;
-            gvStaircases.Visible = estateHasStairCase;
-            btneStatestairCasesNew.Visible = estateHasStairCase;
-            if (estateHasStairCase)
+            gvStaircasesMessage.Visible = associationHasStairCase;
+            gvStaircases.Visible = associationHasStairCase;
+            btnAssociationStairCasesNew.Visible = associationHasStairCase;
+            if (associationHasStairCase)
             {
                 gvStaircases.DataSource = Association.StairCases;
                 gvStaircases.DataBind();
@@ -80,26 +80,26 @@ namespace Admin.Associations
             }
         }
 
-        protected void estateStairs_SelectedIndexChanged(object sender, EventArgs e)
+        protected void associationStairs_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AssociationsManager.UpdateStairs(Association, estateStairs.SelectedIndex == 1);
+            AssociationsManager.UpdateStairs(Association, associationStairs.SelectedIndex == 1);
 
-            Association.HasStaircase = estateStairs.SelectedIndex == 1;
+            Association.HasStaircase = associationStairs.SelectedIndex == 1;
             Session[SessionConstants.SelectedAssociation] = Association;
             Response.Redirect(Request.RawUrl);
         }
 
-        protected void btnEstateCountersNew_Click(object sender, EventArgs e)
+        protected void btnAssociationCountersNew_Click(object sender, EventArgs e)
         {
             if (!newCounter.Visible)
             {
                 newCounter.Visible = true;
 
-                List<Expenses> expenses = ExpensesManager.GetAllExpenses();
+                IEnumerable<Expenses> expenses = ExpensesManager.GetAllExpenses();
 
                 foreach (Expenses expense in expenses)
                 {
-                    drpEstateCounterTypeNew.Items.Add(new ListItem
+                    drpAssociationCounterTypeNew.Items.Add(new ListItem
                     {
                         Text = expense.Name,
                         Value = expense.Id.ToString()
@@ -112,12 +112,12 @@ namespace Admin.Associations
                     Value = "",
                     Text = "Contor pe bloc"
                 };
-                drpEstateStairs.Items.Add(defaultExpense);
+                drpAssociationStairs.Items.Add(defaultExpense);
                 if (Association.HasStaircase)
                 {
                     foreach (var stairCase in Association.StairCases)
                     {
-                        drpEstateStairs.Items.Add(new ListItem
+                        drpAssociationStairs.Items.Add(new ListItem
                         {
                             Text = stairCase.Nume,
                             Value = stairCase.Id.ToString()
@@ -127,24 +127,24 @@ namespace Admin.Associations
             }
             else
             {
-                if (!string.IsNullOrEmpty(txtEstateCounterValueNew.Text))
+                if (!string.IsNullOrEmpty(txtAssociationCounterValueNew.Text))
                 {
                     AssociationCounters associationCounters = new AssociationCounters
                     {
                         Id_Estate = Association.Id,
-                        Value = txtEstateCounterValueNew.Text,
-                        Id_Expense = drpEstateCounterTypeNew.SelectedValue.ToNullableInt().Value,
-                        Id_StairCase = drpEstateStairs.SelectedValue.ToNullableInt(),
+                        Value = txtAssociationCounterValueNew.Text,
+                        Id_Expense = drpAssociationCounterTypeNew.SelectedValue.ToNullableInt().Value,
+                        Id_StairCase = drpAssociationStairs.SelectedValue.ToNullableInt(),
                     };
 
                     CountersManager.Addcounter(associationCounters);
-                    var newEstate = AssociationsManager.GetById(Association.Id);
-                    Session[SessionConstants.SelectedAssociation] = newEstate;
+                    var newAssociation = AssociationsManager.GetById(Association.Id);
+                    Session[SessionConstants.SelectedAssociation] = newAssociation;
                     Response.Redirect(Request.RawUrl);
                 }
                 else
                 {
-                    txtEstateCounterValueNew.Attributes.Add("style", "border-color:red");
+                    txtAssociationCounterValueNew.Attributes.Add("style", "border-color:red");
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace Admin.Associations
         {
             gvStaircases.EditIndex = e.NewEditIndex;
             gvStaircases.DataBind();
-            btneStatestairCasesNew.Visible = false;
+            btnAssociationStairCasesNew.Visible = false;
         }
 
         protected void gvStaircases_RowUpdating(object sender, GridViewUpdateEventArgs e)
@@ -192,11 +192,11 @@ namespace Admin.Associations
                     gvStaircases.EditIndex = -1;
                     gvStaircases.DataBind();
 
-                    var addedEstate = AssociationsManager.GetById(Association.Id);
+                    var addedAssociation = AssociationsManager.GetById(Association.Id);
 
-                    Session[SessionConstants.SelectedAssociation] = addedEstate;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    Session[SessionConstants.SelectedAssociation] = addedAssociation;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -204,7 +204,7 @@ namespace Admin.Associations
 
         protected void gvStaircases_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
-            btnEstateCountersNew.Visible = true;
+            btnAssociationCountersNew.Visible = true;
             gvStaircases.EditIndex = -1;
             gvStaircases.DataBind();
         }
@@ -277,7 +277,7 @@ namespace Admin.Associations
 
         protected void gvCounters_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
-            btnEstateCountersNew.Visible = true;
+            btnAssociationCountersNew.Visible = true;
             gvCounters.EditIndex = -1;
             gvCounters.DataBind();
         }
@@ -310,11 +310,11 @@ namespace Admin.Associations
                     gvStaircases.EditIndex = -1;
                     gvStaircases.DataBind();
 
-                    var addedEstate = AssociationsManager.GetById(Association.Id);
+                    var addedAssociation = AssociationsManager.GetById(Association.Id);
 
-                    Session[SessionConstants.SelectedAssociation] = addedEstate;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    Session[SessionConstants.SelectedAssociation] = addedAssociation;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -322,28 +322,28 @@ namespace Admin.Associations
 
         protected void gvCounters_RowEditing(object sender, GridViewEditEventArgs e)
         {
-            btnEstateCountersNew.Visible = false;
+            btnAssociationCountersNew.Visible = false;
             gvCounters.EditIndex = e.NewEditIndex;
             gvCounters.DataBind();
         }
 
-        protected void btneStatestairCasesNew_Click(object sender, EventArgs e)
+        protected void btnAssociationstairCasesNew_Click(object sender, EventArgs e)
         {
             if (newStairCasePanel.Visible)
             {
                 decimal indiviza;
-                if (!string.IsNullOrEmpty(txtEstateStairCaseName.Text) && decimal.TryParse(txtEstateStairCaseIndiviza.Text
+                if (!string.IsNullOrEmpty(txtAssociationStairCaseName.Text) && decimal.TryParse(txtAssociationStairCaseIndiviza.Text
                     , out indiviza))
                 {
-                    StairCasesManager.AddNew(Association, txtEstateStairCaseName.Text, indiviza);
-                    var newEstate = AssociationsManager.GetById(Association.Id);
-                    Session[SessionConstants.SelectedAssociation] = newEstate;
+                    StairCasesManager.AddNew(Association, txtAssociationStairCaseName.Text, indiviza);
+                    var newAssociation = AssociationsManager.GetById(Association.Id);
+                    Session[SessionConstants.SelectedAssociation] = newAssociation;
                     Response.Redirect(Request.RawUrl);
                 }
                 else
                 {
-                    txtEstateStairCaseIndiviza.Attributes.CssStyle.Add("border-color", "red");
-                    txtEstateStairCaseName.Attributes.Add("style", "border-color:red");
+                    txtAssociationStairCaseIndiviza.Attributes.CssStyle.Add("border-color", "red");
+                    txtAssociationStairCaseName.Attributes.Add("style", "border-color:red");
                 }
             }
             else
@@ -352,153 +352,153 @@ namespace Admin.Associations
             }
         }
 
-        protected void bntEstateNameChange_Click(object sender, EventArgs e)
+        protected void bntAssociationNameChange_Click(object sender, EventArgs e)
         {
-            txtEstateName.Attributes.CssStyle.Add("border-color", "");
-            if (txtEstateName.Enabled)
+            txtAssociationName.Attributes.CssStyle.Add("border-color", "");
+            if (txtAssociationName.Enabled)
             {
-                if (string.IsNullOrEmpty(txtEstateName.Text))
+                if (string.IsNullOrEmpty(txtAssociationName.Text))
                 {
-                    txtEstateName.Attributes.CssStyle.Add("border-color", "red");
+                    txtAssociationName.Attributes.CssStyle.Add("border-color", "red");
                 }
                 else
                 {
-                    txtEstateName.Enabled = false;
+                    txtAssociationName.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
-                    es.Name = txtEstateName.Text;
+                    es.Name = txtAssociationName.Text;
                     AssociationsManager.Update(es.Id, es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
             else
             {
-                txtEstateName.Enabled = true;
+                txtAssociationName.Enabled = true;
             }
         }
 
-        protected void btnEstateAddress_Click(object sender, EventArgs e)
+        protected void btnAssociationAddress_Click(object sender, EventArgs e)
         {
-            txtEstateAddress.Attributes.CssStyle.Add("border-color", "");
-            if (txtEstateAddress.Enabled)
+            txtAssociationAddress.Attributes.CssStyle.Add("border-color", "");
+            if (txtAssociationAddress.Enabled)
             {
-                if (string.IsNullOrEmpty(txtEstateAddress.Text))
+                if (string.IsNullOrEmpty(txtAssociationAddress.Text))
                 {
-                    txtEstateAddress.Attributes.CssStyle.Add("border-color", "red");
+                    txtAssociationAddress.Attributes.CssStyle.Add("border-color", "red");
                 }
                 else
                 {
-                    txtEstateAddress.Enabled = false;
+                    txtAssociationAddress.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
-                    es.Address = txtEstateAddress.Text;
+                    es.Address = txtAssociationAddress.Text;
                     AssociationsManager.Update(es.Id, es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
             else
             {
-                txtEstateAddress.Enabled = true;
+                txtAssociationAddress.Enabled = true;
             }
         }
 
-        protected void btnEstateFiscalCode_Click(object sender, EventArgs e)
+        protected void btnAssociationFiscalCode_Click(object sender, EventArgs e)
         {
-            txtEstateFiscalCode.Attributes.CssStyle.Add("border-color", "");
-            if (txtEstateFiscalCode.Enabled)
+            txtAssociationFiscalCode.Attributes.CssStyle.Add("border-color", "");
+            if (txtAssociationFiscalCode.Enabled)
             {
-                if (string.IsNullOrEmpty(txtEstateFiscalCode.Text))
+                if (string.IsNullOrEmpty(txtAssociationFiscalCode.Text))
                 {
-                    txtEstateFiscalCode.Attributes.CssStyle.Add("border-color", "red");
+                    txtAssociationFiscalCode.Attributes.CssStyle.Add("border-color", "red");
                 }
                 else
                 {
-                    txtEstateFiscalCode.Enabled = false;
+                    txtAssociationFiscalCode.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
-                    es.FiscalCode = txtEstateFiscalCode.Text;
+                    es.FiscalCode = txtAssociationFiscalCode.Text;
                     AssociationsManager.Update(es.Id, es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
             else
             {
-                txtEstateFiscalCode.Enabled = true;
+                txtAssociationFiscalCode.Enabled = true;
             }
         }
 
-        protected void btnEstateBanckAccount_Click(object sender, EventArgs e)
+        protected void btnAssociationBanckAccount_Click(object sender, EventArgs e)
         {
-            txtEstateBanckAccount.Attributes.CssStyle.Add("border-color", "");
-            if (txtEstateBanckAccount.Enabled)
+            txtAssociationBanckAccount.Attributes.CssStyle.Add("border-color", "");
+            if (txtAssociationBanckAccount.Enabled)
             {
-                if (string.IsNullOrEmpty(txtEstateBanckAccount.Text))
+                if (string.IsNullOrEmpty(txtAssociationBanckAccount.Text))
                 {
-                    txtEstateBanckAccount.Attributes.CssStyle.Add("border-color", "red");
+                    txtAssociationBanckAccount.Attributes.CssStyle.Add("border-color", "red");
                 }
                 else
                 {
-                    txtEstateBanckAccount.Enabled = false;
+                    txtAssociationBanckAccount.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
-                    es.BanckAccont = txtEstateBanckAccount.Text;
+                    es.BanckAccont = txtAssociationBanckAccount.Text;
                     AssociationsManager.Update(es.Id, es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
             else
             {
-                txtEstateBanckAccount.Enabled = true;
+                txtAssociationBanckAccount.Enabled = true;
             }
         }
 
-        protected void estateEqualIndiviza_SelectedIndexChanged(object sender, EventArgs e)
+        protected void associationEqualIndiviza_SelectedIndexChanged(object sender, EventArgs e)
         {
             var es = AssociationsManager.GetById(Association.Id);
-            if (es.CotaIndivizaAparments.HasValue && drpEstateEqualIndiviza.SelectedIndex == 0)
+            if (es.CotaIndivizaAparments.HasValue && drpAssociationEqualIndiviza.SelectedIndex == 0)
             {
                 es.CotaIndivizaAparments = null;
                 AssociationsManager.Update(es.Id, es);
                 Session[SessionConstants.SelectedAssociation] = es;
             }
 
-            if (drpEstateEqualIndiviza.SelectedIndex == 0)
+            if (drpAssociationEqualIndiviza.SelectedIndex == 0)
             {
-                txtEstateCotaIndivizaApartments.Visible = false;
-                btnEstateEqualIndiviza.Visible = false;
+                txtAssociationCotaIndivizaApartments.Visible = false;
+                btnAssociationEqualIndiviza.Visible = false;
             }
             else
             {
-                txtEstateCotaIndivizaApartments.Visible = true;
-                btnEstateEqualIndiviza.Visible = true;
+                txtAssociationCotaIndivizaApartments.Visible = true;
+                btnAssociationEqualIndiviza.Visible = true;
             }
         }
 
-        protected void btnEstateEqualIndiviza_Click(object sender, EventArgs e)
+        protected void btnAssociationEqualIndiviza_Click(object sender, EventArgs e)
         {
-            txtEstateCotaIndivizaApartments.Attributes.CssStyle.Add("border-color", "");
-            if (txtEstateCotaIndivizaApartments.Enabled)
+            txtAssociationCotaIndivizaApartments.Attributes.CssStyle.Add("border-color", "");
+            if (txtAssociationCotaIndivizaApartments.Enabled)
             {
-                if (string.IsNullOrEmpty(txtEstateCotaIndivizaApartments.Text))
+                if (string.IsNullOrEmpty(txtAssociationCotaIndivizaApartments.Text))
                 {
-                    txtEstateCotaIndivizaApartments.Attributes.CssStyle.Add("border-color", "red");
+                    txtAssociationCotaIndivizaApartments.Attributes.CssStyle.Add("border-color", "red");
                 }
                 else
                 {
-                    txtEstateCotaIndivizaApartments.Enabled = false;
+                    txtAssociationCotaIndivizaApartments.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
 
                     decimal? cotaIndivizaAparmentsResult;
                     decimal cotaIndivizaAparments;
-                    if (decimal.TryParse(txtEstateCotaIndivizaApartments.Text, out cotaIndivizaAparments))
+                    if (decimal.TryParse(txtAssociationCotaIndivizaApartments.Text, out cotaIndivizaAparments))
                     {
                         cotaIndivizaAparmentsResult = cotaIndivizaAparments;
                     }
@@ -509,14 +509,14 @@ namespace Admin.Associations
                     es.CotaIndivizaAparments = cotaIndivizaAparments;
                     AssociationsManager.Update(es.Id, es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var estates = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = estates;
+                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = Associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
             else
             {
-                txtEstateCotaIndivizaApartments.Enabled = true;
+                txtAssociationCotaIndivizaApartments.Enabled = true;
             }
         }
 

@@ -148,9 +148,8 @@ namespace Admin.Associations
 
         private void AddCounterHeader()
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
-            var associationExpenses = AssociationExpensesManager.GetDefault(estate.Id);
-            var headerCssClass = estate.HasStaircase ? "col-md-4 col-xs-4 countersHeadersNew" : "col-md-6 col-xs-6 countersHeadersNew";
+            var association = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var headerCssClass = association.HasStaircase ? "col-md-4 col-xs-4 countersHeadersNew" : "col-md-6 col-xs-6 countersHeadersNew";
 
             //var cssClass = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
 
@@ -171,7 +170,7 @@ namespace Admin.Associations
             };
             headerPanel.Controls.Add(expenseCounterHeader);
 
-            if (estate.HasStaircase && estate.StairCases.Count != 00)
+            if (association.HasStaircase && association.StairCases.Count != 00)
             {
                 // add coounter header
                 Label expenseStairHeader = new Label
@@ -207,7 +206,7 @@ namespace Admin.Associations
                 ConfigureStep3();
             }
 
-            if (estateStairs.SelectedIndex == 0)
+            if (associationStairs.SelectedIndex == 0)
             {
                 PlaceholderControls.Visible = false;
             }
@@ -225,26 +224,26 @@ namespace Admin.Associations
             _step = 2;
             decimal? indivizaAparmentsResult = null;
 
-            if (estateStairs.SelectedIndex == 1)
+            if (associationStairs.SelectedIndex == 1)
             {
                 decimal indivizaAparments;
-                if (decimal.TryParse(estateCotaIndivizaApartments.Text, out indivizaAparments))
+                if (decimal.TryParse(associationCotaIndivizaApartments.Text, out indivizaAparments))
                 {
                     indivizaAparmentsResult = indivizaAparments;
                 }
             }
 
-            var estate = new Administratoro.DAL.Associations
+            var association = new Administratoro.DAL.Associations
             {
-                Name = estateName.Value,
-                Address = estateAddress.Value,
-                HasStaircase = (estateStairs.SelectedIndex == 1),
+                Name = associationName.Value,
+                Address = associationAddress.Value,
+                HasStaircase = (associationStairs.SelectedIndex == 1),
                 Id_Partner = partner.Id,
-                FiscalCode = estateFiscalCode.Value,
+                FiscalCode = associationFiscalCode.Value,
                 CotaIndivizaAparments = indivizaAparmentsResult
             };
 
-            var addedEstate = AssociationsManager.AddNew(estate);
+            var addedAssociation = AssociationsManager.AddNew(association);
             for (int i = 0; i < DynamicStairs.Count; i++)
             {
                 var stairName = FindControl(DynamicStairs.ElementAt(i).Key);
@@ -260,42 +259,42 @@ namespace Admin.Associations
                     {
                         if (decimal.TryParse(si.Text, out indivizaValue))
                         {
-                            StairCasesManager.AddNew(estate, sn.Text, indivizaValue);
+                            StairCasesManager.AddNew(association, sn.Text, indivizaValue);
                         }
                         else
                         {
-                            StairCasesManager.AddNew(estate, sn.Text, null);
+                            StairCasesManager.AddNew(association, sn.Text, null);
                         }
 
                     }
                 }
             }
 
-            addedEstate = AssociationsManager.GetById(addedEstate.Id);
+            addedAssociation = AssociationsManager.GetById(addedAssociation.Id);
 
-            Session[SessionConstants.SelectedAssociation] = addedEstate;
-            var estates = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
-            Session[SessionConstants.AllAssociations] = estates;
+            Session[SessionConstants.SelectedAssociation] = addedAssociation;
+            var associations = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
+            Session[SessionConstants.AllAssociations] = associations;
 
             ConfigureStep2();
         }
 
         protected void btnSave2_Click(object sender, EventArgs e)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var association = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
             Dictionary<int, int> dictionary = GetSelectdExpenses();
 
-            AssociationExpensesManager.AddAssociationExpensesByApartmentAndMonth(estate.Id, dictionary);
-            estate = AssociationsManager.GetById(estate.Id);
+            AssociationExpensesManager.AddAssociationExpensesByApartmentAndMonth(association.Id, dictionary);
+            association = AssociationsManager.GetById(association.Id);
 
-            Session[SessionConstants.SelectedAssociation] = estate;
+            Session[SessionConstants.SelectedAssociation] = association;
             ConfigureStep3();
 
         }
 
         protected void btnSave3_Click(object sender, EventArgs e)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var association = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
             List<AssociationCounters> cnts = new List<AssociationCounters>();
 
             foreach (var control in countersConfiguration.Controls)
@@ -328,7 +327,7 @@ namespace Admin.Associations
                         {
                             var cnt = new AssociationCounters()
                             {
-                                Id_Estate = estate.Id,
+                                Id_Estate = association.Id,
                                 Id_Expense = expenseId,
                                 Value = valueControl.Text,
                                 Id_StairCase = stairIdResult
@@ -340,9 +339,9 @@ namespace Admin.Associations
             }
 
             CountersManager.Addcounter(cnts);
-            estate = AssociationsManager.GetById(estate.Id);
+            association = AssociationsManager.GetById(association.Id);
 
-            Session[SessionConstants.SelectedAssociation] = estate;
+            Session[SessionConstants.SelectedAssociation] = association;
             Response.Redirect("~/?message=newEstate");
         }
 
@@ -357,7 +356,7 @@ namespace Admin.Associations
 
         private void Step2PopulateExpenses()
         {
-            var expenses = ExpensesManager.GetAllExpenses().OrderBy(e=>e.LegalType);
+            IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses().OrderBy(e => e.LegalType);
 
             foreach (var expense in expenses)
             {
@@ -428,9 +427,9 @@ namespace Admin.Associations
             step3.Visible = true;
         }
 
-        private ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations estate, int controlId)
+        private ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations association, int controlId)
         {
-            ListItem[] result = new ListItem[estate.StairCases.Count + 1];
+            ListItem[] result = new ListItem[association.StairCases.Count + 1];
             int i = 0;
 
             var defaultExpense = new ListItem
@@ -441,7 +440,7 @@ namespace Admin.Associations
             result[i] = defaultExpense;
             i++;
 
-            foreach (var srairCase in estate.StairCases)
+            foreach (var srairCase in association.StairCases)
             {
                 var stair = new ListItem
                 {
@@ -576,10 +575,10 @@ namespace Admin.Associations
             return result;
         }
 
-        protected void estateStairs_SelectedIndexChanged(object sender, EventArgs e)
+        protected void associationStairs_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-            if (estateStairs.SelectedIndex == 0)
+            if (associationStairs.SelectedIndex == 0)
             {
                 UpdatePanel1.Visible = false;
             }
@@ -589,15 +588,15 @@ namespace Admin.Associations
             }
         }
 
-        protected void estateEqualIndiviza_SelectedIndexChanged(object sender, EventArgs e)
+        protected void associationEqualIndiviza_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (estateEqualIndiviza.SelectedIndex == 0)
+            if (associationEqualIndiviza.SelectedIndex == 0)
             {
-                estateCotaIndivizaApartments.Visible = false;
+                associationCotaIndivizaApartments.Visible = false;
             }
             else
             {
-                estateCotaIndivizaApartments.Visible = true;
+                associationCotaIndivizaApartments.Visible = true;
             }
         }
 

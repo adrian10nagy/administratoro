@@ -29,10 +29,6 @@ namespace Administratoro.BL.Managers
             return association;
         }
 
-        public static List<Associations> GetAll()
-        {
-            return GetContext(true).Associations.ToList();
-        }
 
         public static List<Associations> GetAllAssociationsByPartner(int partnerId)
         {

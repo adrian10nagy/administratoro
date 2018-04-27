@@ -68,6 +68,7 @@ namespace Administratoro.BL.Managers
             if (oldApCounter != null)
             {
                 oldApCounter.Id_Counters = newApCounter.Id_Counters;
+                oldApCounter.CountersInsideApartment = newApCounter.CountersInsideApartment;
                 GetContext().Entry(oldApCounter).CurrentValues.SetValues(oldApCounter);
 
                 GetContext().SaveChanges();
@@ -99,16 +100,16 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static List<AssociationCounters> GetAllByExpenseType(int associationId, int expense)
+        public static IEnumerable<AssociationCounters> GetAllByExpenseType(int associationId, int expense)
         {
-            return GetContext(true).AssociationCounters.Where(c => c.Id_Estate == associationId && c.Id_Expense == expense).ToList();
+            return GetContext(true).AssociationCounters.Where(c => c.Id_Estate == associationId && c.Id_Expense == expense);
         }
 
-        public static List<AssociationCounters> GetByApartment(int apartmentId)
+        public static IEnumerable<AssociationCounters> GetByApartment(int apartmentId)
         {
             var result = new List<AssociationCounters>();
 
-            var allAssociationCountersApartment = GetContext(true).AssociationCountersApartment.Where(ac => ac.Id_Apartment == apartmentId).ToList();
+            var allAssociationCountersApartment = GetContext(true).AssociationCountersApartment.Where(ac => ac.Id_Apartment == apartmentId);
 
             foreach (var ac in allAssociationCountersApartment)
 	        {
@@ -122,5 +123,6 @@ namespace Administratoro.BL.Managers
 
             return result;
         }
+
     }
 }

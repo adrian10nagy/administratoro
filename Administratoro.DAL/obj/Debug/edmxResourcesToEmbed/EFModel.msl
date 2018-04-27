@@ -28,6 +28,7 @@
     <EntitySetMapping Name="ApartmentExpenses">
       <EntityTypeMapping TypeName="AdministratoroModel.ApartmentExpenses">
         <MappingFragment StoreEntitySet="ApartmentExpenses">
+          <ScalarProperty Name="CounterOrder" ColumnName="CounterOrder" />
           <ScalarProperty Name="IndexNew" ColumnName="IndexNew" />
           <ScalarProperty Name="IndexOld" ColumnName="IndexOld" />
           <ScalarProperty Name="Id_EstateExpense" ColumnName="Id_EstateExpense" />

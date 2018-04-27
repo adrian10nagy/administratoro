@@ -22,30 +22,30 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static List<AssociationExpenses> GetAllAssociationsByMonthAndYearNotDisabled(int associationId, int year, int month)
+        public static IEnumerable<AssociationExpenses> GetAllAssociationsByMonthAndYearNotDisabled(int associationId, int year, int month)
         {
             return GetContext(true).AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId &&
                 ee.Year == year && ee.Month == month &&
-                !ee.WasDisabled && !ee.Expenses.specialType.HasValue).ToList();
+                !ee.WasDisabled && !ee.Expenses.specialType.HasValue);
         }
 
-        public static List<AssociationExpenses> GetForAddPage(int associationId, int year, int month)
+        public static IEnumerable<AssociationExpenses> GetForAddPage(int associationId, int year, int month)
         {
             return GetContext(true).AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId && ee.Year == year && ee.Month == month &&
-                !ee.WasDisabled && !ee.Expenses.specialType.HasValue && ee.Expenses.Id != 25).ToList();
+                !ee.WasDisabled && !ee.Expenses.specialType.HasValue && ee.Expenses.Id != 25);
         }
 
-        public static List<AssociationExpenses> GetAllAssociationExpensesByMonthAndYearwithDiverse(int associationId, int year, int month)
+        public static IEnumerable<AssociationExpenses> GetAllAssociationExpensesByMonthAndYearwithDiverse(int associationId, int year, int month)
         {
             return GetContext(true).AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId &&
                 ee.Year == year && ee.Month == month &&
-                !ee.WasDisabled).ToList();
+                !ee.WasDisabled);
         }
 
-        public static List<AssociationExpenses> GetFromLastesOpenedMonth(int associationId, bool shouldRefresh = false)
+        public static IEnumerable<AssociationExpenses> GetFromLastesOpenedMonth(int associationId, bool shouldRefresh = false)
         {
             if (GetContext(shouldRefresh).AssociationExpenses.Count() > 0)
             {
@@ -72,16 +72,16 @@ namespace Administratoro.BL.Managers
 
         }
 
-        public static List<AssociationExpenses> GetDefault(int associationId)
+        public static IEnumerable<AssociationExpenses> GetDefault(int associationId)
         {
-            return GetContext().AssociationExpenses.Where(ee => ee.Id_Estate == associationId && ee.isDefault && !ee.WasDisabled && !ee.Expenses.specialType.HasValue).ToList();
+            return GetContext().AssociationExpenses.Where(ee => ee.Id_Estate == associationId && ee.isDefault && !ee.WasDisabled && !ee.Expenses.specialType.HasValue);
         }
 
-        public static List<AssociationExpenses> GetAllAssociationExpensesByMonthAndYearIncludingDisabled(int associationId, int year, int month)
+        public static IEnumerable<AssociationExpenses> GetAllAssociationExpensesByMonthAndYearIncludingDisabled(int associationId, int year, int month)
         {
             return GetContext().AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId &&
-                ee.Year == year && ee.Month == month && !ee.Expenses.specialType.HasValue).ToList();
+                ee.Year == year && ee.Month == month && !ee.Expenses.specialType.HasValue);
         }
 
         public static AssociationExpenses GetAssociationExpensesByMonthAndYearAndDisabled(int associationId, int expenseId, int year, int month, bool wasDisabled = true)
@@ -202,7 +202,7 @@ namespace Administratoro.BL.Managers
                 .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee => ee.Year).ToList();
         }
 
-        public static void UpdatePricePerUnitDefaultPrevieousMonth(AssociationExpenses newEE, List<AssociationExpenses> oldEEs)
+        public static void UpdatePricePerUnitDefaultPrevieousMonth(AssociationExpenses newEE, IEnumerable<AssociationExpenses> oldEEs)
         {
             if (newEE != null)
             {
@@ -449,7 +449,7 @@ namespace Administratoro.BL.Managers
         private static int GetApartmentsWithCountersOfThatExpense(AssociationExpenses associationExpense)
         {
             int apartmentsWithCountersOfThatExpense = 0;
-            List<AssociationCounters> allcountersOfExpense = CountersManager.GetAllByExpenseType(associationExpense.Associations.Id, associationExpense.Expenses.Id);
+            IEnumerable<AssociationCounters > allcountersOfExpense = CountersManager.GetAllByExpenseType(associationExpense.Associations.Id, associationExpense.Expenses.Id);
             foreach (var apartment in associationExpense.Associations.Apartments)
             {
                 if (allcountersOfExpense.Select(c => c.Id).Intersect(apartment.AssociationCountersApartment.Select(ac => ac.Id_Counters)).Any())
@@ -480,8 +480,8 @@ namespace Administratoro.BL.Managers
         {
             List<Expense> result = new List<Expense>();
 
-            List<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
-                ee.Year == year && ee.Month == month).ToList();
+            IQueryable<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
+                ee.Year == year && ee.Month == month);
             foreach (var associationExpense in allEE)
             {
                 if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
@@ -540,9 +540,9 @@ namespace Administratoro.BL.Managers
             return allEE.All(e => e.IsClosed.HasValue && e.IsClosed.Value);
         }
 
-        public static List<Apartments> GetApartmentsNrThatShouldRedistributeTo(int associationExpenseId)
+        public static IEnumerable<Apartments> GetApartmentsNrThatShouldRedistributeTo(int associationExpenseId)
         {
-            List<Apartments> result = new List<Apartments>();
+            IEnumerable<Apartments> result = new List<Apartments>();
 
             var associationExpense = AssociationExpensesManager.GetById(associationExpenseId);
             if (associationExpense != null)
@@ -553,9 +553,9 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static List<Apartments> GetApartmentsNrThatShouldRedistributeTo(int associationExpenseId, int? stairCaseId)
+        public static IEnumerable<Apartments> GetApartmentsNrThatShouldRedistributeTo(int associationExpenseId, int? stairCaseId)
         {
-            List<Apartments> result = new List<Apartments>();
+            IEnumerable<Apartments> result = new List<Apartments>();
 
             var associationExpense = AssociationExpensesManager.GetById(associationExpenseId);
             if (associationExpense != null)

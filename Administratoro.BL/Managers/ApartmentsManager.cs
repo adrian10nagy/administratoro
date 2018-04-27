@@ -103,7 +103,7 @@ namespace Administratoro.BL.Managers
                 List<Apartments> allApartments = GetAllByAssociationId(associationId);
                 foreach (var apartment in allApartments)
                 {
-                    List<AssociationCounters> counters = CountersManager.GetByApartment(apartment.Id);
+                    IEnumerable<AssociationCounters> counters = CountersManager.GetByApartment(apartment.Id);
 
                     if(counters.Any(c=>c.Id_Expense == associationExpense.Expenses.Id))
                     {

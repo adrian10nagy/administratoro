@@ -26,27 +26,19 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static List<Expenses> GetAllExpenses()
+        public static IEnumerable<Expenses> GetAllExpenses()
         {
-            return GetContext().Expenses.Where(e => !e.specialType.HasValue).ToList();
+            return GetContext().Expenses.Where(e => !e.specialType.HasValue);
         }
 
-        public static List<Expenses> GetAllExpensesIncludingSpecialTypes()
-        {
-            return GetContext().Expenses.ToList();
-        }
 
         public static Expenses GetById(int expenseId)
         {
             return GetContext().Expenses.FirstOrDefault(e => e.Id == expenseId);
         }
 
-        public static List<AssociationExpensesRedistributionTypes> GetRedistributiontypes()
-        {
-            return GetContext().AssociationExpensesRedistributionTypes.ToList();
-        }
 
-        public static List<AssociationExpensesRedistributionTypes> GetRedistributiontypesForDiverse()
+        public static IEnumerable<AssociationExpensesRedistributionTypes> GetRedistributiontypesForDiverse()
         {
             return GetContext().AssociationExpensesRedistributionTypes.Where(e => e.Id != 3).ToList();
         }

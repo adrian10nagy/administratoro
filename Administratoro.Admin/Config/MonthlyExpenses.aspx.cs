@@ -77,7 +77,7 @@ namespace Admin.Config
                     var ee = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, _year, month);
                     var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, month);
 
-                    var expenses = ExpensesManager.GetAllExpenses();
+                    IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses();
 
                     foreach (var expense in expenses)
                     {
@@ -161,7 +161,7 @@ namespace Admin.Config
             }
         }
 
-        private bool isStairCaseSplitSelected(Expenses expense, List<AssociationExpenses> ee, int year, int month)
+        private bool isStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
 
             bool result = false;
@@ -173,7 +173,7 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, List<AssociationExpenses> ee, int year, int month)
+        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
             bool result = false;
             if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled).Any())

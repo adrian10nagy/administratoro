@@ -165,7 +165,7 @@ namespace Administratoro.BL.Managers
             {
                 //if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
                 //{
-                //    foreach (var stairCase in estateExpense.Estates.StairCases)
+                //    foreach (var stairCase in estateExpense.Associations.StairCases)
                 //    {
                 //        var result = new Invoices
                 //        {
@@ -191,9 +191,9 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static List<Invoices> GetDiverseByAssociationAssociationExpense(int associationExpenseId)
+        public static IEnumerable<Invoices> GetDiverseByAssociationAssociationExpense(int associationExpenseId)
         {
-            return GetContext().Invoices.Where(i => i.Id_EstateExpense == associationExpenseId).ToList();
+            return GetContext().Invoices.Where(i => i.Id_EstateExpense == associationExpenseId);
         }
 
         public static Invoices GetDiverseById(int invoiceId)
@@ -201,7 +201,7 @@ namespace Administratoro.BL.Managers
             return GetContext().Invoices.FirstOrDefault(i => i.Id == invoiceId);
         }
 
-        public static List<Invoices> GetDiverseByAssociationYearMonth(int association, int year, int month)
+        public static IEnumerable<Invoices> GetDiverseByAssociationYearMonth(int association, int year, int month)
         {
             var result = new List<Invoices>();
             int divereId = 24;

@@ -113,7 +113,7 @@ namespace Admin.Invoices
 
                     if (int.TryParse(yearMonth[0], out year) && int.TryParse(yearMonth[1], out month))
                     {
-                        result = AssociationExpensesManager.GetForAddPage(Association.Id, year, month);
+                        result = AssociationExpensesManager.GetForAddPage(Association.Id, year, month).ToList();
                     }
                 }
             }
@@ -566,7 +566,7 @@ namespace Admin.Invoices
             if (isIndexExpense)
             {
                 InitializeValueFieldAddColumnHeadersForIndexExpenses();
-                var counters = CountersManager.GetAllByExpenseType(Association.Id, expenseId);
+                List<AssociationCounters> counters = CountersManager.GetAllByExpenseType(Association.Id, expenseId).ToList();
                 if (invoicesIndexes.Count < counters.Count)
                 {
                     InvoiceIndexesManager.AddDefault(invoices[0].Id, counters, invoicesIndexes);
@@ -716,7 +716,7 @@ namespace Admin.Invoices
 
         #region diverse
 
-        private void DiverseInitializeValueFieldAddInvoices(List<Administratoro.DAL.Invoices> invoices, bool isNewRow)
+        private void DiverseInitializeValueFieldAddInvoices(IEnumerable<Administratoro.DAL.Invoices> invoices, bool isNewRow)
         {
             foreach (var invoice in invoices)
             {
@@ -792,7 +792,7 @@ namespace Admin.Invoices
                     ID = invoice.Id != 0 ? "drpExpenseredistribute" + invoice.Id : "-1drpExpenseredistribute"
                 };
 
-                List<AssociationExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypesForDiverse();
+                IEnumerable<AssociationExpensesRedistributionTypes> eert = ExpensesManager.GetRedistributiontypesForDiverse();
 
                 foreach (var type in eert)
                 {

@@ -182,6 +182,7 @@
     <Property Name="Id_EstateExpense" Type="Int32" Nullable="false" />
     <Property Name="IndexOld" Type="Decimal" Precision="18" Scale="1" />
     <Property Name="IndexNew" Type="Decimal" Precision="18" Scale="1" />
+    <Property Name="CounterOrder" Type="Int32" />
     <NavigationProperty Name="AssociationExpenses" Relationship="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" FromRole="ApartmentExpenses" ToRole="AssociationExpenses" />
     <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" FromRole="ApartmentExpenses" ToRole="Apartments" />
   </EntityType>

@@ -40,49 +40,49 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.Label lblUserId;
         
         /// <summary>
-        /// estateName control.
+        /// associationName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText estateName;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText associationName;
         
         /// <summary>
-        /// estateAddress control.
+        /// associationAddress control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText estateAddress;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText associationAddress;
         
         /// <summary>
-        /// estateFiscalCode control.
+        /// associationFiscalCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText estateFiscalCode;
+        protected global::System.Web.UI.HtmlControls.HtmlInputText associationFiscalCode;
         
         /// <summary>
-        /// estateEqualIndiviza control.
+        /// associationEqualIndiviza control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList estateEqualIndiviza;
+        protected global::System.Web.UI.WebControls.RadioButtonList associationEqualIndiviza;
         
         /// <summary>
-        /// estateCotaIndivizaApartments control.
+        /// associationCotaIndivizaApartments control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox estateCotaIndivizaApartments;
+        protected global::System.Web.UI.WebControls.TextBox associationCotaIndivizaApartments;
         
         /// <summary>
         /// UpdatePanel1 control.
@@ -94,22 +94,22 @@ namespace Admin.Associations {
         protected global::System.Web.UI.UpdatePanel UpdatePanel1;
         
         /// <summary>
-        /// estateStairs control.
+        /// associationStairs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList estateStairs;
+        protected global::System.Web.UI.WebControls.RadioButtonList associationStairs;
         
         /// <summary>
-        /// estateStairsAdded control.
+        /// associationStairsStairsAdded control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel estateStairsAdded;
+        protected global::System.Web.UI.WebControls.Panel associationStairsStairsAdded;
         
         /// <summary>
         /// PlaceholderControls control.

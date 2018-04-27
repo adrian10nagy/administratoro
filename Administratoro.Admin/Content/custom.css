@@ -5101,7 +5101,7 @@ ul.notifications {
     display: inline-block;
 }
 
-/* Estates page */
+/* associations page */
 input#MainContent_estateStairs_0,
 input#MainContent_estateStairs_1 {
     /*margin-left: 7px;*/
@@ -5177,4 +5177,9 @@ input#MainContent_estateStairs_1 {
     background-color: #2a3f54;
     color: white;
     padding: 5px; 
+}
+
+.countersTableHeader{
+    background-color: #2a3f54;
+    color:white;
 }

@@ -13,103 +13,103 @@ namespace Admin.Associations {
     public partial class Index {
         
         /// <summary>
-        /// txtEstateName control.
+        /// txtAssociationName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateName;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationName;
         
         /// <summary>
-        /// bntEstateNameChange control.
+        /// bntAssociationNameChange control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button bntEstateNameChange;
+        protected global::System.Web.UI.WebControls.Button bntAssociationNameChange;
         
         /// <summary>
-        /// txtEstateAddress control.
+        /// txtAssociationAddress control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateAddress;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationAddress;
         
         /// <summary>
-        /// btnEstateAddress control.
+        /// btnAssociationAddress control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEstateAddress;
+        protected global::System.Web.UI.WebControls.Button btnAssociationAddress;
         
         /// <summary>
-        /// txtEstateFiscalCode control.
+        /// txtAssociationFiscalCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateFiscalCode;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationFiscalCode;
         
         /// <summary>
-        /// btnEstateFiscalCode control.
+        /// btnAssociationFiscalCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEstateFiscalCode;
+        protected global::System.Web.UI.WebControls.Button btnAssociationFiscalCode;
         
         /// <summary>
-        /// txtEstateBanckAccount control.
+        /// txtAssociationBanckAccount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateBanckAccount;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationBanckAccount;
         
         /// <summary>
-        /// btnEstateBanckAccount control.
+        /// btnAssociationBanckAccount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEstateBanckAccount;
+        protected global::System.Web.UI.WebControls.Button btnAssociationBanckAccount;
         
         /// <summary>
-        /// drpEstateEqualIndiviza control.
+        /// drpAssociationEqualIndiviza control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList drpEstateEqualIndiviza;
+        protected global::System.Web.UI.WebControls.RadioButtonList drpAssociationEqualIndiviza;
         
         /// <summary>
-        /// txtEstateCotaIndivizaApartments control.
+        /// txtAssociationCotaIndivizaApartments control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateCotaIndivizaApartments;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationCotaIndivizaApartments;
         
         /// <summary>
-        /// btnEstateEqualIndiviza control.
+        /// btnAssociationEqualIndiviza control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEstateEqualIndiviza;
+        protected global::System.Web.UI.WebControls.Button btnAssociationEqualIndiviza;
         
         /// <summary>
         /// rbHasRoundup control.
@@ -121,13 +121,13 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.RadioButtonList rbHasRoundup;
         
         /// <summary>
-        /// estateStairs control.
+        /// associationStairs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList estateStairs;
+        protected global::System.Web.UI.WebControls.RadioButtonList associationStairs;
         
         /// <summary>
         /// gvStaircasesMessage control.
@@ -157,31 +157,31 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.Panel newStairCasePanel;
         
         /// <summary>
-        /// txtEstateStairCaseName control.
+        /// txtAssociationStairCaseName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateStairCaseName;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationStairCaseName;
         
         /// <summary>
-        /// txtEstateStairCaseIndiviza control.
+        /// txtAssociationStairCaseIndiviza control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateStairCaseIndiviza;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationStairCaseIndiviza;
         
         /// <summary>
-        /// btneStatestairCasesNew control.
+        /// btnAssociationStairCasesNew control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btneStatestairCasesNew;
+        protected global::System.Web.UI.WebControls.Button btnAssociationStairCasesNew;
         
         /// <summary>
         /// gvCounters control.
@@ -202,40 +202,40 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.Panel newCounter;
         
         /// <summary>
-        /// drpEstateCounterTypeNew control.
+        /// drpAssociationCounterTypeNew control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList drpEstateCounterTypeNew;
+        protected global::System.Web.UI.WebControls.DropDownList drpAssociationCounterTypeNew;
         
         /// <summary>
-        /// drpEstateStairs control.
+        /// drpAssociationStairs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList drpEstateStairs;
+        protected global::System.Web.UI.WebControls.DropDownList drpAssociationStairs;
         
         /// <summary>
-        /// txtEstateCounterValueNew control.
+        /// txtAssociationCounterValueNew control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEstateCounterValueNew;
+        protected global::System.Web.UI.WebControls.TextBox txtAssociationCounterValueNew;
         
         /// <summary>
-        /// btnEstateCountersNew control.
+        /// btnAssociationCountersNew control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEstateCountersNew;
+        protected global::System.Web.UI.WebControls.Button btnAssociationCountersNew;
         
         /// <summary>
         /// associationIndex control.
@@ -247,12 +247,12 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.Panel associationIndex;
         
         /// <summary>
-        /// estateIndiviza control.
+        /// associationIndiviza control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox estateIndiviza;
+        protected global::System.Web.UI.WebControls.TextBox associationIndiviza;
     }
 }

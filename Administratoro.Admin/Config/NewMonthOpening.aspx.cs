@@ -77,7 +77,7 @@ namespace Admin.Config
             return result;
         }
 
-        private void InitializeYearsAndMonths(List<AssociationExpenses> defaultEE)
+        private void InitializeYearsAndMonths(IEnumerable<AssociationExpenses> defaultEE)
         {
             var ee = defaultEE.LastOrDefault();
             int year = 2010;
@@ -122,14 +122,14 @@ namespace Admin.Config
                     int defaultMonth = 1;
 
                     var defaultEE = AssociationExpensesManager.GetFromLastesOpenedMonth(estate.Id);
-                    if (defaultEE.Count > 0)
+                    if (defaultEE.Count() > 0)
                     {
                         defaultYear = defaultEE.FirstOrDefault().Year;
                         defaultMonth = defaultEE.FirstOrDefault().Month;
                     }
                     var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
 
-                    var expenses = ExpensesManager.GetAllExpenses();
+                    IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses();
                     var ee = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
 
                     TableRow defaultRow = new TableRow();
@@ -247,7 +247,7 @@ namespace Admin.Config
             }
         }
 
-        private bool isStairCaseSplitSelected(Expenses expense, List<AssociationExpenses> ee, int year, int month)
+        private bool isStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
             bool result = false;
             if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year &&
@@ -297,13 +297,13 @@ namespace Admin.Config
 
             var ee = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(Association.Id, year, month);
 
-            if (ee.Count != 0)
+            if (ee.Count() != 0)
             {
                 lblMessage.Text = "Luna deschisa deja, selecteaza alta luna-an";
                 lblMessage.Attributes.Add("style", "color: red");
                 return;
             }
-            List<AssociationExpenses> oldEE = AssociationExpensesManager.GetFromLastesOpenedMonth(Association.Id);
+            IEnumerable<AssociationExpenses> oldEE = AssociationExpensesManager.GetFromLastesOpenedMonth(Association.Id);
 
             foreach (TableRow row in tblMonthlyExpenses.Rows)
             {

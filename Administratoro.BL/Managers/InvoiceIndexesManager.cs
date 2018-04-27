@@ -28,7 +28,7 @@ namespace Administratoro.BL.Managers
             return GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoiceId);
         }
 
-        private static List<InvoiceIndexes> GetLastMonthIndexes(int invoiceId)
+        private static IEnumerable<InvoiceIndexes> GetLastMonthIndexes(int invoiceId)
         {
             var result = new List<InvoiceIndexes>();
 

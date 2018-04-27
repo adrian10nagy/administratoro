@@ -4,32 +4,32 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <span class="associationsLabels">Denumire asociație:</span>
-    <asp:TextBox runat="server" ID="txtEstateName" Enabled="false"></asp:TextBox>
-    <asp:Button runat="server" ID="bntEstateNameChange" OnClick="bntEstateNameChange_Click" Text="Modifică" />
+    <asp:TextBox runat="server" ID="txtAssociationName" Enabled="false"></asp:TextBox>
+    <asp:Button runat="server" ID="bntAssociationNameChange" OnClick="bntAssociationNameChange_Click" Text="Modifică" />
     <br />
 
     <span class="associationsLabels">Adresa:</span>
-    <asp:TextBox runat="server" ID="txtEstateAddress" Enabled="false"></asp:TextBox>
-    <asp:Button runat="server" ID="btnEstateAddress" OnClick="btnEstateAddress_Click" Text="Modifică" />
+    <asp:TextBox runat="server" ID="txtAssociationAddress" Enabled="false"></asp:TextBox>
+    <asp:Button runat="server" ID="btnAssociationAddress" OnClick="btnAssociationAddress_Click" Text="Modifică" />
     <br />
 
     <span class="associationsLabels">Cod fiscal:</span>
-    <asp:TextBox runat="server" ID="txtEstateFiscalCode" Enabled="false"></asp:TextBox>
-    <asp:Button runat="server" ID="btnEstateFiscalCode" OnClick="btnEstateFiscalCode_Click" Text="Modifică" />
+    <asp:TextBox runat="server" ID="txtAssociationFiscalCode" Enabled="false"></asp:TextBox>
+    <asp:Button runat="server" ID="btnAssociationFiscalCode" OnClick="btnAssociationFiscalCode_Click" Text="Modifică" />
     <br />
     <span class="associationsLabels">Cont bancar:</span>
-    <asp:TextBox runat="server" ID="txtEstateBanckAccount" Enabled="false"></asp:TextBox>
-    <asp:Button runat="server" ID="btnEstateBanckAccount" OnClick="btnEstateBanckAccount_Click" Text="Modifică" />
+    <asp:TextBox runat="server" ID="txtAssociationBanckAccount" Enabled="false"></asp:TextBox>
+    <asp:Button runat="server" ID="btnAssociationBanckAccount" OnClick="btnAssociationBanckAccount_Click" Text="Modifică" />
     <br />
     <div>
-        <asp:RadioButtonList ID="drpEstateEqualIndiviza" CssClass="AssociationsNewRadioBtns" runat="server" AutoPostBack="true" RepeatLayout="Flow" OnSelectedIndexChanged="estateEqualIndiviza_SelectedIndexChanged" RepeatDirection="Horizontal">
+        <asp:RadioButtonList ID="drpAssociationEqualIndiviza" CssClass="AssociationsNewRadioBtns" runat="server" AutoPostBack="true" RepeatLayout="Flow" OnSelectedIndexChanged="associationEqualIndiviza_SelectedIndexChanged" RepeatDirection="Horizontal">
             <asp:ListItem Text="Nu" Value="0" Selected="True" />
             <asp:ListItem Text="Da" Value="1" />
         </asp:RadioButtonList>
         <span>Cotă de indiviză egală la toate apatamentele</span>
-        <asp:TextBox runat="server" ID="txtEstateCotaIndivizaApartments" Visible="false" placeholder="ex: 1,16" Enabled="false"></asp:TextBox>
+        <asp:TextBox runat="server" ID="txtAssociationCotaIndivizaApartments" Visible="false" placeholder="ex: 1,16" Enabled="false"></asp:TextBox>
         %
-    <asp:Button runat="server" ID="btnEstateEqualIndiviza" OnClick="btnEstateEqualIndiviza_Click" Text="Modifică" Visible="false" />
+    <asp:Button runat="server" ID="btnAssociationEqualIndiviza" OnClick="btnAssociationEqualIndiviza_Click" Text="Modifică" Visible="false" />
     </div>
     <br />
     <div>
@@ -42,7 +42,7 @@
     </div>
     <div>
         <span class="associationsLabels">Bloc împărțit pe scări:</span>
-        <asp:RadioButtonList ID="estateStairs" runat="server" AutoPostBack="true" OnSelectedIndexChanged="estateStairs_SelectedIndexChanged"
+        <asp:RadioButtonList ID="associationStairs" runat="server" AutoPostBack="true" OnSelectedIndexChanged="associationStairs_SelectedIndexChanged"
             RepeatLayout="Flow" RepeatDirection="Horizontal">
             <asp:ListItem Text="Nu" Value="0" />
             <asp:ListItem Text="Da" Value="1" />
@@ -61,11 +61,11 @@
 
     <asp:Panel ID="newStairCasePanel" runat="server" Visible="false">
         <asp:Label runat="server" Text="Nume:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
-        <asp:TextBox runat="server" ID="txtEstateStairCaseName" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
+        <asp:TextBox runat="server" ID="txtAssociationStairCaseName" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
         <asp:Label runat="server" Text="Serie contor:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
-        <asp:TextBox runat="server" ID="txtEstateStairCaseIndiviza" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
+        <asp:TextBox runat="server" ID="txtAssociationStairCaseIndiviza" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
     </asp:Panel>
-    <asp:Button runat="server" ID="btneStatestairCasesNew" Text="Adaugă scară" OnClick="btneStatestairCasesNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />
+    <asp:Button runat="server" ID="btnAssociationStairCasesNew" Text="Adaugă scară" OnClick="btnAssociationstairCasesNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />
     <br />
     <br />
     <br />
@@ -101,22 +101,22 @@
     <asp:Panel ID="newCounter" runat="server" Visible="false">
         <div class="col-md-12 col-cs-12">
             <asp:Label runat="server" Text="Cheltuială:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
-            <asp:DropDownList runat="server" ID="drpEstateCounterTypeNew" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:DropDownList>
+            <asp:DropDownList runat="server" ID="drpAssociationCounterTypeNew" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:DropDownList>
         </div>
         <div class="col-md-12 col-cs-12">
             <asp:Label runat="server" Text="Scară:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
-            <asp:DropDownList runat="server" ID="drpEstateStairs" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:DropDownList>
+            <asp:DropDownList runat="server" ID="drpAssociationStairs" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:DropDownList>
         </div>
         <div class="col-md-12 col-cs-12">
             <asp:Label runat="server" Text="Serie contor:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
-            <asp:TextBox runat="server" ID="txtEstateCounterValueNew" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
+            <asp:TextBox runat="server" ID="txtAssociationCounterValueNew" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
         </div>
     </asp:Panel>
-    <asp:Button runat="server" ID="btnEstateCountersNew" Text="Adaugă contor" OnClick="btnEstateCountersNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />
+    <asp:Button runat="server" ID="btnAssociationCountersNew" Text="Adaugă contor" OnClick="btnAssociationCountersNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />
 
     <asp:Panel runat="server" ID="associationIndex" Visible="false">
         <h3>Indiviză</h3>
-        <asp:TextBox runat="server" ID="estateIndiviza" Enabled="false" />
+        <asp:TextBox runat="server" ID="associationIndiviza" Enabled="false" />
     </asp:Panel>
 
 

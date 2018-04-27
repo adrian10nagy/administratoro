@@ -92,7 +92,7 @@
                 </div>
             </div>
             
-            <asp:Panel runat="server" ID="estateCounters" class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+            <asp:Panel runat="server" ID="estateCounters" class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback">
                 <small>2.Configurare contoare alocate</small>
                 <br />
                 <br />

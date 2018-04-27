@@ -10,7 +10,7 @@
     <br />
     <br />
 
-    <div id="divExpensesPerIndex" runat="server">
+    <div runat="server">
          Costul per unitate:
         <asp:TextBox ID="txtExpensesPerIndexValue" runat="server" Enabled="false"></asp:TextBox>
         <asp:Button ID="btnExpensesPerIndexValue" runat="server" Text="Modifică" OnClick="btnExpensesPerIndexValue_Click" /><br /><br />

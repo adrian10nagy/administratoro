@@ -20,6 +20,7 @@ namespace Administratoro.DAL
         public int Id_EstateExpense { get; set; }
         public Nullable<decimal> IndexOld { get; set; }
         public Nullable<decimal> IndexNew { get; set; }
+        public Nullable<int> CounterOrder { get; set; }
     
         public virtual AssociationExpenses AssociationExpenses { get; set; }
         public virtual Apartments Apartments { get; set; }

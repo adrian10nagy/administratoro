@@ -43,7 +43,7 @@ namespace Admin
         {
             get
             {
-                return ExpensesManager.GetAllExpenses();
+                return ExpensesManager.GetAllExpenses().ToList();
             }
         }
 

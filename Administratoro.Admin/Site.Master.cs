@@ -35,28 +35,28 @@ namespace Admin
 
         private void InitializeEsates(Partners partner)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
-            var estates = Session[SessionConstants.AllAssociations] as List<Administratoro.DAL.Associations>;
+            var association = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
+            var associations = Session[SessionConstants.AllAssociations] as List<Administratoro.DAL.Associations>;
 
-            if (estate == null || estates == null)
+            if (association == null || associations == null)
             {
-                estates = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
-                if (estates != null && estates.Count > 0)
+                associations = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
+                if (associations != null && associations.Count > 0)
                 {
-                    estate = estates.First();
-                    Session[SessionConstants.SelectedAssociation] = estate;
-                    Session[SessionConstants.AllAssociations] = estates;
+                    association = associations.First();
+                    Session[SessionConstants.SelectedAssociation] = association;
+                    Session[SessionConstants.AllAssociations] = associations;
                 }
             }
 
             drpMainEstate.Items.Clear();
-            foreach (var itemEstate in estates)
+            foreach (var itemEstate in associations)
             {
                 drpMainEstate.Items.Add(new ListItem
                 {
                     Text = itemEstate.Name,
                     Value = itemEstate.Id.ToString(),
-                    Selected = (itemEstate.Id == estate.Id)
+                    Selected = (itemEstate.Id == association.Id)
                 });
             }
 
@@ -70,16 +70,16 @@ namespace Admin
 
         protected void drpMainEstate_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int? selectedEstate = drpMainEstate.SelectedValue.ToNullableInt();
+            int? selectedAssociation = drpMainEstate.SelectedValue.ToNullableInt();
             var partner = Session[SessionConstants.LoggedPartner] as Partners;
 
-            if (selectedEstate.HasValue && selectedEstate.Value != -1)
+            if (selectedAssociation.HasValue && selectedAssociation.Value != -1)
             {
-                var estates = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
-                var existingEstate = estates.FirstOrDefault(es => es.Id == selectedEstate.Value);
-                if (existingEstate != null)
+                var associations = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
+                var existingAssociation = associations.FirstOrDefault(es => es.Id == selectedAssociation.Value);
+                if (existingAssociation != null)
                 {
-                    Session[SessionConstants.SelectedAssociation] = existingEstate;
+                    Session[SessionConstants.SelectedAssociation] = existingAssociation;
                     Response.Redirect("~/");
                 }
                 else

@@ -5,7 +5,7 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="b028c4556d724cdba4d863c853e92018" Name="Diagram1" ZoomLevel="81">
-        <EntityTypeShape EntityType="AdministratoroModel.ApartmentExpenses" Width="1.5" PointX="10.5" PointY="8.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.ApartmentExpenses" Width="1.5" PointX="10.5" PointY="8.625" />
         <EntityTypeShape EntityType="AdministratoroModel.ApartmentPersons" Width="1.5" PointX="10.5" PointY="3" />
         <EntityTypeShape EntityType="AdministratoroModel.Apartments" Width="1.5" PointX="8.25" PointY="1.75" />
         <EntityTypeShape EntityType="AdministratoroModel.AssociationCounters" Width="1.5" PointX="5.25" PointY="13" />
@@ -13,7 +13,7 @@
         <EntityTypeShape EntityType="AdministratoroModel.AssociationExpenses" Width="1.5" PointX="5.25" PointY="7.75" />
         <EntityTypeShape EntityType="AdministratoroModel.AssociationExpensesRedistributionTypes" Width="1.5" PointX="3" PointY="8.375" />
         <EntityTypeShape EntityType="AdministratoroModel.Associations" Width="1.5" PointX="3" PointY="0.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.ErrorLogs" Width="1.5" PointX="11.75" PointY="12.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.ErrorLogs" Width="1.5" PointX="11.75" PointY="12.375" />
         <EntityTypeShape EntityType="AdministratoroModel.Expenses" Width="1.5" PointX="3" PointY="11.25" />
         <EntityTypeShape EntityType="AdministratoroModel.ExpenseTypes" Width="1.5" PointX="0.75" PointY="6.375" />
         <EntityTypeShape EntityType="AdministratoroModel.Functionalities" Width="1.5" PointX="1.75" PointY="20.375" />
@@ -25,7 +25,7 @@
         <EntityTypeShape EntityType="AdministratoroModel.PartnerTypes" Width="1.5" PointX="1.5" PointY="17.5" />
         <EntityTypeShape EntityType="AdministratoroModel.Persons" Width="1.5" PointX="8.25" PointY="16.625" />
         <EntityTypeShape EntityType="AdministratoroModel.StairCases" Width="1.5" PointX="6" PointY="2.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.sysdiagrams" Width="1.5" PointX="12.75" PointY="1.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.sysdiagrams" Width="1.5" PointX="12.75" PointY="1.375" />
         <AssociationConnector Association="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" />
         <AssociationConnector Association="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" />
         <AssociationConnector Association="AdministratoroModel.FK__TenantPer__Id_Pe__4BAC3F29" />

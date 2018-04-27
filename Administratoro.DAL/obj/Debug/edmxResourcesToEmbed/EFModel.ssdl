@@ -10,6 +10,7 @@
     <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
     <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
     <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
+    <Property Name="CounterOrder" Type="int" />
   </EntityType>
   <EntityType Name="ApartmentPersons">
     <Key>
