@@ -138,7 +138,7 @@ namespace Administratoro.BL.Managers
             }
             else if (associationExpense.RedistributeType.Value == (int)RedistributionType.PerApartments)
             {
-                result = RedistributionManager.RedistributeValuePerApartments(associationExpense, apartment);
+                result = RedistributionManager.RedistributeValuePerApartmentDependents(associationExpense, apartment);
             }
             else if (associationExpense.RedistributeType.Value == (int)RedistributionType.PerConsumption)
             {
@@ -192,7 +192,7 @@ namespace Administratoro.BL.Managers
             return apartmentConsumption;
         }
 
-        private static decimal? RedistributeValuePerApartments(AssociationExpenses associationExpense, Apartments apartment)
+        private static decimal? RedistributeValuePerApartmentDependents(AssociationExpenses associationExpense, Apartments apartment)
         {
             decimal? result = null;
 
@@ -253,7 +253,8 @@ namespace Administratoro.BL.Managers
         private static decimal? RedistributeValuePerApartment(AssociationExpenses associationExpense, Apartments apartment)
         {
             decimal? result = null;
-            if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
+            // todo change this to be for index expense or add new if branch
+            if (true)
             {
                 var redistributeSum = GetRedistributeValueForIndexExpenseForStairCase(associationExpense, apartment);
 
@@ -301,24 +302,47 @@ namespace Administratoro.BL.Managers
 
         private static decimal? GetRedistributeValueForIndexExpenseForStairCase(AssociationExpenses associationExpense, Apartments apartment)
         {
-            decimal? sumOfInvoicesForStairCase = GetSumOfInvoices(associationExpense, apartment);
-            var sumOfExpensesForStairCase = associationExpense.ApartmentExpenses.Where(tex => tex.Apartments.Id_StairCase == apartment.Id_StairCase).Sum(t => t.IndexNew - t.IndexOld) * associationExpense.PricePerExpenseUnit;
-            var redistributeSum = sumOfInvoicesForStairCase - sumOfExpensesForStairCase;
-            return redistributeSum;
+            decimal? result = null;
+            var stairCase = apartment.Id_StairCase;
+            decimal? sumOfInvoicesForStairCase = GetSumOfInvoices(associationExpense, stairCase);
+            if(sumOfInvoicesForStairCase.HasValue)
+            {
+                var sumOfExpensesForStairCase = ApartmentExpensesManager.GetConsumption(associationExpense, stairCase);
+                if(sumOfExpensesForStairCase.HasValue)
+                {
+
+                    result = sumOfInvoicesForStairCase - sumOfExpensesForStairCase;
+                }
+            }
+
+            return result;
         }
 
-        private static decimal? GetSumOfInvoices(AssociationExpenses associationExpense, Apartments apartment)
+        private static decimal? GetSumOfInvoices(AssociationExpenses associationExpense, int? stairCase)
         {
             decimal? sumOfInvoices = null;
-            foreach (var invoice in associationExpense.Invoices.Where(i => i.Id_StairCase == apartment.Id_StairCase))
+            var invoice = associationExpense.Invoices.FirstOrDefault();
+
+            if (invoice == null)
             {
-                if (invoice != null && invoice.Value.HasValue)
+                return sumOfInvoices;
+            }
+
+            var invoiceIndexes = InvoiceIndexesManager.Get(invoice.Id, stairCase);
+
+            foreach (var invoiceIndex in invoiceIndexes)
+            {
+                if (invoiceIndex != null && invoiceIndex.IndexNew.HasValue && invoiceIndex.IndexOld.HasValue && invoiceIndex.Invoices.Value.HasValue
+                    &&invoice.AssociationExpenses.PricePerExpenseUnit.HasValue)
                 {
+
                     if (!sumOfInvoices.HasValue)
                     {
                         sumOfInvoices = 0m;
                     }
-                    sumOfInvoices = sumOfInvoices + invoice.Value.Value;
+                    decimal? valueToAdd = (invoiceIndex.IndexNew - invoiceIndex.IndexOld) * invoice.AssociationExpenses.PricePerExpenseUnit.Value;
+
+                    sumOfInvoices = sumOfInvoices + valueToAdd;
                 }
             }
 

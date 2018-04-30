@@ -32,14 +32,11 @@ namespace Administratoro.BL.Managers
             var ee = AssociationExpensesManager.GetById(idExpenseEstateCurentMonth);
             if (ee != null)
             {
-                //todo -1 does not work for month 1(january)
-                var lastMonthEE = GetContext(true).AssociationExpenses.FirstOrDefault(e => e.Month == ee.Month - 1 &&
-                    e.Id_Estate == ee.Id_Estate && e.Id_Expense == ee.Id_Expense && e.Id_ExpenseType == ee.Id_ExpenseType &&
-                    e.isDefault == ee.isDefault && e.Year == ee.Year && e.WasDisabled == ee.WasDisabled);
+                var prevMonthAE = AssociationExpensesManager.GetPreviousMonth(ee);
 
-                if (lastMonthEE != null)
+                if (prevMonthAE != null)
                 {
-                    result = GetByExpenseEstateIdAndApartmentId(lastMonthEE.Id, idApartment);
+                    result = GetByExpenseEstateIdAndApartmentId(prevMonthAE.Id, idApartment);
                 }
             }
 
@@ -56,7 +53,7 @@ namespace Administratoro.BL.Managers
             return GetContext().ApartmentExpenses.Where(te => te.Id_EstateExpense == idExpenseEstate && te.Id_Tenant == IdApartment);
         }
 
-        public static ApartmentExpenses GetByAssociationExpenseApartmentAndCountOrder(int idExpenseEstate, int IdApartment, int countOrder)
+        public static ApartmentExpenses Get(int idExpenseEstate, int IdApartment, int? countOrder)
         {
             return GetContext().ApartmentExpenses.FirstOrDefault(te => te.Id_EstateExpense == idExpenseEstate
                 && te.Id_Tenant == IdApartment
@@ -301,21 +298,45 @@ namespace Administratoro.BL.Managers
                 {
                     for (int i = assC.CountersInsideApartment.Value; i < apartmentExpenses.Count; i++)
                     {
-                        ApartmentExpensesManager.RemoveApartmentExpense(apartment.Id, apartmentExpenses[i].Id_EstateExpense, apartmentExpenses[i].CounterOrder.Value);
+                        if(apartmentExpenses[i].CounterOrder.HasValue)
+                        {
+                            ApartmentExpensesManager.RemoveApartmentExpense(apartment.Id, apartmentExpenses[i].Id_EstateExpense, apartmentExpenses[i].CounterOrder.Value);
+                        }
                     }
                 }
             }
 
             for (int i = 0; i < assC.CountersInsideApartment; i++)
             {
-                var apartmentExpense = ApartmentExpensesManager.GetForPreviousMonthByOrder(ae.Id, apartment.Id, i);
+                var apartmentExpense = ApartmentExpensesManager.Get(ae.Id, apartment.Id, i);
+                var lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForPreviousMonth(ae.Id, apartment.Id, i);
 
-                if(apartmentExpense == null)
+                if (assC.CountersInsideApartment == 1)
+                {
+                    if (apartmentExpense == null)
+                    {
+                        apartmentExpense = ApartmentExpensesManager.Get(ae.Id, apartment.Id, null);
+                    }
+
+                    if (lastMonthIndexApartmentExpense == null)
+                    {
+                        lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForIndexExpensPreviousMonthApartmentExpense(ae.Id, apartment.Id);
+                    }
+                }
+
+                if(apartmentExpense != null && apartmentExpense.IndexNew.HasValue && apartmentExpense.IndexOld.HasValue && apartmentExpense.Value.HasValue && 
+                    apartmentExpense.AssociationExpenses.PricePerExpenseUnit.HasValue &&
+                    (apartmentExpense.IndexNew - apartmentExpense.IndexOld) * apartmentExpense.AssociationExpenses.PricePerExpenseUnit.Value != apartmentExpense.Value)
+                {
+                    var theValue = (apartmentExpense.IndexNew - apartmentExpense.IndexOld) * apartmentExpense.AssociationExpenses.PricePerExpenseUnit.Value;
+                    UpdateApartmentExpense(apartmentExpense.Id, theValue);
+                }
+
+
+                if(apartmentExpense == null || lastMonthIndexApartmentExpense == null)
                 {
                     continue;
                 }
-
-                var lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForPreviousMonthByOrder(ae.Id, apartment.Id, i);
 
                 if (lastMonthIndexApartmentExpense != null && !lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.HasValue)
                 {
@@ -374,7 +395,7 @@ namespace Administratoro.BL.Managers
                 GetContext().SaveChanges();
 
                 //update previeous month old index
-                var lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForIndexExpensPreviousMonthApartmentExpense(associationExpense.Id, apartmentExpense.Id_Tenant);
+                var lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForPreviousMonth(apartmentExpense.Apartments.Id, apartmentExpenseId);
                 if (lastMonthIndexApartmentExpense != null && apartmentExpense.IndexOld != null &&
                     lastMonthIndexApartmentExpense.IndexNew != apartmentExpense.IndexOld && !lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.HasValue)
                 {
@@ -385,10 +406,22 @@ namespace Administratoro.BL.Managers
             }
         }
 
+        private static ApartmentExpenses GetForPreviousMonth(int apartmentId, int apartmentExpenseId)
+        {
+            ApartmentExpenses result = null;
+
+            var apartmentExpense = ApartmentExpensesManager.GetById(apartmentExpenseId);
+            if (apartmentExpense != null)
+            {
+                result = GetForPreviousMonth(apartmentExpense.AssociationExpenses.Id, apartmentId, apartmentExpense.CounterOrder);   
+            }
+
+            return result;
+        }
+
         internal static IEnumerable<ApartmentExpenses> GetByExpenseYearAndMonth(int apartmentId, int associationExpenseId)
         {
             return GetContext(true).ApartmentExpenses.Where(te => te.Id_Tenant == apartmentId && te.Id_EstateExpense == associationExpenseId);
-
         }
 
         public static void UpdateApartmentExpenses(AssociationExpenses associationExpense, decimal? value, int? stairCase = null)
@@ -476,7 +509,7 @@ namespace Administratoro.BL.Managers
 
                 decimal? value = null;
                 decimal? oldIndex = null;
-                var aeFormOld = ApartmentExpensesManager.GetForPreviousMonthByOrder(associationExpenseId, apartmentid, counterOrder);
+                var aeFormOld = ApartmentExpensesManager.GetForPreviousMonth(associationExpenseId, apartmentid, counterOrder);
                 if (aeFormOld != null)
                 {
                     oldIndex = aeFormOld.IndexNew;
@@ -496,20 +529,18 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        private static ApartmentExpenses GetForPreviousMonthByOrder(int idExpenseEstateCurentMonth, int apartmentid, int countOrder)
+        private static ApartmentExpenses GetForPreviousMonth(int idAssociationExpenseCurentMonth, int apartmentid, int? countOrder)
         {
             ApartmentExpenses result = null;
-            var ee = AssociationExpensesManager.GetById(idExpenseEstateCurentMonth);
+            var ee = AssociationExpensesManager.GetById(idAssociationExpenseCurentMonth);
             if (ee != null)
             {
                 //todo -1 does not work for month 1(january)
-                var lastMonthEE = GetContext(true).AssociationExpenses.FirstOrDefault(ae => ae.Month == ee.Month - 1 &&
-                    ae.Id_Estate == ee.Id_Estate && ae.Id_Expense == ee.Id_Expense && ae.Id_ExpenseType == ee.Id_ExpenseType &&
-                    ae.isDefault == ee.isDefault && ae.Year == ee.Year && ae.WasDisabled == ee.WasDisabled);
+                var prevMonthAE = AssociationExpensesManager.GetPreviousMonth(ee);
 
-                if (lastMonthEE != null)
+                if (prevMonthAE != null)
                 {
-                    result = GetByAssociationExpenseApartmentAndCountOrder(lastMonthEE.Id, apartmentid, countOrder);
+                    result = Get(prevMonthAE.Id, apartmentid, countOrder);
                 }
             }
 
@@ -631,13 +662,13 @@ namespace Administratoro.BL.Managers
             Associations association, IEnumerable<Invoices> invoices, out bool hasDiverse)
         {
             hasDiverse = false;
-            foreach (var apatrment in apartments)
+            foreach (var apartment in apartments)
             {
                 ExpenseReport expenseReport = new ExpenseReport();
-                expenseReport.Ap = apatrment.Number.ToString();
-                expenseReport.Name = apatrment.Name;
-                expenseReport.NrPers = apatrment.Dependents;
-                expenseReport.CotaIndiviza = apatrment.CotaIndiviza.HasValue ? apatrment.CotaIndiviza.Value.ToString() : string.Empty;
+                expenseReport.Ap = apartment.Number.ToString();
+                expenseReport.Name = apartment.Name;
+                expenseReport.NrPers = apartment.Dependents;
+                expenseReport.CotaIndiviza = apartment.CotaIndiviza.HasValue ? apartment.CotaIndiviza.Value.ToString() : string.Empty;
 
                 raportDictionary.Clear();
                 int counter = 0;
@@ -653,10 +684,10 @@ namespace Administratoro.BL.Managers
                         totalCol.Add((Expense)associationExpense.Expenses.Id, 0.0m);
                     }
 
-                    IEnumerable<ApartmentExpenses> apartmentExpenses = ApartmentExpensesManager.GetByExpenseYearAndMonth(apatrment.Id, associationExpense.Id);
+                    IEnumerable<ApartmentExpenses> apartmentExpenses = ApartmentExpensesManager.GetByExpenseYearAndMonth(apartment.Id, associationExpense.Id);
                     if (associationExpense.RedistributeType.HasValue)
                     {
-                        apartmentExpenseRedistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(associationExpense.Id, apatrment, apartmentExpenses);
+                        apartmentExpenseRedistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(associationExpense.Id, apartment, apartmentExpenses);
                     }
                     rowValue = CalculateRowValue(apartmentExpenses, apartmentExpenseRedistributionValue);
 
@@ -715,7 +746,7 @@ namespace Administratoro.BL.Managers
 
                 raportDictionary.Add(counter, Expense.Diverse);
 
-                hasDiverse = RaportPopulateExpensesListDiverse(apatrment, invoices, association, totalCol, expenseReport) || hasDiverse;
+                hasDiverse = RaportPopulateExpensesListDiverse(apartment, invoices, association, totalCol, expenseReport) || hasDiverse;
 
                 expenseReportList.Add(expenseReport);
             }
@@ -1094,6 +1125,20 @@ namespace Administratoro.BL.Managers
         public static IEnumerable<ApartmentExpenses> GetApartmentsExpenseByAssociationExpenseId(int associationExpenseId)
         {
             return GetContext(true).ApartmentExpenses.Where(te => te.Id_EstateExpense == associationExpenseId);
+        }
+
+        public static decimal? GetConsumption(AssociationExpenses associationExpense, int? stairCase)
+        {
+            decimal? result = null;
+
+            IEnumerable<ApartmentExpenses> apartmentExpenses = associationExpense.ApartmentExpenses;
+            var sumOfIndexes = apartmentExpenses.Where(tex => tex.Apartments.Id_StairCase == stairCase).Sum(t => t.IndexNew - t.IndexOld);
+            if (sumOfIndexes.HasValue && associationExpense.PricePerExpenseUnit.HasValue)
+            {
+                result = sumOfIndexes * associationExpense.PricePerExpenseUnit;
+            }
+
+            return result;
         }
     }
 }

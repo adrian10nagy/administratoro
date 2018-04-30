@@ -127,8 +127,8 @@ namespace Admin.Expenses
                         if (!string.IsNullOrEmpty(cellNew.Text) && decimal.TryParse(cellNew.Text, out newIndexValue) &&
                             !string.IsNullOrEmpty(cellOld.Text) && decimal.TryParse(cellOld.Text, out oldIndexValue))
                         {
-                            decimal? newValue = newIndexValue;
                             decimal? oldValue = oldIndexValue;
+                            decimal? newValue = newIndexValue;
                             ApartmentExpensesManager.UpdateNewIndexAndValue(apartmentExpenseId, idExpenseEstate, newValue, true, oldValue);
                         }
                         else

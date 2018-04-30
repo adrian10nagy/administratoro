@@ -561,7 +561,7 @@ namespace Admin.Invoices
                 InitializeInvoiceFields(invoices[0]);
             }
 
-            var invoicesIndexes = InvoiceIndexesManager.GetAllByInvoiceId(invoices[0].Id).ToList();
+            var invoicesIndexes = InvoiceIndexesManager.Get(invoices[0].Id).ToList();
 
             if (isIndexExpense)
             {
@@ -570,7 +570,7 @@ namespace Admin.Invoices
                 if (invoicesIndexes.Count < counters.Count)
                 {
                     InvoiceIndexesManager.AddDefault(invoices[0].Id, counters, invoicesIndexes);
-                    invoicesIndexes = InvoiceIndexesManager.GetAllByInvoiceId(invoices[0].Id).ToList();
+                    invoicesIndexes = InvoiceIndexesManager.Get(invoices[0].Id).ToList();
                 }
 
                 InitializeValueFieldAddInvoicesForIndexExpenses(invoicesIndexes, counters);

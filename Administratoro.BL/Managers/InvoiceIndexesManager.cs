@@ -2,12 +2,13 @@
 
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.DAL;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using Administratoro.BL.Constants;
+using Administratoro.DAL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
     public static class InvoiceIndexesManager
     {
@@ -23,9 +24,16 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static IEnumerable<InvoiceIndexes> GetAllByInvoiceId(int invoiceId)
+        #region Get
+       
+        public static IEnumerable<InvoiceIndexes> Get(int invoiceId)
         {
             return GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoiceId);
+        }
+
+        public static IEnumerable<InvoiceIndexes> Get(int invoiceId, int? stairCase)
+        {
+            return GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoiceId && t.AssociationCounters.Id_StairCase == stairCase);
         }
 
         private static IEnumerable<InvoiceIndexes> GetLastMonthIndexes(int invoiceId)
@@ -41,6 +49,10 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
+        #endregion
+
+        #region Add
+
         public static void Add(int invoiceId, decimal? indexOld, decimal? indexNew)
         {
             var result = new InvoiceIndexes
@@ -52,20 +64,6 @@ namespace Administratoro.BL.Managers
 
             GetContext().InvoiceIndexes.Add(result);
             GetContext().SaveChanges();
-        }
-
-        public static void Update(int invoiceIndexId, int invoiceId, decimal? indexOld, decimal? indexNew)
-        {
-            InvoiceIndexes result = new InvoiceIndexes();
-            result = GetContext(true).InvoiceIndexes.FirstOrDefault(c => c.Id == invoiceIndexId);
-
-            if (result != null)
-            {
-                result.IndexNew = indexNew;
-                result.IndexOld = indexOld;
-                GetContext().Entry(result).CurrentValues.SetValues(result);
-                GetContext().SaveChanges();
-            }
         }
 
         public static void AddDefault(int invoiceId, List<AssociationCounters> counters, List<InvoiceIndexes> invoicesIndexes)
@@ -92,5 +90,24 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
+        #endregion
+
+        #region Update
+
+        public static void Update(int invoiceIndexId, int invoiceId, decimal? indexOld, decimal? indexNew)
+        {
+            InvoiceIndexes result = new InvoiceIndexes();
+            result = GetContext(true).InvoiceIndexes.FirstOrDefault(c => c.Id == invoiceIndexId);
+
+            if (result != null)
+            {
+                result.IndexNew = indexNew;
+                result.IndexOld = indexOld;
+                GetContext().Entry(result).CurrentValues.SetValues(result);
+                GetContext().SaveChanges();
+            }
+        }
+
+        #endregion
     }
 }

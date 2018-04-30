@@ -215,6 +215,21 @@ namespace Administratoro.BL.Managers
             }
         }
 
+        public static AssociationExpenses GetPreviousMonth(AssociationExpenses ae)
+        {
+            if (ae == null)
+            {
+                return null;
+            }
+
+            //todo -1 does not work for month 1(january)
+            var lastMonthEE = GetContext(true).AssociationExpenses.FirstOrDefault(e => e.Month == ae.Month - 1 &&
+                e.Id_Estate == ae.Id_Estate && e.Id_Expense == ae.Id_Expense && e.Id_ExpenseType == ae.Id_ExpenseType &&
+                e.isDefault == ae.isDefault && e.Year == ae.Year && e.WasDisabled == ae.WasDisabled);
+
+            return lastMonthEE;
+        }
+
         public static void UpdateRedistributeMethod(int associationExpenseId, int? type)
         {
             AssociationExpenses result = new AssociationExpenses();
@@ -390,11 +405,11 @@ namespace Administratoro.BL.Managers
         {
             string percentage = string.Empty;
 
-            int apartmentsWithCountersOfThatExpense = GetApartmentsWithCountersOfThatExpense(associationExpense);
+            int allApartmentExpenses = associationExpense.ApartmentExpenses.Count();
 
-            if (apartmentsWithCountersOfThatExpense > 0)
+            if (allApartmentExpenses > 0)
             {
-                percentage = ExpensePercentageFilledInAsString(associationExpense, apartmentsWithCountersOfThatExpense);
+                percentage = ExpensePercentageFilledInAsString(associationExpense, allApartmentExpenses);
             }
             else
             {
@@ -408,11 +423,11 @@ namespace Administratoro.BL.Managers
         {
             decimal percentage = 0.0m;
 
-            int apartmentsWithCountersOfThatExpense = GetApartmentsWithCountersOfThatExpense(associationExpense);
+            int allApartmentExpenses = associationExpense.ApartmentExpenses.Count();
 
-            if (apartmentsWithCountersOfThatExpense > 0)
+            if (allApartmentExpenses > 0)
             {
-                percentage = ExpensePercentageFilledIn(associationExpense, apartmentsWithCountersOfThatExpense);
+                percentage = ExpensePercentageFilledIn(associationExpense, allApartmentExpenses);
             }
             else
             {
@@ -441,23 +456,9 @@ namespace Administratoro.BL.Managers
         public static string ExpensePercentageFilledInMessage(AssociationExpenses associationExpense)
         {
             var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.IndexNew.HasValue);
-            int apartmentsWithCountersOfThatExpense = GetApartmentsWithCountersOfThatExpense(associationExpense);
+            int apartmentsWithCountersOfThatExpense = associationExpense.ApartmentExpenses.Count();
 
             return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + apartmentsWithCountersOfThatExpense + "</b> ";
-        }
-
-        private static int GetApartmentsWithCountersOfThatExpense(AssociationExpenses associationExpense)
-        {
-            int apartmentsWithCountersOfThatExpense = 0;
-            IEnumerable<AssociationCounters > allcountersOfExpense = CountersManager.GetAllByExpenseType(associationExpense.Associations.Id, associationExpense.Expenses.Id);
-            foreach (var apartment in associationExpense.Associations.Apartments)
-            {
-                if (allcountersOfExpense.Select(c => c.Id).Intersect(apartment.AssociationCountersApartment.Select(ac => ac.Id_Counters)).Any())
-                {
-                    apartmentsWithCountersOfThatExpense++;
-                }
-            }
-            return apartmentsWithCountersOfThatExpense;
         }
 
         #endregion
@@ -561,7 +562,7 @@ namespace Administratoro.BL.Managers
             if (associationExpense != null)
             {
                 result = associationExpense.ApartmentExpenses.Where(te => te.Apartments.AssociationCountersApartment.Any(ac => ac.AssociationCounters.Id_Expense == associationExpense.Id_Expense)
-                    && te.Apartments.Id_StairCase == stairCaseId).Select(te => te.Apartments).ToList();
+                    && te.Apartments.Id_StairCase == stairCaseId).Select(te => te.Apartments).Distinct().ToList();
             }
 
             return result;
