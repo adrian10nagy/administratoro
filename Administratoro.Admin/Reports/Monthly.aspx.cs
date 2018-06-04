@@ -49,7 +49,7 @@ namespace Admin.Expenses
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            lblExpenseMeessage.Text = "Cheltuielile pe luna Septembrie";
+            lblExpenseMeessage.Text = "Cheltuielile pe luna <b>" + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(_month) + " " + _year + "</b>";
 
             if (!Page.IsPostBack)
             {
@@ -89,8 +89,6 @@ namespace Admin.Expenses
 
         private void InitializeGridView(DataTable dt, int? stairCase = null)
         {
-            var association = Session[SessionConstants.SelectedAssociation] as Associations;
-
             RecalculationManager.RecalculateMonthlyExpenses(Association.Id, _year, _month);
 
             dt = ApartmentExpensesManager.GetMonthlyRaportAsDataTable(Association.Id, _year, _month, stairCase);
@@ -131,7 +129,7 @@ namespace Admin.Expenses
                 ws.Cells("D1").Value = ws.Cell(4, 2).Value;
                 ws.Range("D1:D2").Merge();
 
-                var expenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
+                var expenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key);
                 char position = 'E';
                 foreach (var expense in expenses)
                 {
@@ -155,7 +153,7 @@ namespace Admin.Expenses
             }
         }
 
-        public MemoryStream GetStream(XLWorkbook excelWorkbook)
+        public static MemoryStream GetStream(XLWorkbook excelWorkbook)
         {
             MemoryStream fs = new MemoryStream();
             excelWorkbook.SaveAs(fs);
@@ -194,7 +192,7 @@ namespace Admin.Expenses
             HeaderCell.ColumnSpan = 4;
             HeaderGridRow.Cells.Add(HeaderCell);//Adding HeaderCell to header.
 
-            var expenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
+            var expenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(Association.Id, _year, _month).GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key).ToList();
             foreach (var expense in expenses)
             {
                 var HeaderCell2 = new TableCell();

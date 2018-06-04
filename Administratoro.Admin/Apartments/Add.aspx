@@ -35,11 +35,11 @@
             </div>
 
             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                <label class="control-label col-md-3 col-sm-3 col-xs-12">Număr locatari</label>
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Număr persoane</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
                     <input type="number" class="form-control has-feedback-left" id="userDependents" runat="server" autocomplete="off">
                     <span class="fa fa-group form-control-feedback left" aria-hidden="true"></span>
-                    <asp:RequiredFieldValidator ControlToValidate="userDependents" runat="server" ErrorMessage="Numărul locatarilor este obligatoriu" CssClass="requiredField"></asp:RequiredFieldValidator>
+                    <asp:RequiredFieldValidator ControlToValidate="userDependents" runat="server" ErrorMessage="Numărul persoanelor este obligatorie" CssClass="requiredField"></asp:RequiredFieldValidator>
                 </div>
             </div>
 

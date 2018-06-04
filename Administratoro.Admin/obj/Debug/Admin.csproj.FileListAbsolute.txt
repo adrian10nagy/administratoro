@@ -60,10 +60,11 @@ D:\BTT\administratoro\Administratoro.Admin\bin\EntityFramework.xml
 D:\BTT\administratoro\Administratoro.Admin\obj\Debug\Admin.csprojResolveAssemblyReference.cache
 D:\BTT\administratoro\Administratoro.Admin\obj\Debug\Admin.dll
 D:\BTT\administratoro\Administratoro.Admin\obj\Debug\Admin.pdb
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.csprojResolveAssemblyReference.cache
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Admin.dll.config
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Admin.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Admin.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Admin.dll.CodeAnalysisLog.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Admin.dll.lastcodeanalysissucceeded
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Administratoro.BL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Administratoro.DAL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Antlr3.Runtime.dll
@@ -72,6 +73,7 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\ClosedXML.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\DocumentFormat.OpenXml.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\FastMember.Signed.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\itextsharp.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.AspNet.FriendlyUrls.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.AspNet.Web.Optimization.WebForms.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.MSAjax.dll
@@ -86,6 +88,8 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Administratoro.BL.pdb
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Administratoro.DAL.pdb
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\ClosedXML.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\itextsharp.xml
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Antlr3.Runtime.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.csprojResolveAssemblyReference.cache
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.pdb

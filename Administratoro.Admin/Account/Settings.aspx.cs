@@ -15,8 +15,8 @@
             //txtErrorMessage.Attributes.CssStyle.Add("color", "");
             //txtErrorMessage.Attributes.CssStyle.Add("font-weight", "");
 
-            //if (ValidatePassword())
-            //{
+            if (ValidatePassword())
+            {
             //    var user = Session[SessionConstants.LoginUser] as User;
 
             //    if (UsersManager.UpdateUserPassword(user.Id, txtUserPasswordOld.Value, txtUserPasswordNew.Value, user.Library.Id))
@@ -31,7 +31,7 @@
             //    }
 
             //    txtErrorMessage.Attributes.CssStyle.Add("font-weight", "bold");
-            //}
+            }
         }
 
         private bool ValidatePassword()

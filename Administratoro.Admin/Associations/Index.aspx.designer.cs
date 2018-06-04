@@ -211,15 +211,6 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.DropDownList drpAssociationCounterTypeNew;
         
         /// <summary>
-        /// drpAssociationStairs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList drpAssociationStairs;
-        
-        /// <summary>
         /// txtAssociationCounterValueNew control.
         /// </summary>
         /// <remarks>
@@ -227,6 +218,15 @@ namespace Admin.Associations {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAssociationCounterValueNew;
+        
+        /// <summary>
+        /// chbAssociationStairs control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBoxList chbAssociationStairs;
         
         /// <summary>
         /// btnAssociationCountersNew control.

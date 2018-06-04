@@ -26,6 +26,11 @@ namespace Administratoro.BL.Managers
             return GetContext().Invoices.FirstOrDefault(t => t.Id == invoiceId);
         }
 
+        public static IEnumerable<Invoices> GetByAssociationExpenseId(int associationExpenseId)
+        {
+            return GetContext(true).Invoices.Where(t => t.Id_EstateExpense == associationExpenseId);
+        }
+
         public static IEnumerable<Invoices> GetAllByAssotiationYearMonthExpenseId(int associationId, int expenseId, int year, int month)
         {
             return GetContext().Invoices.Where(i => i.AssociationExpenses.Id_Estate == associationId &&
@@ -291,6 +296,12 @@ namespace Administratoro.BL.Managers
         {
             return GetContext().Invoices.Where(i => i.AssociationExpenses.Id_Estate == associationId &&
                             i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year);
+        }
+
+        internal static Invoices GetByAssociationExpense(AssociationExpenses associationExpense)
+        {
+            var ae = AssociationExpensesManager.GetById(associationExpense.Id);
+            return ae.Invoices.FirstOrDefault();
         }
     }
 }

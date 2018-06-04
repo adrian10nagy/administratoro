@@ -132,17 +132,18 @@ namespace Administratoro.BL.Managers
                 return result;
             }
 
-            if (associationExpense.RedistributeType.Value == (int)RedistributionType.PerApartament)
+            switch (associationExpense.RedistributeType.Value)
             {
-                result = RedistributionManager.RedistributeValuePerApartment(associationExpense, apartment);
-            }
-            else if (associationExpense.RedistributeType.Value == (int)RedistributionType.PerApartments)
-            {
-                result = RedistributionManager.RedistributeValuePerApartmentDependents(associationExpense, apartment);
-            }
-            else if (associationExpense.RedistributeType.Value == (int)RedistributionType.PerConsumption)
-            {
-                result = RedistributionManager.RedistributeValuePerConsumption(associationExpense, apartment, apartmentExpenses);
+                case (int)RedistributionType.PerApartament:
+                    result = RedistributionManager.RedistributeValuePerApartment(associationExpense, apartment);
+                    break;
+                case (int)RedistributionType.PerDependents:
+                    result = RedistributionManager.RedistributeValuePerApartmentDependents(associationExpense, apartment);
+                    break;
+                case (int)RedistributionType.PerConsumption:
+                    result = RedistributionManager.RedistributeValuePerConsumption(associationExpense, apartment, apartmentExpenses);
+                    break;
+
             }
 
             return result;
@@ -178,124 +179,95 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        private static decimal GetApartmentConsumprionAsDecimal(IEnumerable<ApartmentExpenses> apartmentExpenses)
-        {
-            decimal apartmentConsumption = 0;
-            foreach (var apartmentExpense in apartmentExpenses)
-            {
-                // redistrib = invoice - allConsum 
-                if (apartmentExpense.IndexNew.HasValue && apartmentExpense.IndexOld.HasValue)
-                {
-                    apartmentConsumption = apartmentConsumption + (apartmentExpense.IndexNew.Value - apartmentExpense.IndexOld.Value);
-                }
-            }
-            return apartmentConsumption;
-        }
-
         private static decimal? RedistributeValuePerApartmentDependents(AssociationExpenses associationExpense, Apartments apartment)
         {
             decimal? result = null;
 
-            if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
-            {
-                var redistributeSum = GetRedistributeValueForIndexExpenseForStairCase(associationExpense, apartment);
-                var allApartmentsDependents = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpense.Id, apartment.Id_StairCase).Sum(t => t.Dependents);
+            //if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
+            //{
+            var redistributeSum = GetRedistributeValueForIndexExpenseForStairCase(associationExpense, apartment);
+            var allApartmentsDependents = ApartmentExpensesManager.GetApartmentsOnSameCounter(associationExpense.Id, apartment.Id_StairCase).Sum(t => t.Dependents);
 
-                if (redistributeSum.HasValue && allApartmentsDependents != 0)
+            if (redistributeSum.HasValue && allApartmentsDependents != 0)
+            {
+                if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
                 {
-                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
-                    {
-                    }
-                    else
-                    {
-                        result = redistributeSum * apartment.Dependents / allApartmentsDependents;
-                    }
+                }
+                else
+                {
+                    result = redistributeSum * apartment.Dependents / allApartmentsDependents;
                 }
             }
-            else
-            {
-                var allApartmentsDependents = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpense.Id).Sum(e => e.Dependents);
+            //}
+            //else
+            //{
+            // var allApartmentsDependentsu = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpense.Id).Sum(e => e.Dependents);
 
-                if (allApartmentsDependents != 0)
-                {
-                    var redistributeVal = CalculateRedistributeValue(associationExpense.Id);
-                    if (redistributeVal != null && redistributeVal.HasValue && allApartmentsDependents != 0)
-                    {
-                        if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
-                        {
-                        }
-                        else
-                        {
-                            result = redistributeVal.Value * apartment.Dependents / allApartmentsDependents;
-                        }
-                    }
-                }
-            }
+            //if (allApartmentsDependents != 0)
+            //{
+            //    var redistributeVal = CalculateRedistributeValue(associationExpense.Id);
+            //    if (redistributeVal != null && redistributeVal.HasValue && allApartmentsDependents != 0)
+            //    {
+            //        if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
+            //        {
+            //        }
+            //        else
+            //        {
+            //            result = redistributeVal.Value * apartment.Dependents / allApartmentsDependents;
+            //        }
+            //    }
+            //}
+            //}
 
             return result;
-        }
-
-        private static decimal GetSumToRedistribute(AssociationExpenses associationExpense, decimal? sumOfInvoices, decimal? sumOfIndices)
-        {
-            decimal sumToRedistribute;
-            if (associationExpense.PricePerExpenseUnit.HasValue && sumOfIndices.HasValue)
-            {
-                sumToRedistribute = sumOfInvoices.Value - (sumOfIndices.Value * associationExpense.PricePerExpenseUnit.Value);
-            }
-            else
-            {
-                sumToRedistribute = sumOfInvoices.Value;
-            }
-
-            return sumToRedistribute;
         }
 
         private static decimal? RedistributeValuePerApartment(AssociationExpenses associationExpense, Apartments apartment)
         {
             decimal? result = null;
             // todo change this to be for index expense or add new if branch
-            if (true)
-            {
-                var redistributeSum = GetRedistributeValueForIndexExpenseForStairCase(associationExpense, apartment);
+            //if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
+            //{
+            var redistributeSum = GetRedistributeValueForIndexExpenseForStairCase(associationExpense, apartment);
 
-                var allApartmentsNr = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpense.Id, apartment.Id_StairCase).Count();
+            var allApartmentsOnSamecounter = ApartmentExpensesManager.GetApartmentsOnSameCounter(associationExpense.Id, apartment.Id_StairCase).Count();
 
-                if (redistributeSum.HasValue && allApartmentsNr != 0)
-                {
-                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
-                    {
-                    }
-                    else
-                    {
-                        result = redistributeSum / allApartmentsNr;
-                    }
-                }
-            }
-            else
+            if (redistributeSum.HasValue && allApartmentsOnSamecounter != 0)
             {
-                var redistributeVal = CalculateRedistributeValue(associationExpense.Id);
-                int allApartmentsNr;
-                if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
+                if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
                 {
-                    IEnumerable<Apartments> apartments = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpense.Id);
-                    allApartmentsNr = apartments.Count();
                 }
                 else
                 {
-                    allApartmentsNr = associationExpense.Associations.Apartments.Count();
-                }
-
-                if (redistributeVal != null && redistributeVal.HasValue && allApartmentsNr != 0)
-                {
-                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
-                    {
-                    }
-                    else
-                    {
-                        result = redistributeVal.Value / allApartmentsNr;
-                    }
+                    result = redistributeSum / allApartmentsOnSamecounter;
                 }
             }
+            //}
+            //else
+            //{
+            //    var redistributeVal = CalculateRedistributeValue(associationExpense.Id);
+            //    int allApartmentsNr;
+            //    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
+            //    {
+            //        IEnumerable<Apartments> apartments = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpense.Id);
+            //        allApartmentsNr = apartments.Count();
+            //    }
+            //    else
+            //    {
+            //        allApartmentsNr = associationExpense.Associations.Apartments.Count();
+            //    }
+
+            //    if (redistributeVal != null && redistributeVal.HasValue && allApartmentsNr != 0)
+            //    {
+            //        if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex && !AssociationExpensesManager.HasCounterOfExpense(apartment.Id, associationExpense.Id_Expense))
+            //        {
+            //        }
+            //        else
+            //        {
+            //            result = redistributeVal.Value / allApartmentsNr;
+            //        }
+            //    }
+            //}
 
             return result;
         }
@@ -303,22 +275,20 @@ namespace Administratoro.BL.Managers
         private static decimal? GetRedistributeValueForIndexExpenseForStairCase(AssociationExpenses associationExpense, Apartments apartment)
         {
             decimal? result = null;
-            var stairCase = apartment.Id_StairCase;
-            decimal? sumOfInvoicesForStairCase = GetSumOfInvoices(associationExpense, stairCase);
-            if(sumOfInvoicesForStairCase.HasValue)
+            decimal? sumOfInvoiceForCounter = GetSumOfInvoiceForStairCaseCounter(associationExpense, apartment.Id_StairCase);
+            if (sumOfInvoiceForCounter.HasValue)
             {
-                var sumOfExpensesForStairCase = ApartmentExpensesManager.GetConsumption(associationExpense, stairCase);
-                if(sumOfExpensesForStairCase.HasValue)
+                var sumOfExpensesForCounter = ApartmentExpensesManager.GetConsumption(associationExpense, apartment.Id_StairCase);
+                if (sumOfExpensesForCounter.HasValue)
                 {
-
-                    result = sumOfInvoicesForStairCase - sumOfExpensesForStairCase;
+                    result = sumOfInvoiceForCounter - sumOfExpensesForCounter;
                 }
             }
 
             return result;
         }
 
-        private static decimal? GetSumOfInvoices(AssociationExpenses associationExpense, int? stairCase)
+        private static decimal? GetSumOfInvoiceForStairCaseCounter(AssociationExpenses associationExpense, int? stairCase)
         {
             decimal? sumOfInvoices = null;
             var invoice = associationExpense.Invoices.FirstOrDefault();
@@ -328,12 +298,12 @@ namespace Administratoro.BL.Managers
                 return sumOfInvoices;
             }
 
-            var invoiceIndexes = InvoiceIndexesManager.Get(invoice.Id, stairCase);
+            var invoiceIndexes = InvoiceIndexesManager.Get(invoice, stairCase);
 
             foreach (var invoiceIndex in invoiceIndexes)
             {
                 if (invoiceIndex != null && invoiceIndex.IndexNew.HasValue && invoiceIndex.IndexOld.HasValue && invoiceIndex.Invoices.Value.HasValue
-                    &&invoice.AssociationExpenses.PricePerExpenseUnit.HasValue)
+                    && invoice.AssociationExpenses.PricePerExpenseUnit.HasValue)
                 {
 
                     if (!sumOfInvoices.HasValue)
@@ -355,6 +325,20 @@ namespace Administratoro.BL.Managers
 
             return result.HasValue ? result.Value.ToString() : string.Empty;
         }
-    }
-}
 
+        private static decimal GetApartmentConsumprionAsDecimal(IEnumerable<ApartmentExpenses> apartmentExpenses)
+        {
+            decimal apartmentConsumption = 0;
+            foreach (var apartmentExpense in apartmentExpenses)
+            {
+                // redistrib = invoice - allConsum 
+                if (apartmentExpense.IndexNew.HasValue && apartmentExpense.IndexOld.HasValue)
+                {
+                    apartmentConsumption = apartmentConsumption + (apartmentExpense.IndexNew.Value - apartmentExpense.IndexOld.Value);
+                }
+            }
+            return apartmentConsumption;
+        }
+    }
+
+}

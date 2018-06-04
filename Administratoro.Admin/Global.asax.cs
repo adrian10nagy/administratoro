@@ -12,6 +12,7 @@ namespace Admin
 
     public class Global : HttpApplication
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         void Application_Start(object sender, EventArgs e)
         {
             // Code that runs on application startup

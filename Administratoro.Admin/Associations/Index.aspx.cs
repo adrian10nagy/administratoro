@@ -13,11 +13,21 @@ namespace Admin.Associations
     using Administratoro.BL.Extensions;
     using System.Data;
     using System.Data.SqlClient;
+    using Administratoro.BL.Models;
 
     public partial class Index : BasePage
     {
         protected void Page_Init(object sender, EventArgs e)
         {
+            if(!Page.IsPostBack)
+            {
+                InitializeCounters();
+            }
+            else
+            {
+                gvCounters.DataBind();
+            }
+
             var assoc = Association;
             txtAssociationName.Text = assoc.Name;
             txtAssociationAddress.Text = assoc.Address;
@@ -31,14 +41,30 @@ namespace Admin.Associations
                 btnAssociationEqualIndiviza.Visible = true;
                 txtAssociationCotaIndivizaApartments.Visible = true;
             }
-            InitializeCounters();
+
             InitializeStairs();
         }
 
         private void InitializeCounters()
         {
-            gvCounters.DataSource = Association.AssociationCounters.OrderBy(ac => ac.Id_Expense);
+            var associationCounters = Association.AssociationCounters.OrderBy(ac => ac.Id_Expense);
+            var formatedAssCounters = PrepareToBind(associationCounters);
+            gvCounters.DataSource = formatedAssCounters;
+
             gvCounters.DataBind();
+        }
+
+        private static object PrepareToBind(IOrderedEnumerable<AssociationCounters> associationCounters)
+        {
+            var result = new List<FormatedAssociationCounter>();
+
+            foreach (var associationCounter in associationCounters)
+            {
+                var formatedAssociationCounter = new FormatedAssociationCounter(associationCounter);
+                result.Add(formatedAssociationCounter);
+            }
+
+            return result;
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -91,7 +117,30 @@ namespace Admin.Associations
 
         protected void btnAssociationCountersNew_Click(object sender, EventArgs e)
         {
-            if (!newCounter.Visible)
+            if (newCounter.Visible)
+            {
+                if (!string.IsNullOrEmpty(txtAssociationCounterValueNew.Text))
+                {
+                    List<AssociationCountersStairCase> associationCounterStariCases = GetStairCases(chbAssociationStairs);
+                    AssociationCounters associationCounters = new AssociationCounters
+                    {
+                        Id_Estate = Association.Id,
+                        Value = txtAssociationCounterValueNew.Text,
+                        Id_Expense = drpAssociationCounterTypeNew.SelectedValue.ToNullableInt().Value,
+                        AssociationCountersStairCase = associationCounterStariCases
+                    };
+
+                    CountersManager.Add(associationCounters);
+                    var newAssociation = AssociationsManager.GetById(Association.Id);
+                    Session[SessionConstants.SelectedAssociation] = newAssociation;
+                    Response.Redirect(Request.RawUrl);
+                }
+                else
+                {
+                    txtAssociationCounterValueNew.Attributes.Add("style", "border-color:red");
+                }
+            }
+            else
             {
                 newCounter.Visible = true;
 
@@ -112,12 +161,12 @@ namespace Admin.Associations
                     Value = "",
                     Text = "Contor pe bloc"
                 };
-                drpAssociationStairs.Items.Add(defaultExpense);
+                chbAssociationStairs.Items.Add(defaultExpense);
                 if (Association.HasStaircase)
                 {
                     foreach (var stairCase in Association.StairCases)
                     {
-                        drpAssociationStairs.Items.Add(new ListItem
+                        chbAssociationStairs.Items.Add(new ListItem
                         {
                             Text = stairCase.Nume,
                             Value = stairCase.Id.ToString()
@@ -125,28 +174,27 @@ namespace Admin.Associations
                     }
                 }
             }
-            else
+        }
+
+        private static List<AssociationCountersStairCase> GetStairCases(CheckBoxList chbAssociationStairs)
+        {
+
+            var result = new List<AssociationCountersStairCase>();
+
+            foreach (ListItem item in chbAssociationStairs.Items)
             {
-                if (!string.IsNullOrEmpty(txtAssociationCounterValueNew.Text))
+                if (item.Selected)
                 {
-                    AssociationCounters associationCounters = new AssociationCounters
+                    var newCounte = new AssociationCountersStairCase
                     {
-                        Id_Estate = Association.Id,
-                        Value = txtAssociationCounterValueNew.Text,
-                        Id_Expense = drpAssociationCounterTypeNew.SelectedValue.ToNullableInt().Value,
-                        Id_StairCase = drpAssociationStairs.SelectedValue.ToNullableInt(),
+                        Id_StairCase = item.Value.ToNullableInt()
                     };
 
-                    CountersManager.Addcounter(associationCounters);
-                    var newAssociation = AssociationsManager.GetById(Association.Id);
-                    Session[SessionConstants.SelectedAssociation] = newAssociation;
-                    Response.Redirect(Request.RawUrl);
-                }
-                else
-                {
-                    txtAssociationCounterValueNew.Attributes.Add("style", "border-color:red");
+                    result.Add(newCounte);
                 }
             }
+
+            return result;
         }
 
         protected void gvStaircases_RowEditing(object sender, GridViewEditEventArgs e)
@@ -159,7 +207,6 @@ namespace Admin.Associations
         protected void gvStaircases_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             var row = gvStaircases.Rows[e.RowIndex];
-            var stair = new StairCases();
             if (row.Cells.Count > 4 &&
                 row.Cells[2].Controls.Count > 0 && row.Cells[2].Controls[0] is TextBox &&
                 row.Cells[4].Controls.Count > 0 && row.Cells[4].Controls[0] is TextBox)
@@ -243,34 +290,46 @@ namespace Admin.Associations
                 ddlCounters.DataValueField = "Id";
                 ddlCounters.DataBind();
 
-                //Select the Expense in DropDownList
+                //Select the Expense in CheckBoxList
                 string expense = (e.Row.FindControl("lblExpense") as Label).Text;
                 ddlCounters.Items.FindByValue(expense).Selected = true;
 
-                DropDownList ddlStairCase = (e.Row.FindControl("ddlStairCase") as DropDownList);
-                ddlStairCase.Items.Add(new ListItem
+                CheckBoxList chbStairCase = (e.Row.FindControl("chbStairCase") as CheckBoxList);
+                chbStairCase.Items.Add(new ListItem
                 {
                     Value = "",
                     Text = "Contor pe bloc"
                 });
                 foreach (var stairCase in Association.StairCases)
                 {
-                    ddlStairCase.Items.Add(new ListItem
+                    chbStairCase.Items.Add(new ListItem
                     {
                         Value = stairCase.Id.ToString(),
                         Text = stairCase.Nume
                     });
                 }
-                ddlStairCase.DataBind();
+                chbStairCase.DataBind();
 
-                //string stairCase = (e.Row.FindControl("lblStairCaseId") as Label).Text;
-                //stairCase = "adian e om fain2";
 
                 //Select the Expense in DropDownList
-                string stair = (e.Row.FindControl("lblStairCaseId") as Label).Text;
-                if (ddlStairCase.Items.FindByValue(stair) != null)
+                string stairs = (e.Row.FindControl("lblStairCaseId") as Label).Text;
+
+                foreach (var stair in stairs.Split(','))
                 {
-                    ddlStairCase.Items.FindByValue(stair).Selected = true;
+                    if (stair == string.Empty)
+                    {
+                        continue;
+                    }
+
+                    if (stair == "-1")
+                    {
+                        chbStairCase.Items.FindByValue(string.Empty).Selected = true;
+                    }
+
+                    if (chbStairCase.Items.FindByValue(stair) != null)
+                    {
+                        chbStairCase.Items.FindByValue(stair).Selected = true;
+                    }
                 }
             }
         }
@@ -285,10 +344,12 @@ namespace Admin.Associations
         protected void gvCounters_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             var row = gvCounters.Rows[e.RowIndex];
-            if (row.Cells.Count > 4 && row.Cells[2].Controls[0] is TextBox)
+            if (row.Cells.Count > 4 && row.Cells[2].Controls[0] is TextBox &&
+                row.Cells[4].Controls[3] is CheckBoxList)
             {
                 var counterValue = (TextBox)row.Cells[2].Controls[0];
-                var counterIdValue = row.Cells[5];
+                var stairCases = (CheckBoxList)row.Cells[4].Controls[3];
+                var counterIdValue = row.Cells[6];
 
                 int counterId;
                 if (string.IsNullOrEmpty(counterValue.Text) || !int.TryParse(counterIdValue.Text, out counterId))
@@ -298,13 +359,16 @@ namespace Admin.Associations
                 else
                 {
                     AssociationCounters associationCounters = CountersManager.GetById(counterId);
-                    if (associationCounters != null && counterValue.Text != associationCounters.Value)
+                    List<AssociationCountersStairCase> associationCounterStariCases = GetStairCases(stairCases);
+                    if (associationCounters != null)
                     {
                         var newCounter = new AssociationCounters
                         {
-                            Value = counterValue.Text
+                            Value = counterValue.Text,
+                            AssociationCountersStairCase = associationCounterStariCases,
+                            Id = counterId
                         };
-                        CountersManager.Update(newCounter, counterId);
+                        CountersManager.Update(newCounter);
                     }
 
                     gvStaircases.EditIndex = -1;

@@ -11,7 +11,7 @@ namespace Administratoro.BL.Managers
     {
         public static void RecalculateMonthlyExpenses(int associationId, int year, int month)
         {
-            var associationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(associationId, year, month);
+            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(associationId, year, month);
 
             foreach (var associationExpense in associationExpenses)
             {
@@ -21,7 +21,7 @@ namespace Administratoro.BL.Managers
 
         private static void RelalculateExpense(AssociationExpenses item)
         {
-            if (item.Id_ExpenseType == (int)ExpenseType.PerApartments || item.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+            if (item.Id_ExpenseType == (int)ExpenseType.PerNrTenants || item.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
             {
                 if(item.Invoices.Count == 1)
                 {

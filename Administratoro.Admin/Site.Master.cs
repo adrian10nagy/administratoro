@@ -43,7 +43,7 @@ namespace Admin
                 associations = AssociationsManager.GetAllAssociationsByPartner(partner.Id);
                 if (associations != null && associations.Count > 0)
                 {
-                    association = associations.First();
+                    association = associations.FirstOrDefault();
                     Session[SessionConstants.SelectedAssociation] = association;
                     Session[SessionConstants.AllAssociations] = associations;
                 }

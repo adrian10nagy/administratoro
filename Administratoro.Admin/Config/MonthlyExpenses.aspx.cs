@@ -2,14 +2,13 @@
 namespace Admin.Config
 {
     using Administratoro.BL.Constants;
+    using Administratoro.BL.Extensions;
     using Administratoro.BL.Managers;
     using Administratoro.DAL;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Threading.Tasks;
-    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
@@ -74,7 +73,7 @@ namespace Admin.Config
                 var estate = (Associations)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var ee = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, _year, month);
+                    var ee = AssociationExpensesManager.GetByMonthAndYearNotDisabled(estate.Id, _year, month);
                     var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, month);
 
                     IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses();
@@ -122,12 +121,20 @@ namespace Admin.Config
                                 Selected = selected2
                             });
 
-                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerApartments);
+                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerNrTenants);
                             dp.Items.Add(new ListItem
                             {
                                 Value = "3",
-                                Text = "Per număr locatari imobil",
+                                Text = "Per număr persoane imobil",
                                 Selected = selected3
+                            });
+
+                            var selected4 = isDplExpenseTypesSelected(esex, ExpenseType.PerApartament);
+                            dp.Items.Add(new ListItem
+                            {
+                                Value = ((int)ExpenseType.PerApartament).ToString(),
+                                Text = ExpenseType.PerApartament.ToDescription(),
+                                Selected = selected4
                             });
                         }
                         else
@@ -161,7 +168,7 @@ namespace Admin.Config
             }
         }
 
-        private bool isStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
+        private static bool isStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
 
             bool result = false;
@@ -249,7 +256,7 @@ namespace Admin.Config
                 var estate = (Associations)Session[SessionConstants.SelectedAssociation];
                 if (estate != null)
                 {
-                    var existingAssociationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(estate.Id, _year, _month);
+                    var existingAssociationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(estate.Id, _year, _month);
                     var existingAssociationExpensesIncludingDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, _month);
 
                     foreach (TableRow row in tblMonthlyExpenses.Rows)
@@ -329,6 +336,11 @@ namespace Admin.Config
                         }
                     }
                 }
+            }
+
+            if (year() != null && month() != null && step33.Visible)
+            {
+                Response.Redirect("~/Expenses/Invoices.aspx?year=" + year() + "&month=" + month());
             }
         }
 

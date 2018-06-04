@@ -1,5 +1,6 @@
 ﻿using Administratoro.BL.Constants;
 using Administratoro.BL.Managers;
+using Administratoro.BL.Extensions;
 using Administratoro.DAL;
 using System;
 using System.Collections.Generic;
@@ -123,7 +124,7 @@ namespace Admin.Invoices
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/");
+            Response.Redirect("~/Expenses/Invoices.aspx?year=" + _year.Value + "&month=" + _month.Value);
         }
 
         #region save
@@ -256,7 +257,7 @@ namespace Admin.Invoices
                                 var ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
                                 if (ee == null)
                                 {
-                                    AssociationExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerApartments).ToString(), false);
+                                    AssociationExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerNrTenants).ToString(), false);
                                     ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
                                 }
 
@@ -301,15 +302,95 @@ namespace Admin.Invoices
                 //error
             }
 
+            var addedInvoiceSubcategories = new List<InvoiceSubcategories>();
             if (associationExpense != null && isIndexExpense && theInvoideValue.HasValue)
             {
                 decimal? addedIndices = SaveAndGetInvoicesIndices();
-                if(addedIndices.HasValue)
+                if (pnInvoiceSubcategories.Visible)
                 {
-                    decimal pricePerUnit = theInvoideValue.Value / addedIndices.Value;
-                    AssociationExpensesManager.UpdatePricePerUnit(associationExpense.Id, pricePerUnit);
+                    addedInvoiceSubcategories = SaveAndGetSubcategories();
+                }
+
+                AssociationExpensesManager.UpdatePricePerUnit(associationExpense.Id, addedInvoiceSubcategories);
+
+                //decimal pricePerUnit = theInvoideValue.Value / addedIndices.Value;
+                //AssociationExpensesManager.UpdatePricePerUnit(associationExpense.Id, pricePerUnit);
+            }
+        }
+
+        private List<InvoiceSubcategories> SaveAndGetSubcategories()
+        {
+            List<InvoiceSubcategories> addedInvoiceSubcategories = new List<InvoiceSubcategories>();
+
+            foreach (var control in pnInvoiceSubcategories.Controls)
+            {
+                if (control is Panel)
+                {
+                    var thePanelControl = control as Panel;
+                    if (thePanelControl != null && thePanelControl.Controls.Count == 7)
+                    {
+                        Panel theNameControl = thePanelControl.Controls[0] as Panel;
+                        Panel theQuantityControl = thePanelControl.Controls[1] as Panel;
+                        Panel thePriceControl = thePanelControl.Controls[2] as Panel;
+                        Panel theVATControl = thePanelControl.Controls[3] as Panel;
+                        Panel theServicesControl = thePanelControl.Controls[4] as Panel;
+                        Panel thePenaltiesControl = thePanelControl.Controls[5] as Panel;
+                        Panel theValueControl = thePanelControl.Controls[6] as Panel;
+
+                        if (theNameControl != null && theNameControl.Controls.Count == 1 && theNameControl.Controls[0] is Label &&
+                            (theQuantityControl != null && theQuantityControl.Controls.Count == 1 && theQuantityControl.Controls[0] is TextBox) &&
+                            (thePriceControl != null && thePriceControl.Controls.Count == 1 && thePriceControl.Controls[0] is TextBox) &&
+                            (theVATControl != null && theVATControl.Controls.Count == 1 && theVATControl.Controls[0] is TextBox) &&
+                            (theServicesControl != null && theServicesControl.Controls.Count == 1 && theServicesControl.Controls[0] is TextBox) &&
+                            (thePenaltiesControl != null && thePenaltiesControl.Controls.Count == 1 && thePenaltiesControl.Controls[0] is TextBox) &&
+                            (theValueControl != null && theValueControl.Controls.Count == 1 && theValueControl.Controls[0] is TextBox))
+                        {
+                            Label theName = theNameControl.Controls[0] as Label;
+                            TextBox theQuantity = theQuantityControl.Controls[0] as TextBox;
+                            TextBox thePrice = thePriceControl.Controls[0] as TextBox;
+                            TextBox theVAT = theVATControl.Controls[0] as TextBox;
+                            TextBox theServices = theServicesControl.Controls[0] as TextBox;
+                            TextBox thePenalties = thePenaltiesControl.Controls[0] as TextBox;
+                            TextBox theValue = theValueControl.Controls[0] as TextBox;
+
+                            int theSubcategoryId;
+                            int theInvoiceId;
+
+                            decimal? theQuantityToUpdate = DecimalExtensions.GetNullableDecimal(theQuantity.Text);
+                            decimal? thePriceToUpdate = DecimalExtensions.GetNullableDecimal(thePrice.Text);
+                            decimal? theVATToUpdate = DecimalExtensions.GetNullableDecimal(theVAT.Text);
+                            decimal? theServicesToUpdate = DecimalExtensions.GetNullableDecimal(theServices.Text);
+                            decimal? thePenaltiesToUpdate = DecimalExtensions.GetNullableDecimal(thePenalties.Text);
+                            decimal? theValueToUpdate = DecimalExtensions.GetNullableDecimal(theValue.Text);
+
+                            var nameSubStringIndex = theName.ID.IndexOf("tbInvoice") + 9;
+
+                            if (int.TryParse(theValue.ID.Replace("tbinvoiceSubcategory", string.Empty), out theSubcategoryId) &&
+                                int.TryParse(theName.ID.Substring(nameSubStringIndex), out theInvoiceId))
+                            {
+
+                                var invoiceSubcategory = new InvoiceSubcategories
+                                {
+                                    Value = theValueToUpdate,
+                                    Id_subCategType = theSubcategoryId,
+                                    Id_Invoice = theInvoiceId,
+                                    quantity = theQuantityToUpdate,
+                                    PricePerUnit = thePriceToUpdate,
+                                    VAT = theVATToUpdate,
+                                    service = theServicesToUpdate,
+                                    penalties = thePenaltiesToUpdate,
+                                };
+
+                                InvoicesSubcategoriesManager.Update(invoiceSubcategory);
+                                addedInvoiceSubcategories.Add(invoiceSubcategory);
+                            }
+                        }
+                    }
                 }
             }
+
+
+            return addedInvoiceSubcategories;
         }
 
         private decimal? SaveAndGetInvoicesIndices()
@@ -378,10 +459,6 @@ namespace Admin.Invoices
                                     InvoiceIndexesManager.Update(indexInvoiceId.Value, invoice.Id, indexOld, indexNew);
                                 }
                             }
-                            else
-                            {
-                                //todo error
-                            }
                         }
                     }
                 }
@@ -399,6 +476,7 @@ namespace Admin.Invoices
             InitializeYearMonth();
             InitializeExpenses();
             pnInvoiceValues.Controls.Clear();
+            pnInvoiceSubcategories.Controls.Clear();
             InitializeValueField();
         }
 
@@ -406,12 +484,14 @@ namespace Admin.Invoices
         {
             InitializeExpenses();
             pnInvoiceValues.Controls.Clear();
+            pnInvoiceSubcategories.Controls.Clear();
             InitializeValueField();
         }
 
         protected void drpInvoiceExpenses_SelectedIndexChanged(object sender, EventArgs e)
         {
             pnInvoiceValues.Controls.Clear();
+            pnInvoiceSubcategories.Controls.Clear();
             pnlInvoiceDiverseValues.Controls.Clear();
             InitializeValueField();
         }
@@ -435,14 +515,14 @@ namespace Admin.Invoices
 
                     if (associationExpense == null && expenseId == (int)Expense.Diverse)
                     {
-                        AssociationExpensesManager.Add(Association.Id, expenseId, month, year, ((int)ExpenseType.PerApartments).ToString(), false);
+                        AssociationExpensesManager.Add(Association.Id, expenseId, month, year, ((int)ExpenseType.PerNrTenants).ToString(), false);
                         associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
                     }
 
                     if (expenseId == (int)Expense.Diverse)
                     {
                         pnlInvoiceBody.Visible = false;
-                        InitializeValueFieldAddExtraControlsForDiverse(year, month, Association.Id, associationExpense);
+                        InitializeValueFieldAddExtraControlsForDiverse(associationExpense);
                     }
                     else
                     {
@@ -453,7 +533,7 @@ namespace Admin.Invoices
             }
         }
 
-        private void InitializeValueFieldAddExtraControlsForDiverse(int year, int month, int associationId, AssociationExpenses associationExpense)
+        private void InitializeValueFieldAddExtraControlsForDiverse(AssociationExpenses associationExpense)
         {
             InitializeValueFieldAddColumnHeadersForDiverse();
 
@@ -461,10 +541,10 @@ namespace Admin.Invoices
             {
                 var invoices = InvoicesManager.GetDiverseByAssociationAssociationExpense(associationExpense.Id);
 
-                DiverseInitializeValueFieldAddInvoices(invoices, false);
+                DiverseInitializeValueFieldAddInvoices(invoices);
             }
 
-            DiverseInitializeValueFieldAddInvoices(new List<Administratoro.DAL.Invoices> { new Administratoro.DAL.Invoices() }, true);
+            DiverseInitializeValueFieldAddInvoices(new List<Administratoro.DAL.Invoices> { new Administratoro.DAL.Invoices() });
         }
 
         private void InitializeValueFieldAddInvoicesForIndexExpenses(List<Administratoro.DAL.InvoiceIndexes> invoicesIndexes, List<Administratoro.DAL.AssociationCounters> counters)
@@ -511,7 +591,6 @@ namespace Admin.Invoices
                 panel3.Controls.Add(drpCunters);
                 panelMain.Controls.Add(panel3);
 
-
                 /* panel 7 */
                 Panel panel7 = new Panel
                 {
@@ -547,6 +626,7 @@ namespace Admin.Invoices
 
         private void InitializeValueFieldAddcontrols(int year, int month, int associationId, int expenseId, AssociationExpenses associationExpense, bool isPostbackFromLoadEvent)
         {
+            pnInvoiceSubcategories.Visible = false;
             bool isIndexExpense = associationExpense != null && associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
             var invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
 
@@ -565,6 +645,8 @@ namespace Admin.Invoices
 
             if (isIndexExpense)
             {
+                invoices = ConfigureSubcategories(invoices).ToList();
+
                 InitializeValueFieldAddColumnHeadersForIndexExpenses();
                 List<AssociationCounters> counters = CountersManager.GetAllByExpenseType(Association.Id, expenseId).ToList();
                 if (invoicesIndexes.Count < counters.Count)
@@ -574,6 +656,225 @@ namespace Admin.Invoices
                 }
 
                 InitializeValueFieldAddInvoicesForIndexExpenses(invoicesIndexes, counters);
+                if (expenseId == (int)Expense.ApaRece || expenseId == (int)Expense.ApaCalda)
+                {
+                    pnInvoiceSubcategories.Visible = true;
+                    InitializeSubInvoices(invoices);
+                }
+            }
+        }
+
+        private static IEnumerable<Administratoro.DAL.Invoices> ConfigureSubcategories(IEnumerable<Administratoro.DAL.Invoices> invoices)
+        {
+            var result = invoices;
+
+            if (invoices.Any())
+            {
+                foreach (var invoice in invoices)
+                {
+                    if (invoice.InvoiceSubcategories.Count() == 0)
+                    {
+                        InvoicesSubcategoriesManager.AddDefault(invoice.Id);
+                    }
+                }
+
+                result = InvoicesManager.GetByAssociationExpenseId(invoices.FirstOrDefault().Id_EstateExpense.Value);
+            }
+
+            return result;
+        }
+
+        private void InitializeSubInvoices(List<Administratoro.DAL.Invoices> invoices)
+        {
+            Panel panelMain = new Panel
+            {
+                CssClass = "col-md-12 col-xs-12 invoicesRow"
+            };
+
+            Panel panel1 = new Panel
+            {
+                CssClass = "col-md-2"
+            };
+            Label lb1 = new Label
+            {
+                Text = "Denumire"
+            };
+            panel1.Controls.Add(lb1);
+            panelMain.Controls.Add(panel1);
+
+            Panel panel2 = new Panel
+            {
+                CssClass = "col-md-1"
+            };
+            Label lb2 = new Label
+            {
+                Text = "Cantitate"
+            };
+            panel2.Controls.Add(lb2);
+            panelMain.Controls.Add(panel2);
+
+            Panel panel3 = new Panel
+            {
+                CssClass = "col-md-1"
+            };
+            Label lb3 = new Label
+            {
+                Text = "Preț mp"
+            };
+            panel3.Controls.Add(lb3);
+            panelMain.Controls.Add(panel3);
+
+            Panel panel4 = new Panel
+            {
+                CssClass = "col-md-2"
+            };
+            Label lb4 = new Label
+            {
+                Text = "TVA"
+            };
+            panel4.Controls.Add(lb4);
+            panelMain.Controls.Add(panel4);
+
+            Panel panel5 = new Panel
+            {
+                CssClass = "col-md-2"
+            };
+            Label lb5 = new Label
+            {
+                Text = "Servicii"
+            };
+            panel5.Controls.Add(lb5);
+            panelMain.Controls.Add(panel5);
+
+
+            Panel panel6 = new Panel
+            {
+                CssClass = "col-md-2"
+            };
+            Label lb6 = new Label
+            {
+                Text = "Penalizari"
+            };
+            panel6.Controls.Add(lb6);
+            panelMain.Controls.Add(panel6);
+
+            Panel panel7 = new Panel
+            {
+                CssClass = "col-md-2"
+            };
+            Label lb7 = new Label
+            {
+                Text = "Valoare"
+            };
+            panel7.Controls.Add(lb7);
+            panelMain.Controls.Add(panel7);
+
+            pnInvoiceSubcategories.Controls.Add(panelMain);
+
+            foreach (var invoice in invoices)
+            {
+                // print the subgategories
+                foreach (var invoiceSubcategory in invoice.InvoiceSubcategories)
+                {
+                    Panel innerPanelMain = new Panel
+                    {
+                        CssClass = "col-md-12 col-xs-12 invoicesRow"
+                    };
+
+                    Panel textPanel = new Panel
+                    {
+                        CssClass = "col-md-2"
+                    };
+                    Label lb01 = new Label
+                    {
+                        Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.InvoiceSubcategoryTypes.Value.ToString() : string.Empty,
+                        ID = invoiceSubcategory.Id + "tbInvoice" + invoice.Id
+                    };
+                    textPanel.Controls.Add(lb01);
+                    innerPanelMain.Controls.Add(textPanel);
+
+                    Panel quantityPanel = new Panel
+                    {
+                        CssClass = "col-md-1"
+                    };
+
+                    TextBox tbquantity = new TextBox
+                    {
+                        Text = invoiceSubcategory.quantity.HasValue ? invoiceSubcategory.quantity.Value.ToString() : string.Empty,
+                        CssClass = "form-control"
+                    };
+                    quantityPanel.Controls.Add(tbquantity);
+                    innerPanelMain.Controls.Add(quantityPanel);
+
+                    Panel pricePanel = new Panel
+                    {
+                        CssClass = "col-md-1"
+                    };
+
+                    TextBox tbPrice = new TextBox
+                    {
+                        Text = invoiceSubcategory.PricePerUnit.HasValue ? invoiceSubcategory.PricePerUnit.Value.ToString() : string.Empty,
+                        CssClass = "form-control"
+                    };
+                    pricePanel.Controls.Add(tbPrice);
+                    innerPanelMain.Controls.Add(pricePanel);
+
+                    Panel vatPanel = new Panel
+                    {
+                        CssClass = "col-md-2"
+                    };
+
+                    TextBox tbVat = new TextBox
+                    {
+                        Text = invoiceSubcategory.VAT.HasValue ? invoiceSubcategory.VAT.ToString() : string.Empty,
+                        CssClass = "form-control",
+                    };
+                    vatPanel.Controls.Add(tbVat);
+                    innerPanelMain.Controls.Add(vatPanel);
+
+                    Panel servicePanel = new Panel
+                    {
+                        CssClass = "col-md-2"
+                    };
+
+                    TextBox tbService = new TextBox
+                    {
+                        Text = invoiceSubcategory.service.HasValue ? invoiceSubcategory.service.ToString() : string.Empty,
+                        CssClass = "form-control"
+                    };
+                    servicePanel.Controls.Add(tbService);
+                    innerPanelMain.Controls.Add(servicePanel);
+
+                    Panel penaltiesPanel = new Panel
+                    {
+                        CssClass = "col-md-2"
+                    };
+
+                    TextBox tbPenalties = new TextBox
+                    {
+                        Text = invoiceSubcategory.penalties.HasValue ? invoiceSubcategory.penalties.ToString() : string.Empty,
+                        CssClass = "form-control"
+                    };
+                    penaltiesPanel.Controls.Add(tbPenalties);
+                    innerPanelMain.Controls.Add(penaltiesPanel);
+
+                    Panel valuePanel = new Panel
+                    {
+                        CssClass = "col-md-2"
+                    };
+
+                    TextBox tb = new TextBox
+                    {
+                        Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.Value.ToString() : string.Empty,
+                        CssClass = "form-control",
+                        ID = "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType
+                    };
+                    valuePanel.Controls.Add(tb);
+                    innerPanelMain.Controls.Add(valuePanel);
+
+
+                    pnInvoiceSubcategories.Controls.Add(innerPanelMain);
+                }
             }
         }
 
@@ -593,20 +894,6 @@ namespace Admin.Invoices
 
         #region initialize headers
 
-        private void InitializeValueFieldAddColumnHeaders()
-        {
-            Panel panel3 = new Panel
-            {
-                CssClass = "col-md-3"
-            };
-            Label lb3 = new Label
-            {
-                Text = "Împărțire"
-            };
-            panel3.Controls.Add(lb3);
-            pnInvoiceValues.Controls.Add(panel3);
-        }
-
         private void InitializeValueFieldAddColumnHeadersForIndexExpenses()
         {
             Panel panel1 = new Panel
@@ -615,7 +902,7 @@ namespace Admin.Invoices
             };
             Label lb1 = new Label
             {
-                Text = "Contor"
+                Text = "Contoare"
             };
             panel1.Controls.Add(lb1);
             pnInvoiceValues.Controls.Add(panel1);
@@ -716,7 +1003,7 @@ namespace Admin.Invoices
 
         #region diverse
 
-        private void DiverseInitializeValueFieldAddInvoices(IEnumerable<Administratoro.DAL.Invoices> invoices, bool isNewRow)
+        private void DiverseInitializeValueFieldAddInvoices(IEnumerable<Administratoro.DAL.Invoices> invoices)
         {
             foreach (var invoice in invoices)
             {

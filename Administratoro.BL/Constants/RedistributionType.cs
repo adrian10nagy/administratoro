@@ -10,7 +10,7 @@ namespace Administratoro.BL.Constants
     {
         Unknown = 0,
         PerApartament = 1,
-        PerApartments = 2,
+        PerDependents = 2,
         PerConsumption = 3,
         PerCotaIndiviza = 4
     }

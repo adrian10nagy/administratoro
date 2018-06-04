@@ -3,9 +3,7 @@ namespace Administratoro.BL.Managers
 {
     using Administratoro.DAL;
     using System.Collections.Generic;
-    using System.Data.Entity;
     using System.Linq;
-    using System.Threading.Tasks;
 
     public static class AssociationsManager
     {
@@ -74,14 +72,12 @@ namespace Administratoro.BL.Managers
         public static void UpdateStairs(Associations es, bool hasStairs)
         {
             Associations associations = new Associations();
-            associations = GetContext().Associations.First(b => b.Id == es.Id);
+            associations = GetContext().Associations.FirstOrDefault(b => b.Id == es.Id);
 
             if (associations != null)
             {
                 associations.HasStaircase = hasStairs;
-                GetContext().Entry(associations).CurrentValues.SetValues(associations);
-
-                GetContext().SaveChanges();
+                PerformUpdate(associations);
             }
         }
 
@@ -93,7 +89,7 @@ namespace Administratoro.BL.Managers
             }
 
             var associations = new Associations();
-            associations = GetContext().Associations.First(b => b.Id == association.Id);
+            associations = GetContext().Associations.FirstOrDefault(b => b.Id == association.Id);
 
             if (associations != null)
             {
@@ -104,23 +100,26 @@ namespace Administratoro.BL.Managers
                 associations.HasStaircase = association.HasStaircase;
                 associations.Name = association.Name;
 
-                GetContext().Entry(associations).CurrentValues.SetValues(associations);
-
-                GetContext().SaveChanges();
+                PerformUpdate(associations);
             }
+        }
+
+        private static void PerformUpdate(Associations associations)
+        {
+            GetContext().Entry(associations).CurrentValues.SetValues(associations);
+
+            GetContext().SaveChanges();
         }
 
         public static void UpdateRoundUpColumn(Associations association, bool hasRoundCoulmn)
         {
-            Associations associations = new Associations();
-            associations = GetContext().Associations.First(b => b.Id == association.Id);
+            Associations existingAssociation = new Associations();
+            existingAssociation = GetContext().Associations.FirstOrDefault(b => b.Id == association.Id);
 
-            if (associations != null)
+            if (existingAssociation != null)
             {
-                associations.HasRoundUpColumn = hasRoundCoulmn;
-                GetContext().Entry(associations).CurrentValues.SetValues(associations);
-
-                GetContext().SaveChanges();
+                existingAssociation.HasRoundUpColumn = hasRoundCoulmn;
+                PerformUpdate(existingAssociation);
             }
         }
     }

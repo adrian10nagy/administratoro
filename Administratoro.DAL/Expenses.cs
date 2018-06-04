@@ -18,6 +18,7 @@ namespace Administratoro.DAL
         {
             this.AssociationCounters = new HashSet<AssociationCounters>();
             this.AssociationExpenses = new HashSet<AssociationExpenses>();
+            this.InvoiceSubcategoryTypes = new HashSet<InvoiceSubcategoryTypes>();
         }
     
         public int Id { get; set; }
@@ -28,5 +29,6 @@ namespace Administratoro.DAL
         public virtual ICollection<AssociationCounters> AssociationCounters { get; set; }
         public virtual ICollection<AssociationExpenses> AssociationExpenses { get; set; }
         public virtual ExpenseTypes ExpenseTypes { get; set; }
+        public virtual ICollection<InvoiceSubcategoryTypes> InvoiceSubcategoryTypes { get; set; }
     }
 }

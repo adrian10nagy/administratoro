@@ -13,6 +13,6 @@ namespace Administratoro.BL.Constants
         public const int InvoicePrecision = 4;
 
         // also the precision of the column IndexOld and IndexNew of the TenantsExpense table
-        public const int IndexPrecision = 1;
+        public const int IndexPrecision = 4;
     }
 }

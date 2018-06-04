@@ -53,6 +53,7 @@
                                     <li runat="server" id="mainMenuExpenses"><a><i class="fa fa-bar-chart"></i>Raportare  <span class="label label-success pull-right">În curând</span></a>
                                         <ul class="nav child_menu">
                                             <li><a href="~/Reports/Index.aspx" runat="server" id="mainMenuExpensesCurrentMonth">Liste de cheltuieli</a></li>
+                                            <li><a href="~/Reports/Flyers.aspx" runat="server">Fluturași de cheltuieli</a></li>
                                         </ul>
                                     </li>
                                      <%-- <li runat="server" id="mainMenuRaports"><a><i class="fa fa-bar-chart"></i>Rapoartare <span class="label label-success pull-right">În curând</span></a>

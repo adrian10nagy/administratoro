@@ -13,16 +13,17 @@
             <asp:DropDownList runat="server" ID="drpInvoiceExpenses" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="drpInvoiceExpenses_SelectedIndexChanged"></asp:DropDownList>
         </div>
         <div class="form-group" runat="server" id="pnlInvoiceBody">
-            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
-                <label>Denumire factură</label>
-                <asp:TextBox runat="server" ID="txtInvoiceDescription"></asp:TextBox>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
+            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback" runat="server" id="divInvoiceMainValue">
                 <label>Valoare</label>
                 <asp:TextBox runat="server" ID="txtInvoiceValue"></asp:TextBox>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
-                <label>Data prezentării</label>
+                <label>Denumire factură</label>
+                <asp:TextBox runat="server" ID="txtInvoiceDescription"></asp:TextBox>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
+                <label>Data emiterii</label>
                 <asp:TextBox runat="server" ID="txtInvoiceDate" CssClass="datepicker"></asp:TextBox>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback">
@@ -30,6 +31,8 @@
                 <asp:TextBox runat="server" ID="txtInvoiceNumber"></asp:TextBox>
             </div>
         </div>
+        <asp:Panel runat="server" ID="pnInvoiceSubcategories" EnableViewState="false" Visible="false">
+        </asp:Panel>
         <asp:Panel runat="server" ID="pnInvoiceValues" EnableViewState="false" >
         </asp:Panel>
         <asp:Panel runat="server" ID="pnlInvoiceDiverseValues" EnableViewState="false">

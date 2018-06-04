@@ -40,13 +40,13 @@ namespace Admin.Invoices {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlInvoiceBody;
         
         /// <summary>
-        /// txtInvoiceDescription control.
+        /// divInvoiceMainValue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtInvoiceDescription;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divInvoiceMainValue;
         
         /// <summary>
         /// txtInvoiceValue control.
@@ -56,6 +56,15 @@ namespace Admin.Invoices {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtInvoiceValue;
+        
+        /// <summary>
+        /// txtInvoiceDescription control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtInvoiceDescription;
         
         /// <summary>
         /// txtInvoiceDate control.
@@ -74,6 +83,15 @@ namespace Admin.Invoices {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtInvoiceNumber;
+        
+        /// <summary>
+        /// pnInvoiceSubcategories control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnInvoiceSubcategories;
         
         /// <summary>
         /// pnInvoiceValues control.

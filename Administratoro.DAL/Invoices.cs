@@ -17,6 +17,7 @@ namespace Administratoro.DAL
         public Invoices()
         {
             this.InvoiceIndexes = new HashSet<InvoiceIndexes>();
+            this.InvoiceSubcategories = new HashSet<InvoiceSubcategories>();
         }
     
         public int Id { get; set; }
@@ -32,5 +33,6 @@ namespace Administratoro.DAL
         public virtual AssociationExpensesRedistributionTypes AssociationExpensesRedistributionTypes { get; set; }
         public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }
         public virtual StairCases StairCases { get; set; }
+        public virtual ICollection<InvoiceSubcategories> InvoiceSubcategories { get; set; }
     }
 }

@@ -24,7 +24,7 @@
         </asp:Panel>
 
         <asp:Panel runat="server">
-            <asp:Button runat="server" Text="Per  număr de locatari" ID="invoiceRedistributeEqualTenants" OnClick="invoiceRedistributeEqualTenants_Click" />
+            <asp:Button runat="server" Text="Per număr de persoane" ID="invoiceRedistributeEqualTenants" OnClick="invoiceRedistributeEqualTenants_Click" />
             <asp:Label runat="server" ID="txtInvoiceRedistributeEqualTenants"></asp:Label>
         </asp:Panel>
 

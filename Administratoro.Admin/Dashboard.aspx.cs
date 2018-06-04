@@ -33,30 +33,46 @@ namespace Admin
 
         private void CheckStairCases(StringBuilder sb)
         {
+            decimal sumStairCaseIndiviza = 0;
+            decimal sumApartmentIndiviza = 0;
+
             if (Association.HasStaircase)
             {
-                decimal sum = 0;
                 foreach (var stairCase in Association.StairCases)
                 {
                     if (stairCase.Indiviza.HasValue)
                     {
-                        sum = sum + stairCase.Indiviza.Value;
+                        sumStairCaseIndiviza = sumStairCaseIndiviza + stairCase.Indiviza.Value;
                     }
                     else
                     {
                         sb.Append("- Scara cu numele <b>" + stairCase.Nume + "</b> nu are indiviza setată <a href='Associations/Index.aspx'>Modifică</a><br />");
                     }
                 }
+            }
 
-                if (sum != 100.0m)
+            if (sumStairCaseIndiviza != 100.0m)
+            {
+                sb.Append("- Suma cotelor de indiviză a scărilor este de <b>" + sumStairCaseIndiviza.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
+            }
+
+            foreach (var apartment in Association.Apartments)
+            {
+                if (apartment.CotaIndiviza.HasValue)
                 {
-                    //sb.Append("- Suma cotelor de indiviză a scărilor este de <b>" + sum.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
+                    sumApartmentIndiviza = sumApartmentIndiviza + apartment.CotaIndiviza.Value;
+                }
+                else
+                {
+                    sb.Append("- Apartamentul cu numele <b>" + apartment.Name+ "</b> nu are indiviza setată <a href='Apartments/Add.aspx?apartmentid=" 
+                        + apartment.Id + "'>Modifică</a><br />");
                 }
 
-                if(string.IsNullOrEmpty(sb.ToString()))
-                {
-                    sb.Append("- nici o notă/atenționare");
-                }
+            }
+
+            if (string.IsNullOrEmpty(sb.ToString()))
+            {
+                sb.Append("- nici o notă/atenționare");
             }
         }
     }

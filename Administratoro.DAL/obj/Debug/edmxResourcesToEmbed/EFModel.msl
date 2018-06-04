@@ -70,7 +70,6 @@
       <EntityTypeMapping TypeName="AdministratoroModel.AssociationCounters">
         <MappingFragment StoreEntitySet="AssociationCounters">
           <ScalarProperty Name="Id_Expense" ColumnName="Id_Expense" />
-          <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
           <ScalarProperty Name="Id_Estate" ColumnName="Id_Estate" />
           <ScalarProperty Name="Value" ColumnName="Value" />
           <ScalarProperty Name="Id" ColumnName="Id" />
@@ -83,6 +82,15 @@
           <ScalarProperty Name="CountersInsideApartment" ColumnName="CountersInsideApartment" />
           <ScalarProperty Name="Id_Counters" ColumnName="Id_Counters" />
           <ScalarProperty Name="Id_Apartment" ColumnName="Id_Apartment" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AssociationCountersStairCase">
+      <EntityTypeMapping TypeName="AdministratoroModel.AssociationCountersStairCase">
+        <MappingFragment StoreEntitySet="AssociationCountersStairCase">
+          <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
+          <ScalarProperty Name="Id_AssCounter" ColumnName="Id_AssCounter" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>
       </EntityTypeMapping>
@@ -184,6 +192,30 @@
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
           <ScalarProperty Name="Id_EstateExpense" ColumnName="Id_EstateExpense" />
+          <ScalarProperty Name="Value" ColumnName="Value" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="InvoiceSubcategories">
+      <EntityTypeMapping TypeName="AdministratoroModel.InvoiceSubcategories">
+        <MappingFragment StoreEntitySet="InvoiceSubcategories">
+          <ScalarProperty Name="PricePerUnit" ColumnName="PricePerUnit" />
+          <ScalarProperty Name="penalties" ColumnName="penalties" />
+          <ScalarProperty Name="service" ColumnName="service" />
+          <ScalarProperty Name="VAT" ColumnName="VAT" />
+          <ScalarProperty Name="quantity" ColumnName="quantity" />
+          <ScalarProperty Name="Value" ColumnName="Value" />
+          <ScalarProperty Name="Id_subCategType" ColumnName="Id_subCategType" />
+          <ScalarProperty Name="Id_Invoice" ColumnName="Id_Invoice" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="InvoiceSubcategoryTypes">
+      <EntityTypeMapping TypeName="AdministratoroModel.InvoiceSubcategoryTypes">
+        <MappingFragment StoreEntitySet="InvoiceSubcategoryTypes">
+          <ScalarProperty Name="Id_Expense" ColumnName="Id_Expense" />
           <ScalarProperty Name="Value" ColumnName="Value" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>

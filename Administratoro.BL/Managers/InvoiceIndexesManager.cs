@@ -2,13 +2,9 @@
 
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Constants;
-using Administratoro.DAL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+    using Administratoro.DAL;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public static class InvoiceIndexesManager
     {
@@ -25,16 +21,33 @@ using System.Threading.Tasks;
         }
 
         #region Get
-       
+
         public static IEnumerable<InvoiceIndexes> Get(int invoiceId)
         {
             return GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoiceId);
         }
 
-        public static IEnumerable<InvoiceIndexes> Get(int invoiceId, int? stairCase)
+        public static IEnumerable<InvoiceIndexes> Get(Invoices invoice, int? stairCase)
         {
-            return GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoiceId && t.AssociationCounters.Id_StairCase == stairCase);
+            var result = new List<InvoiceIndexes>();
+            // find which counter has on that stairCase
+            var assocCounter = CountersManager.GetByExpenseAndStairCase(invoice, stairCase);
+
+            if (assocCounter != null)
+            {
+                // get Invoice inces
+                result = GetByInvoiceAndCounter(invoice, result, assocCounter);
+            }
+
+            return result;
         }
+
+        public static List<InvoiceIndexes> GetByInvoiceAndCounter(Invoices invoice, List<InvoiceIndexes> result, AssociationCounters assocCounter)
+        {
+            result = GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoice.Id && t.AssociationCounters.Id == assocCounter.Id).ToList();
+            return result;
+        }
+
 
         private static IEnumerable<InvoiceIndexes> GetLastMonthIndexes(int invoiceId)
         {

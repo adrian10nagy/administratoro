@@ -8,8 +8,8 @@
     <Property Name="Value" Type="decimal" Precision="30" Scale="10" />
     <Property Name="Id_Tenant" Type="int" Nullable="false" />
     <Property Name="Id_EstateExpense" Type="int" Nullable="false" />
-    <Property Name="IndexOld" Type="decimal" Precision="18" Scale="1" />
-    <Property Name="IndexNew" Type="decimal" Precision="18" Scale="1" />
+    <Property Name="IndexOld" Type="decimal" Precision="20" Scale="4" />
+    <Property Name="IndexNew" Type="decimal" Precision="20" Scale="4" />
     <Property Name="CounterOrder" Type="int" />
   </EntityType>
   <EntityType Name="ApartmentPersons">
@@ -45,7 +45,6 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Value" Type="nvarchar" MaxLength="50" Nullable="false" />
     <Property Name="Id_Estate" Type="int" Nullable="false" />
-    <Property Name="Id_StairCase" Type="int" />
     <Property Name="Id_Expense" Type="int" />
   </EntityType>
   <EntityType Name="AssociationCountersApartment">
@@ -56,6 +55,14 @@
     <Property Name="Id_Apartment" Type="int" Nullable="false" />
     <Property Name="Id_Counters" Type="int" Nullable="false" />
     <Property Name="CountersInsideApartment" Type="int" />
+  </EntityType>
+  <EntityType Name="AssociationCountersStairCase">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_AssCounter" Type="int" Nullable="false" />
+    <Property Name="Id_StairCase" Type="int" />
   </EntityType>
   <EntityType Name="AssociationExpenses">
     <Key>
@@ -150,6 +157,28 @@
     <Property Name="issueDate" Type="date" />
     <Property Name="issueNumber" Type="nvarchar" MaxLength="50" />
   </EntityType>
+  <EntityType Name="InvoiceSubcategories">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Id_Invoice" Type="int" Nullable="false" />
+    <Property Name="Id_subCategType" Type="int" Nullable="false" />
+    <Property Name="Value" Type="decimal" Precision="24" Scale="4" />
+    <Property Name="quantity" Type="decimal" Precision="24" Scale="4" />
+    <Property Name="VAT" Type="decimal" Precision="24" Scale="4" />
+    <Property Name="service" Type="decimal" Precision="24" Scale="4" />
+    <Property Name="penalties" Type="decimal" Precision="24" Scale="4" />
+    <Property Name="PricePerUnit" Type="decimal" Precision="24" Scale="4" />
+  </EntityType>
+  <EntityType Name="InvoiceSubcategoryTypes">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Value" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Id_Expense" Type="int" Nullable="false" />
+  </EntityType>
   <EntityType Name="Localities">
     <Key>
       <PropertyRef Name="Id" />
@@ -243,6 +272,30 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__Associati__Id_As__7FB5F314">
+    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="1" />
+    <End Role="AssociationCountersStairCase" Type="Self.AssociationCountersStairCase" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AssociationCounters">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="AssociationCountersStairCase">
+        <PropertyRef Name="Id_AssCounter" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Associati__Id_St__00AA174D">
+    <End Role="StairCases" Type="Self.StairCases" Multiplicity="0..1" />
+    <End Role="AssociationCountersStairCase" Type="Self.AssociationCountersStairCase" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="StairCases">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="AssociationCountersStairCase">
+        <PropertyRef Name="Id_StairCase" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__Counters__Id_Est__0B5CAFEA">
     <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
     <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="*" />
@@ -264,18 +317,6 @@
       </Principal>
       <Dependent Role="AssociationCounters">
         <PropertyRef Name="Id_Expense" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__Counters__Id_Sta__0C50D423">
-    <End Role="StairCases" Type="Self.StairCases" Multiplicity="0..1" />
-    <End Role="AssociationCounters" Type="Self.AssociationCounters" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="StairCases">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="AssociationCounters">
-        <PropertyRef Name="Id_StairCase" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -408,6 +449,42 @@
       </Principal>
       <Dependent Role="Invoices">
         <PropertyRef Name="Id_StairCase" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__InvoiceSu__Id_Ex__038683F8">
+    <End Role="Expenses" Type="Self.Expenses" Multiplicity="1" />
+    <End Role="InvoiceSubcategoryTypes" Type="Self.InvoiceSubcategoryTypes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Expenses">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="InvoiceSubcategoryTypes">
+        <PropertyRef Name="Id_Expense" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__InvoiceSu__Id_In__0E04126B">
+    <End Role="Invoices" Type="Self.Invoices" Multiplicity="1" />
+    <End Role="InvoiceSubcategories" Type="Self.InvoiceSubcategories" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Invoices">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="InvoiceSubcategories">
+        <PropertyRef Name="Id_Invoice" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__InvoiceSu__Id_su__0EF836A4">
+    <End Role="InvoiceSubcategoryTypes" Type="Self.InvoiceSubcategoryTypes" Multiplicity="1" />
+    <End Role="InvoiceSubcategories" Type="Self.InvoiceSubcategories" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="InvoiceSubcategoryTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="InvoiceSubcategories">
+        <PropertyRef Name="Id_subCategType" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -580,6 +657,7 @@
     <EntitySet Name="Apartments" EntityType="Self.Apartments" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AssociationCounters" EntityType="Self.AssociationCounters" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AssociationCountersApartment" EntityType="Self.AssociationCountersApartment" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssociationCountersStairCase" EntityType="Self.AssociationCountersStairCase" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AssociationExpenses" EntityType="Self.AssociationExpenses" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AssociationExpensesRedistributionTypes" EntityType="Self.AssociationExpensesRedistributionTypes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Associations" EntityType="Self.Associations" Schema="dbo" store:Type="Tables" />
@@ -589,6 +667,8 @@
     <EntitySet Name="Functionalities" EntityType="Self.Functionalities" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="InvoiceIndexes" EntityType="Self.InvoiceIndexes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Invoices" EntityType="Self.Invoices" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="InvoiceSubcategories" EntityType="Self.InvoiceSubcategories" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="InvoiceSubcategoryTypes" EntityType="Self.InvoiceSubcategoryTypes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Localities" EntityType="Self.Localities" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="PartnerRights" EntityType="Self.PartnerRights" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Partners" EntityType="Self.Partners" Schema="dbo" store:Type="Tables" />
@@ -604,16 +684,20 @@
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
       <End Role="AssociationCountersApartment" EntitySet="AssociationCountersApartment" />
     </AssociationSet>
+    <AssociationSet Name="FK__Associati__Id_As__7FB5F314" Association="Self.FK__Associati__Id_As__7FB5F314">
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
+      <End Role="AssociationCountersStairCase" EntitySet="AssociationCountersStairCase" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Associati__Id_St__00AA174D" Association="Self.FK__Associati__Id_St__00AA174D">
+      <End Role="StairCases" EntitySet="StairCases" />
+      <End Role="AssociationCountersStairCase" EntitySet="AssociationCountersStairCase" />
+    </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Est__0B5CAFEA" Association="Self.FK__Counters__Id_Est__0B5CAFEA">
       <End Role="Associations" EntitySet="Associations" />
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
     </AssociationSet>
     <AssociationSet Name="FK__Counters__Id_Exp__0D44F85C" Association="Self.FK__Counters__Id_Exp__0D44F85C">
       <End Role="Expenses" EntitySet="Expenses" />
-      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
-    </AssociationSet>
-    <AssociationSet Name="FK__Counters__Id_Sta__0C50D423" Association="Self.FK__Counters__Id_Sta__0C50D423">
-      <End Role="StairCases" EntitySet="StairCases" />
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExp__Redis__44952D46" Association="Self.FK__EstateExp__Redis__44952D46">
@@ -659,6 +743,18 @@
     <AssociationSet Name="FK__Invoices__Id_sta__42ACE4D4" Association="Self.FK__Invoices__Id_sta__42ACE4D4">
       <End Role="StairCases" EntitySet="StairCases" />
       <End Role="Invoices" EntitySet="Invoices" />
+    </AssociationSet>
+    <AssociationSet Name="FK__InvoiceSu__Id_Ex__038683F8" Association="Self.FK__InvoiceSu__Id_Ex__038683F8">
+      <End Role="Expenses" EntitySet="Expenses" />
+      <End Role="InvoiceSubcategoryTypes" EntitySet="InvoiceSubcategoryTypes" />
+    </AssociationSet>
+    <AssociationSet Name="FK__InvoiceSu__Id_In__0E04126B" Association="Self.FK__InvoiceSu__Id_In__0E04126B">
+      <End Role="Invoices" EntitySet="Invoices" />
+      <End Role="InvoiceSubcategories" EntitySet="InvoiceSubcategories" />
+    </AssociationSet>
+    <AssociationSet Name="FK__InvoiceSu__Id_su__0EF836A4" Association="Self.FK__InvoiceSu__Id_su__0EF836A4">
+      <End Role="InvoiceSubcategoryTypes" EntitySet="InvoiceSubcategoryTypes" />
+      <End Role="InvoiceSubcategories" EntitySet="InvoiceSubcategories" />
     </AssociationSet>
     <AssociationSet Name="FK__StairCase__Id_Es__4F47C5E3" Association="Self.FK__StairCase__Id_Es__4F47C5E3">
       <End Role="Associations" EntitySet="Associations" />

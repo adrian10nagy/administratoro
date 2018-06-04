@@ -124,14 +124,19 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddCotaIndivizaApartmentExpenses(int idExpenseEstate, decimal totalValue)
+        public static void AddCotaIndivizaApartmentExpenses(int idAssociationExpense, decimal totalValue)
         {
-            AssociationExpenses ee = GetContext().AssociationExpenses.FirstOrDefault(e => e.Id == idExpenseEstate);
+            AssociationExpenses ee = GetApExById(idAssociationExpense);
 
             if (ee != null)
             {
                 AddCotaIndivizaApartmentExpenses(ee, totalValue, null);
             }
+        }
+
+        private static AssociationExpenses GetApExById(int idAssociationExpense)
+        {
+            return GetContext().AssociationExpenses.FirstOrDefault(e => e.Id == idAssociationExpense);
         }
 
         public static void AddCotaIndivizaApartmentExpenses(AssociationExpenses associationExpense, decimal? totalValue, int? stairCase)
@@ -185,7 +190,7 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddPerApartmentExpenses(int idExpenseEstate, decimal? valuePerApartment, List<Apartments> apartments = null)
+        public static void AddPerDependentsExpenses(int idExpenseEstate, decimal? valuePerApartment, List<Apartments> apartments = null)
         {
             var ee = AssociationExpensesManager.GetById(idExpenseEstate);
             if (ee != null)
@@ -194,7 +199,7 @@ namespace Administratoro.BL.Managers
 
                 if (apartments == null)
                 {
-                    allApartments = ApartmentsManager.GetAllByAssociationId(ee.Id_Estate);
+                    allApartments = ApartmentsManager.Get(ee.Id_Estate);
                 }
                 else
                 {
@@ -228,10 +233,42 @@ namespace Administratoro.BL.Managers
             }
         }
 
+        public static void AddPerApartmentsExpenses(int idExpenseEstate, decimal? valuePerApartment, List<Apartments> apartments = null)
+        {
+            var ee = AssociationExpensesManager.GetById(idExpenseEstate);
+            if (ee != null)
+            {
+                foreach (var apartment in apartments)
+                {
+                    if (apartment != null)
+                    {
+                        ApartmentExpenses tte = ApartmentExpensesManager.GetByExpenseEstateIdAndApartmentId(idExpenseEstate, apartment.Id);
+                        if (tte != null)
+                        {
+                            tte.Value = valuePerApartment;
+                            GetContext().Entry(tte).CurrentValues.SetValues(tte);
+                        }
+                        else
+                        {
+                            ApartmentExpenses te = new ApartmentExpenses
+                            {
+                                Value = valuePerApartment,
+                                Id_Tenant = apartment.Id,
+                                Id_EstateExpense = ee.Id,
+                            };
+                            GetContext().ApartmentExpenses.Add(te);
+                        }
+
+                        GetContext().SaveChanges();
+                    }
+                }
+            }
+        }
+
         public static void UpdateOldIndexAndValue(ApartmentExpenses apartmentExpense, decimal? oldIndex, decimal? pricePerExpenseUnit)
         {
             ApartmentExpenses result = new ApartmentExpenses();
-            result = GetContext().ApartmentExpenses.First(b => b.Id == apartmentExpense.Id);
+            result = GetContext().ApartmentExpenses.FirstOrDefault(b => b.Id == apartmentExpense.Id);
 
             if (result != null)
             {
@@ -245,7 +282,7 @@ namespace Administratoro.BL.Managers
                     result.Value = null;
                 }
 
-                GetContext().Entry(result).CurrentValues.SetValues(result);
+                PerformUpdate(result);
                 GetContext().SaveChanges();
             }
         }
@@ -253,7 +290,7 @@ namespace Administratoro.BL.Managers
         public static void UpdatePerIndexValue(ApartmentExpenses apartmentExpense, decimal? pricePerExpenseUnit)
         {
             ApartmentExpenses result = new ApartmentExpenses();
-            result = GetContext(true).ApartmentExpenses.First(b => b.Id == apartmentExpense.Id);
+            result = GetContext(true).ApartmentExpenses.FirstOrDefault(b => b.Id == apartmentExpense.Id);
 
             if (result != null)
             {
@@ -275,7 +312,7 @@ namespace Administratoro.BL.Managers
         public static void ConfigurePerIndex(AssociationExpenses ae, Apartments apartment)
         {
             var assC = CountersApartmentManager.GetByApartmentAndExpense(apartment.Id, ae.Id_Expense);
-           
+
             var apartmentExpenses = ApartmentExpensesManager.GetByExpenseEstateIdAndApartmentIdAll(ae.Id, apartment.Id).ToList();
 
             if (assC != null && assC.CountersInsideApartment.HasValue)
@@ -298,7 +335,7 @@ namespace Administratoro.BL.Managers
                 {
                     for (int i = assC.CountersInsideApartment.Value; i < apartmentExpenses.Count; i++)
                     {
-                        if(apartmentExpenses[i].CounterOrder.HasValue)
+                        if (apartmentExpenses[i].CounterOrder.HasValue)
                         {
                             ApartmentExpensesManager.RemoveApartmentExpense(apartment.Id, apartmentExpenses[i].Id_EstateExpense, apartmentExpenses[i].CounterOrder.Value);
                         }
@@ -324,7 +361,7 @@ namespace Administratoro.BL.Managers
                     }
                 }
 
-                if(apartmentExpense != null && apartmentExpense.IndexNew.HasValue && apartmentExpense.IndexOld.HasValue && apartmentExpense.Value.HasValue && 
+                if (apartmentExpense != null && apartmentExpense.IndexNew.HasValue && apartmentExpense.IndexOld.HasValue && apartmentExpense.Value.HasValue &&
                     apartmentExpense.AssociationExpenses.PricePerExpenseUnit.HasValue &&
                     (apartmentExpense.IndexNew - apartmentExpense.IndexOld) * apartmentExpense.AssociationExpenses.PricePerExpenseUnit.Value != apartmentExpense.Value)
                 {
@@ -333,12 +370,12 @@ namespace Administratoro.BL.Managers
                 }
 
 
-                if(apartmentExpense == null || lastMonthIndexApartmentExpense == null)
+                if (apartmentExpense == null || lastMonthIndexApartmentExpense == null)
                 {
                     continue;
                 }
 
-                if (lastMonthIndexApartmentExpense != null && !lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.HasValue)
+                if (lastMonthIndexApartmentExpense != null && IsMonthClosed(lastMonthIndexApartmentExpense))
                 {
                     if (lastMonthIndexApartmentExpense == null && apartmentExpense.IndexOld == null)
                     {
@@ -391,19 +428,36 @@ namespace Administratoro.BL.Managers
                     apartmentExpense.Value = null;
                 }
 
-                GetContext().Entry(apartmentExpense).CurrentValues.SetValues(apartmentExpense);
-                GetContext().SaveChanges();
+                PerformUpdate(apartmentExpense);
 
                 //update previeous month old index
-                var lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForPreviousMonth(apartmentExpense.Apartments.Id, apartmentExpenseId);
+                var lastMonthIndexApartmentExpense = ApartmentExpensesManager.GetForPreviousMonth(apartmentExpense.Id_Tenant, apartmentExpenseId);
                 if (lastMonthIndexApartmentExpense != null && apartmentExpense.IndexOld != null &&
-                    lastMonthIndexApartmentExpense.IndexNew != apartmentExpense.IndexOld && !lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.HasValue)
+                    lastMonthIndexApartmentExpense.IndexNew != apartmentExpense.IndexOld &&
+                    IsMonthClosed(lastMonthIndexApartmentExpense))
                 {
-                    lastMonthIndexApartmentExpense.IndexNew = apartmentExpense.IndexOld;
-                    GetContext().Entry(lastMonthIndexApartmentExpense).CurrentValues.SetValues(lastMonthIndexApartmentExpense);
-                    GetContext().SaveChanges();
+                    UpdateIndexNew(apartmentExpense, lastMonthIndexApartmentExpense);
                 }
             }
+        }
+
+        private static void PerformUpdate(ApartmentExpenses apartmentExpense)
+        {
+            GetContext().Entry(apartmentExpense).CurrentValues.SetValues(apartmentExpense);
+            GetContext().SaveChanges();
+        }
+
+        public static bool IsMonthClosed(ApartmentExpenses lastMonthIndexApartmentExpense)
+        {
+            return (!lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.HasValue ||
+                                (lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.HasValue && !lastMonthIndexApartmentExpense.AssociationExpenses.IsClosed.Value));
+        }
+
+        public static void UpdateIndexNew(ApartmentExpenses apartmentExpense, ApartmentExpenses lastMonthIndexApartmentExpense)
+        {
+            lastMonthIndexApartmentExpense.IndexNew = apartmentExpense.IndexOld;
+            GetContext().Entry(lastMonthIndexApartmentExpense).CurrentValues.SetValues(lastMonthIndexApartmentExpense);
+            GetContext().SaveChanges();
         }
 
         private static ApartmentExpenses GetForPreviousMonth(int apartmentId, int apartmentExpenseId)
@@ -413,7 +467,7 @@ namespace Administratoro.BL.Managers
             var apartmentExpense = ApartmentExpensesManager.GetById(apartmentExpenseId);
             if (apartmentExpense != null)
             {
-                result = GetForPreviousMonth(apartmentExpense.AssociationExpenses.Id, apartmentId, apartmentExpense.CounterOrder);   
+                result = GetForPreviousMonth(apartmentExpense.AssociationExpenses.Id, apartmentId, apartmentExpense.CounterOrder);
             }
 
             return result;
@@ -430,18 +484,18 @@ namespace Administratoro.BL.Managers
             {
                 ApartmentExpensesManager.AddCotaIndivizaApartmentExpenses(associationExpense, value, stairCase);
             }
-            else if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerApartments)
+            else if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerNrTenants)
             {
                 decimal? valuePerApartment = null;
                 List<Apartments> apartments;
 
                 if (stairCase == null || !stairCase.HasValue)
                 {
-                    apartments = ApartmentsManager.GetAllByAssociationId(associationExpense.Id_Estate);
+                    apartments = ApartmentsManager.Get(associationExpense.Id_Estate);
                 }
                 else
                 {
-                    apartments = ApartmentsManager.GetAllByEstateIdAndStairCase(associationExpense.Id_Estate, stairCase.Value);
+                    apartments = ApartmentsManager.Get(associationExpense.Id_Estate, stairCase.Value);
                 }
 
                 var allTenantDependents = apartments.Sum(t => t.Dependents);
@@ -450,7 +504,18 @@ namespace Administratoro.BL.Managers
                     valuePerApartment = value.Value / allTenantDependents;
                 }
 
-                ApartmentExpensesManager.AddPerApartmentExpenses(associationExpense.Id, valuePerApartment, apartments);
+                ApartmentExpensesManager.AddPerDependentsExpenses(associationExpense.Id, valuePerApartment, apartments);
+            }
+            else if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerApartament)
+            {
+                var apartments = ApartmentsManager.Get(associationExpense.Id_Estate);
+                decimal? valuePerApartment = null;
+                if (value.HasValue && apartments.Count != 0)
+                {
+                    valuePerApartment = value.Value / apartments.Count;
+                }
+
+                ApartmentExpensesManager.AddPerApartmentsExpenses(associationExpense.Id, valuePerApartment, apartments);
             }
         }
 
@@ -485,14 +550,12 @@ namespace Administratoro.BL.Managers
         public static void UpdateApartmentExpense(int apartmentid, int year, int month, object te)
         {
             ApartmentExpenses result = new ApartmentExpenses();
-            result = GetContext().ApartmentExpenses.First(b => b.Id == ((ApartmentExpenses)te).Id);
+            result = GetContext().ApartmentExpenses.FirstOrDefault(b => b.Id == ((ApartmentExpenses)te).Id);
 
             if (result != null)
             {
                 result.Value = ((ApartmentExpenses)te).Value;
-                GetContext().Entry(result).CurrentValues.SetValues(result);
-
-                GetContext().SaveChanges();
+                PerformUpdate(result);
             }
         }
 
@@ -621,7 +684,7 @@ namespace Administratoro.BL.Managers
                 return dt;
             }
 
-            var associationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(associationId, year, month).OrderBy(ee => ee.Id_ExpenseType).ToList();
+            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(associationId, year, month).OrderBy(ee => ee.Id_ExpenseType).ToList();
             List<Apartments> apartments;
             if (!stairCase.HasValue)
             {
@@ -629,18 +692,19 @@ namespace Administratoro.BL.Managers
             }
             else
             {
-                apartments = ApartmentsManager.GetAllByEstateIdAndStairCase(association.Id, stairCase.Value);
+                apartments = ApartmentsManager.Get(association.Id, stairCase.Value);
             }
 
             apartments = apartments.OrderBy(a => a.Number).ToList();
 
             IEnumerable<Administratoro.DAL.Invoices> invoices = InvoicesManager.GetDiverseByAssociationYearMonth(associationId, year, month);
-            int expensesFieldSize = associationExpenses.Count();
 
             // populate expenses- pre-step
             bool hasDiverse;
             bool hasRoundUpColumn = association.HasRoundUpColumn.HasValue && association.HasRoundUpColumn.Value;
             RaportPopulateExpensesList(raportDictionary, totalCol, expenseReportList, associationExpenses, apartments, association, invoices, out hasDiverse);
+
+            int expensesFieldSize = associationExpenses.Count();
             if (hasDiverse)
             {
                 expensesFieldSize++;
@@ -740,7 +804,7 @@ namespace Administratoro.BL.Managers
                             break;
                     }
 
-                    totalCol[(Expense)associationExpense.Expenses.Id] = rowValue == null ? totalCol[(Expense)associationExpense.Expenses.Id] :
+                    totalCol[(Expense)associationExpense.Expenses.Id] = rowValue == 0 ? totalCol[(Expense)associationExpense.Expenses.Id] :
                                 totalCol[(Expense)associationExpense.Expenses.Id] + rowValue.Value;
                 }
 
@@ -759,13 +823,15 @@ namespace Administratoro.BL.Managers
 
             if (apartmentExpenses != null && apartmentExpenses.Count() != 0)
             {
-                result = apartmentExpenses.Where(ae=>ae.Value.HasValue).Sum(ae=>ae.Value.Value);
+                result = apartmentExpenses.Where(ae => ae.Value.HasValue).Sum(ae => ae.Value.Value);
             }
 
             if (redistributionValue.HasValue)
             {
                 result = result.HasValue ? result + redistributionValue.Value : redistributionValue.Value;
             }
+
+            result = result.HasValue ? 0.0m : result;
 
             return result;
         }
@@ -784,7 +850,7 @@ namespace Administratoro.BL.Managers
                     continue;
                 }
 
-                if (invoice.id_Redistributiontype == (int)RedistributionType.PerApartments)
+                if (invoice.id_Redistributiontype == (int)RedistributionType.PerDependents)
                 {
                     int? nrOfDependents = null;
                     if (invoice.Id_StairCase.HasValue)
@@ -908,6 +974,10 @@ namespace Administratoro.BL.Managers
                 dt.Columns.Add(new DataColumn("Diverse", typeof(string)));
             }
 
+            if (hasRoundUpColumn)
+            {
+                dt.Columns.Add(new DataColumn("Rotunjiri", typeof(string)));
+            }
             dt.Columns.Add(new DataColumn("Total lună", typeof(string)));
             dt.Columns.Add(new DataColumn("Fond rulment", typeof(string)));
             dt.Columns.Add(new DataColumn("Fond reparații", typeof(string)));
@@ -915,10 +985,7 @@ namespace Administratoro.BL.Managers
             dt.Columns.Add(new DataColumn("Penalizări", typeof(string)));
             dt.Columns.Add(new DataColumn("Total general", typeof(string)));
 
-            if (hasRoundUpColumn)
-            {
-                dt.Columns.Add(new DataColumn("Rotunjiri", typeof(string)));
-            }
+
 
             dt.Columns.Add(new DataColumn("Ap ", typeof(string)));
         }
@@ -964,20 +1031,26 @@ namespace Administratoro.BL.Managers
 
                 generalMonthSum = generalMonthSum + monthSum;
                 monthSum = Math.Round(monthSum, 2);
+
+                // add round coulmn
+                if (hasRoundUpColumn)
+                {
+                    var monthSumBefore = monthSum;
+                    monthSum = (DecimalExtensions.RoundUp((double)monthSum, 0));
+
+                    var roundedValue = monthSum - monthSumBefore;
+                    row.Add(roundedValue.ToString());
+                }
+
                 generalSum = monthSum;
                 generalSum = generalSum + 0 + 0 + 0 + 0;
+
+                // add other rows
                 row.Add(monthSum.ToString());
                 row.Add(string.Empty);
                 row.Add(string.Empty);
                 row.Add(string.Empty);
                 row.Add(generalSum.ToString());
-
-                if (hasRoundUpColumn)
-                {
-                    var value = (DecimalExtensions.RoundUp((double)generalSum, 0));
-                    row.Add(value.ToString());
-                }
-
                 row.Add(raportList.Ap);
 
                 dt.Rows.Add(row.ToArray());
@@ -1002,17 +1075,18 @@ namespace Administratoro.BL.Managers
             }
 
             generalMonthSum = Math.Round(generalMonthSum, 2);
-            rowTotal.Add(generalMonthSum.ToString());
+            rowTotal.Add(string.Empty);
+            if (hasRoundUpColumn)
+            {
+                generalMonthSum = DecimalExtensions.RoundUp((double)generalMonthSum, 0);
+                rowTotal.Add(generalMonthSum.ToString());
+            }
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(string.Empty);
             rowTotal.Add(generalMonthSum.ToString());
 
-            if (hasRoundUpColumn)
-            {
-                var value = DecimalExtensions.RoundUp((double)generalMonthSum, 0);
-                rowTotal.Add(value.ToString());
-            }
+
 
             rowTotal.Add(string.Empty);
 
@@ -1088,7 +1162,7 @@ namespace Administratoro.BL.Managers
         public static void UpdateApartmentExpense(int apartmentExpenseId, decimal? newValue)
         {
             ApartmentExpenses result = new ApartmentExpenses();
-            result = GetContext().ApartmentExpenses.First(b => b.Id == apartmentExpenseId);
+            result = GetContext().ApartmentExpenses.FirstOrDefault(b => b.Id == apartmentExpenseId);
 
             if (result != null)
             {
@@ -1131,14 +1205,78 @@ namespace Administratoro.BL.Managers
         {
             decimal? result = null;
 
-            IEnumerable<ApartmentExpenses> apartmentExpenses = associationExpense.ApartmentExpenses;
-            var sumOfIndexes = apartmentExpenses.Where(tex => tex.Apartments.Id_StairCase == stairCase).Sum(t => t.IndexNew - t.IndexOld);
-            if (sumOfIndexes.HasValue && associationExpense.PricePerExpenseUnit.HasValue)
+            var ac = CountersManager.GetByExpenseAndStairCase(associationExpense, stairCase);
+            if (ac != null)
             {
-                result = sumOfIndexes * associationExpense.PricePerExpenseUnit;
+                var apWithSpecificCounter = GetApartmentsByCounter(ac).Select(a => a.Id);
+                var sumOfIndexes = associationExpense.ApartmentExpenses.Where(tex => apWithSpecificCounter.Contains(tex.Apartments.Id)).Sum(t => t.IndexNew - t.IndexOld);
+                if (sumOfIndexes.HasValue && associationExpense.PricePerExpenseUnit.HasValue)
+                {
+                    result = sumOfIndexes * associationExpense.PricePerExpenseUnit;
+                }
             }
 
             return result;
+        }
+
+
+        public static IEnumerable<Apartments> GetApartmentsByCounter(AssociationCounters associationCounter)
+        {
+            var result = Enumerable.Empty<Apartments>();
+
+            if (associationCounter != null)
+            {
+                var allStairCases = associationCounter.AssociationCountersStairCase.Select(ass => ass.Id_StairCase).ToList();
+
+                List<Apartments> allAps = new List<Apartments>();
+                foreach (AssociationCountersStairCase associationCountersStairCase in associationCounter.AssociationCountersStairCase)
+                {
+                    foreach (AssociationCountersApartment associationCountersApartment in associationCountersStairCase.AssociationCounters.AssociationCountersApartment)
+                    {
+                        if (allStairCases.Contains(null) || allStairCases.Contains(associationCountersApartment.Apartments.Id_StairCase))
+                        {
+                            allAps.Add(associationCountersApartment.Apartments);
+                        }
+                    }
+
+                }
+
+                result = allAps.Distinct();
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<Apartments> GetApartmentsOnSameCounter(int associationExpenseId, int? stairCase)
+        {
+            var result = Enumerable.Empty<Apartments>();
+            var associationExpense = AssociationExpensesManager.GetById(associationExpenseId);
+
+            if (associationExpense != null)
+            {
+                var associationCounter = CountersManager.GetByExpenseAndStairCase(associationExpense, stairCase);
+
+                if (associationCounter != null)
+                {
+                    result = GetApartmentsByCounter(associationCounter);
+                }
+            }
+
+            return result;
+        }
+
+        private static AssociationCounters GetAsCtById(int id)
+        {
+            return GetContext().AssociationCounters.FirstOrDefault(e => e.Id == id);
+        }
+
+
+        public static void ConfigurePerIndex(AssociationExpenses ee, List<Apartments> apartments)
+        {
+            foreach (var apartment in apartments)
+            {
+                ApartmentExpensesManager.ConfigurePerIndex(ee, apartment);
+            }
         }
     }
 }

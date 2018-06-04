@@ -23,7 +23,7 @@ namespace Administratoro.BL.Managers
         }
 
 
-        public static List<Apartments> GetAllByAssociationId(int associationId)
+        public static List<Apartments> Get(int associationId)
         {
             return GetContext().Apartments.Where(t => t.Associations.Id == associationId).OrderBy(a => a.Number).ToList();
         }
@@ -54,7 +54,7 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static DbSet<Apartments> GetAllAsDbSet(int associationId)
+        public static DbSet<Apartments> GetAsDbSet(int associationId)
         {
             return GetContext().Apartments;
         }
@@ -100,7 +100,7 @@ namespace Administratoro.BL.Managers
             AssociationExpenses associationExpense = AssociationExpensesManager.GetById(esexId);
             if (associationExpense != null)
             {
-                List<Apartments> allApartments = GetAllByAssociationId(associationId);
+                List<Apartments> allApartments = Get(associationId);
                 foreach (var apartment in allApartments)
                 {
                     IEnumerable<AssociationCounters> counters = CountersManager.GetByApartment(apartment.Id);
@@ -116,7 +116,7 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static List<Apartments> GetAllByEstateIdAndStairCase(int associationId, int stairCaseId)
+        public static List<Apartments> Get(int associationId, int stairCaseId)
         {
             return GetContext().Apartments.Where(t => t.Associations.Id == associationId && t.Id_StairCase == stairCaseId).ToList();
         }

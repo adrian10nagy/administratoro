@@ -22,7 +22,6 @@ D:\BTT\administratoro\Administratoro.BL\bin\Debug\EntityFramework.SqlServer.xml
 D:\BTT\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.csprojResolveAssemblyReference.cache
 D:\BTT\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.dll
 D:\BTT\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.pdb
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.csprojResolveAssemblyReference.cache
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Administratoro.BL.dll.config
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Administratoro.BL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Administratoro.BL.pdb
@@ -30,5 +29,6 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\EntityFramework.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\EntityFramework.SqlServer.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Administratoro.DAL.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.csprojResolveAssemblyReference.cache
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.pdb

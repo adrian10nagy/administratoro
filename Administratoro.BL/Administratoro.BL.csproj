@@ -53,6 +53,7 @@
     <Compile Include="Constants\Expense.cs" />
     <Compile Include="Constants\ExpensesCompletedStatus.cs" />
     <Compile Include="Constants\ExpenseType.cs" />
+    <Compile Include="Constants\InvoiceSubcategoryType.cs" />
     <Compile Include="Constants\RedistributionType.cs" />
     <Compile Include="Constants\SessionConstants.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Managers\ExpensesManager.cs" />
     <Compile Include="Managers\InvoiceIndexesManager.cs" />
     <Compile Include="Managers\InvoicesManager.cs" />
+    <Compile Include="Managers\InvoicesSubcategoriesManager.cs" />
     <Compile Include="Managers\PartnerRightsManager.cs" />
     <Compile Include="Managers\PartnersManager.cs" />
     <Compile Include="Managers\RecalculationManager.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Managers\ApartmentExpensesManager.cs" />
     <Compile Include="Managers\ApartmentsManager.cs" />
     <Compile Include="Models\ExpenseReport.cs" />
+    <Compile Include="Models\FormatedAssociationCounter.cs" />
     <Compile Include="Models\YearMonth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -68,18 +68,19 @@ namespace Admin.Expenses
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
             var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
-            var apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId);
             AssociationExpenses ee = AssociationExpensesManager.GetById(esexId);
+
+            var apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId);
+            ApartmentExpensesManager.ConfigurePerIndex(ee, apartments);
+
             foreach (var apartment in apartments)
             {
-                ApartmentExpensesManager.ConfigurePerIndex(ee, apartment);
-
                 string query = @"
                     Select 
                     TE.Id as Id,
                     A.Number as Apartament,
-                    TE.IndexOld as 'Index vechi',
-                    TE.IndexNew as 'Index nou',
+                    cast(TE.IndexOld as float) as 'Index vechi',
+                    cast(TE.IndexNew as float) as 'Index nou',
                     TE.Value as 'Valoare'
                     from ApartmentExpenses TE
                     Inner join Apartments A

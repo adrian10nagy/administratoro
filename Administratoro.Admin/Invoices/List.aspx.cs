@@ -40,7 +40,7 @@ namespace Admin.Invoices
 
         private void InitializeInvoices()
         {
-            var ee = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearwithDiverse(Association.Id, year(), month());
+            var ee = AssociationExpensesManager.GetByMonthAndYearwithDiverse(Association.Id, year(), month());
 
             Panel pnHeader = new Panel();
             pnHeader.CssClass = "col-md-12 invoicesListHeader";

@@ -14,7 +14,7 @@ namespace Admin.Tenants
     using Administratoro.BL.Managers;
 
 
-    public partial class Manage : ApartmentsBase
+    public partial class Manage : BasePage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -33,10 +33,7 @@ namespace Admin.Tenants
         
         private void InitializeUsersTable()
         {
-            var sessionUser = Session[SessionConstants.LoginUser] as Apartments;
-            var estate = Session[SessionConstants.SelectedAssociation] as Associations;
-
-            var apartments = ApartmentsManager.GetAllByAssociationId(estate.Id);
+            var apartments = ApartmentsManager.Get(Association.Id);
 
             foreach (Apartments ap in apartments)
             {

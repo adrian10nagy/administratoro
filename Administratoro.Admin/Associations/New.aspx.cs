@@ -321,6 +321,8 @@ namespace Admin.Associations
                             }
                         }
 
+                        // to do, add checkbox and select multiple
+
                         int expenseId;
                         if (valueControl != null && !string.IsNullOrEmpty(expenseControl.Text) &&
                             int.TryParse(expenseCleaned, out expenseId))
@@ -330,7 +332,7 @@ namespace Admin.Associations
                                 Id_Estate = association.Id,
                                 Id_Expense = expenseId,
                                 Value = valueControl.Text,
-                                Id_StairCase = stairIdResult
+                                AssociationCountersStairCase = new List<AssociationCountersStairCase> { new AssociationCountersStairCase { Id_StairCase = stairIdResult }}
                             };
                             cnts.Add(cnt);
                         }
@@ -399,9 +401,9 @@ namespace Admin.Associations
 
                     dp.Items.Add(new ListItem
                     {
-                        Value = ((int)ExpenseType.PerApartments).ToString(),
-                        Text = "Per număr locatari imobil",
-                        Selected = expense.LegalType == (int)ExpenseType.PerApartments
+                        Value = ((int)ExpenseType.PerNrTenants).ToString(),
+                        Text = "Per număr persoane imobil",
+                        Selected = expense.LegalType == (int)ExpenseType.PerNrTenants
                     });
                 }
                 else
@@ -427,7 +429,7 @@ namespace Admin.Associations
             step3.Visible = true;
         }
 
-        private ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations association, int controlId)
+        private static ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations association, int controlId)
         {
             ListItem[] result = new ListItem[association.StairCases.Count + 1];
             int i = 0;

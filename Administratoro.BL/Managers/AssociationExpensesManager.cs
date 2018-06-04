@@ -22,7 +22,7 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-        public static IEnumerable<AssociationExpenses> GetAllAssociationsByMonthAndYearNotDisabled(int associationId, int year, int month)
+        public static IEnumerable<AssociationExpenses> GetByMonthAndYearNotDisabled(int associationId, int year, int month)
         {
             return GetContext(true).AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId &&
@@ -37,7 +37,7 @@ namespace Administratoro.BL.Managers
                 !ee.WasDisabled && !ee.Expenses.specialType.HasValue && ee.Expenses.Id != 25);
         }
 
-        public static IEnumerable<AssociationExpenses> GetAllAssociationExpensesByMonthAndYearwithDiverse(int associationId, int year, int month)
+        public static IEnumerable<AssociationExpenses> GetByMonthAndYearwithDiverse(int associationId, int year, int month)
         {
             return GetContext(true).AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId &&
@@ -45,7 +45,7 @@ namespace Administratoro.BL.Managers
                 !ee.WasDisabled);
         }
 
-        public static IEnumerable<AssociationExpenses> GetFromLastesOpenedMonth(int associationId, bool shouldRefresh = false)
+        public static IEnumerable<AssociationExpenses> GetFromLastestOpenedMonth(int associationId, bool shouldRefresh = false)
         {
             if (GetContext(shouldRefresh).AssociationExpenses.Count() > 0)
             {
@@ -103,9 +103,15 @@ namespace Administratoro.BL.Managers
 
         public static AssociationExpenses GetById(int idExpenseEstate)
         {
-            return GetContext(true).AssociationExpenses.Where(
-                ee => ee.Id == idExpenseEstate).First();
+            return GetContext(true).AssociationExpenses.FirstOrDefault(
+                ee => ee.Id == idExpenseEstate);
         }
+
+        public static AssociationExpenses GetByIdNotSpecialtype(int idExpenseEstate)
+        {
+            return GetContext().AssociationExpenses.FirstOrDefault(ee => ee.Id == idExpenseEstate && !ee.Expenses.specialType.HasValue);
+        }
+
 
         public static AssociationExpenses Add(int associationId, int expenseId, int month, int year, string expenseType, bool? isStairCaseSplit)
         {
@@ -176,9 +182,10 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void UpdatePricePerUnit(int idExpenseEstate, decimal? newPricePerUnit)
+        public static void UpdatePricePerUnit(int idAssociationExpense, decimal? newPricePerUnit)
         {
-            var associationExpense = GetContext().AssociationExpenses.FirstOrDefault(ee => ee.Id == idExpenseEstate && !ee.Expenses.specialType.HasValue);
+            var associationExpense = AssociationExpensesManager.GetByIdNotSpecialtype(idAssociationExpense);
+
             if (associationExpense != null)
             {
                 associationExpense.PricePerExpenseUnit = newPricePerUnit;
@@ -186,6 +193,76 @@ namespace Administratoro.BL.Managers
 
                 ApartmentExpensesManager.UpdateValueForPriceUpdate(associationExpense.Id, newPricePerUnit);
             }
+        }
+
+        public static void UpdatePricePerUnit(int idAssociationExpense, List<InvoiceSubcategories> invoiceSubcategories)
+        {
+                var associationExpense = AssociationExpensesManager.GetByIdNotSpecialtype(idAssociationExpense);
+
+                if (associationExpense != null)
+                {
+                    decimal? newPricePerUnit = null;
+
+                    if (associationExpense.Id_Expense == (int)Expense.ApaRece)
+                    {
+                        newPricePerUnit = GetPriceForColdWather(invoiceSubcategories);
+                    }
+                    else if (associationExpense.Id_Expense == (int)Expense.ApaCalda)
+                    {
+                        newPricePerUnit = GetPriceForHotWather(associationExpense, invoiceSubcategories);
+                    }
+
+                    UpdatePricePerUnit(idAssociationExpense, newPricePerUnit);
+                }
+        }
+
+        private static decimal? GetPriceForHotWather(AssociationExpenses associationExpense, List<InvoiceSubcategories> invoiceSubcategories)
+        {
+            decimal? result = null;
+            Invoices invoice = InvoicesManager.GetByAssociationExpense(associationExpense);
+
+            if (invoice != null )
+            {
+                var invoiceSubcategoryForApaCT = InvoicesSubcategoriesManager.GetByInvoiceId(invoice.Id, (int)InvoiceSubcategoryType.ApaCT);
+                if (invoiceSubcategoryForApaCT != null && invoiceSubcategoryForApaCT.quantity.HasValue)
+                {
+                    var coldWAtherExpense = AssociationExpensesManager.GetAssociationExpense(associationExpense.Id_Estate, (int)Expense.ApaRece, associationExpense.Year, associationExpense.Month);
+                    if(coldWAtherExpense != null && coldWAtherExpense.PricePerExpenseUnit.HasValue)
+                    {
+                        result = ((coldWAtherExpense.PricePerExpenseUnit.Value * invoiceSubcategoryForApaCT.quantity.Value) + 2 )/ invoiceSubcategoryForApaCT.quantity.Value;
+
+                    }
+                }
+            }
+
+            // 2. get preparare AC from hor wather (invoiceSubcategories)
+            // price = (price AR*1(apa ct quantity) + 2) / 1(apa CT quantity)
+
+            return result;
+        }
+
+        private static decimal? GetPriceForColdWather(List<InvoiceSubcategories> invoiceSubcategories)
+        {
+            decimal? result = null;
+            int[] subcategoryIds = { (int)InvoiceSubcategoryType.ApaRetea, (int)InvoiceSubcategoryType.ApaCT, (int)InvoiceSubcategoryType.Canal };
+
+            var subcategories = invoiceSubcategories.Where(i => subcategoryIds.Any(s => s == i.Id_subCategType));
+            var counsumptionWather = invoiceSubcategories.FirstOrDefault(i => i.Id_subCategType == (int)InvoiceSubcategoryType.ApaRetea);
+
+            if (counsumptionWather != null && counsumptionWather.quantity.HasValue && subcategories.All(s=>s.quantity.HasValue && s.PricePerUnit.HasValue))
+            {
+                foreach (var subcategory in subcategories)
+                {
+                    if (subcategory.quantity.HasValue && subcategory.PricePerUnit.HasValue)
+                    {
+                        var value = (subcategory.quantity.Value * subcategory.PricePerUnit.Value);
+                        result = result.HasValue ? result + value : value;
+                    }
+                }
+                result = result / counsumptionWather.quantity.Value;
+            }
+
+            return result;
         }
 
         public static List<YearMonth> GetAllMonthsAndYearsAvailableByAssociationId(int assotiationId)
@@ -198,7 +275,7 @@ namespace Administratoro.BL.Managers
         public static List<YearMonth> GetAllMonthsAndYearsNotClosedByAssociationId(int assotiationId)
         {
             return GetContext().AssociationExpenses.Where(ee => ee.Id_Estate == assotiationId &&
-                ee.Year != -1 && ee.Month != -1 && !ee.Expenses.specialType.HasValue && !ee.IsClosed.HasValue)
+                ee.Year != -1 && ee.Month != -1 && !ee.Expenses.specialType.HasValue && (!ee.IsClosed.HasValue || !ee.isDefault))
                 .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee => ee.Year).ToList();
         }
 
@@ -391,7 +468,7 @@ namespace Administratoro.BL.Managers
 
             //if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
             //{
-                result = StatusOfInvoicesForSplit(associationExpense, result, redistributeValue, percentage);
+            result = StatusOfInvoicesForSplit(associationExpense, result, redistributeValue, percentage);
             //}
             //else
             //{
@@ -456,15 +533,31 @@ namespace Administratoro.BL.Managers
         public static string ExpensePercentageFilledInMessage(AssociationExpenses associationExpense)
         {
             var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.IndexNew.HasValue);
+
             int apartmentsWithCountersOfThatExpense = associationExpense.ApartmentExpenses.Count();
 
             return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + apartmentsWithCountersOfThatExpense + "</b> ";
         }
 
+        public static void ConfigurePerIndex(Associations association, int year, int month)
+        {
+            IEnumerable<Administratoro.DAL.Expenses> allExpenses = ExpensesManager.GetAllExpenses();
+            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(association.Id, year, month);
+
+            foreach (Expenses expense in allExpenses)
+            {
+                var associationExpense = associationExpenses.FirstOrDefault(ea => ea.Id_Expense == expense.Id);
+                if (associationExpense != null)
+                {
+                    var apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(association.Id, associationExpense.Id);
+                    ApartmentExpensesManager.ConfigurePerIndex(associationExpense, apartments);
+                }
+            }
+        }
+
         #endregion
 
-
-        public static void CloseMonth(int association, int year, int month, bool shouldClose = true)
+        public static void OpenCloseMonth(int association, int year, int month, bool shouldClose = true)
         {
             List<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
                 ee.Year == year && ee.Month == month).ToList();
@@ -485,9 +578,15 @@ namespace Administratoro.BL.Managers
                 ee.Year == year && ee.Month == month);
             foreach (var associationExpense in allEE)
             {
+                if (associationExpense.Invoices.Count() == 0 || associationExpense.Invoices.Any(i => !i.Value.HasValue))
+                {
+                    result.Add((Expense)associationExpense.Id_Expense);
+                    continue;
+                }
+
                 if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
                 {
-                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerApartments || associationExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerNrTenants || associationExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
                     {
                         if (associationExpense.Invoices.Count != associationExpense.Associations.StairCases.Count || associationExpense.Invoices.Any(i => !i.Value.HasValue))
                         {
@@ -505,7 +604,7 @@ namespace Administratoro.BL.Managers
                 }
                 else
                 {
-                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerApartments || associationExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+                    if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerNrTenants || associationExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
                     {
                         if (associationExpense.Invoices.Any(i => !i.Value.HasValue) && associationExpense.Invoices.Count != 0)
                         {
@@ -537,6 +636,10 @@ namespace Administratoro.BL.Managers
         {
             List<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
                 ee.Year == year && ee.Month == month).ToList();
+            if (allEE.Count() == 0)
+            {
+                return false;
+            }
 
             return allEE.All(e => e.IsClosed.HasValue && e.IsClosed.Value);
         }
@@ -549,20 +652,6 @@ namespace Administratoro.BL.Managers
             if (associationExpense != null)
             {
                 result = associationExpense.ApartmentExpenses.Where(te => te.Apartments.AssociationCountersApartment.Any(ac => ac.AssociationCounters.Id_Expense == associationExpense.Id_Expense)).Select(te => te.Apartments).ToList();
-            }
-
-            return result;
-        }
-
-        public static IEnumerable<Apartments> GetApartmentsNrThatShouldRedistributeTo(int associationExpenseId, int? stairCaseId)
-        {
-            IEnumerable<Apartments> result = new List<Apartments>();
-
-            var associationExpense = AssociationExpensesManager.GetById(associationExpenseId);
-            if (associationExpense != null)
-            {
-                result = associationExpense.ApartmentExpenses.Where(te => te.Apartments.AssociationCountersApartment.Any(ac => ac.AssociationCounters.Id_Expense == associationExpense.Id_Expense)
-                    && te.Apartments.Id_StairCase == stairCaseId).Select(te => te.Apartments).Distinct().ToList();
             }
 
             return result;

@@ -39,7 +39,7 @@ namespace Admin
             }
         }
 
-        public List<Administratoro.DAL.Expenses> Expenses
+        public static List<Administratoro.DAL.Expenses> Expenses
         {
             get
             {

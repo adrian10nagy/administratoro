@@ -41,15 +41,17 @@ namespace Admin.Expenses
 
         protected void Page_Init(object sender, EventArgs e)
         {
+            AssociationExpensesManager.ConfigurePerIndex(Association, year(), month());
+
             mainHeader.InnerText = "Facturi pentru luna " + CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month()) + " " + year();
             InitializeInvoice();
         }
 
-        private void InitializeInvoice(int? exesId = null)
+        private void InitializeInvoice()
         {
             if (month() != 0 && year() != 0 && Association.Id != 0)
             {
-                InitializeInvoice(Association.Id, year(), month(), exesId);
+                InitializeInvoice(Association.Id, year(), month());
             }
             else
             {
@@ -57,13 +59,14 @@ namespace Admin.Expenses
             }
         }
 
-        private void InitializeInvoice(int associationId, int yearNr, int monthNr, int? exesId)
+        private void InitializeInvoice(int associationId, int yearNr, int monthNr)
         {
-            bool isMonthClosed = AssociationExpensesManager.IsMonthClosed(Association.Id, yearNr, monthNr);
+            bool isMonthClosed = AssociationExpensesManager.IsMonthClosed(associationId, yearNr, monthNr);
             if (!isMonthClosed)
             {
                 AddHeaderPanels();
                 AddBodyPanels(associationId, yearNr, monthNr);
+                btnCloseMonth.CommandArgument = "1";
             }
             else
             {
@@ -72,7 +75,8 @@ namespace Admin.Expenses
                 lbMessage.Text = "Luna este închisă, nu se mai pot face modificări. Pentru a redeschide luna contactează administratorul asociației";
                 pnlMessage.Controls.Add(lbMessage);
                 pnlMessage.Visible = true;
-                btnCloseMonth.Visible = false;
+                btnCloseMonth.Text = "Deschide Luna";
+                btnCloseMonth.CommandArgument = "0";
                 lblExpenseMeessageConfigure.Visible = false;
             }
         }
@@ -83,7 +87,7 @@ namespace Admin.Expenses
             bool even = false;
 
             IEnumerable<Administratoro.DAL.Expenses> allExpenses = ExpensesManager.GetAllExpenses();
-            var associationExpenses = AssociationExpensesManager.GetAllAssociationsByMonthAndYearNotDisabled(associationId, yearNr, monthNr).OrderBy(ee => ee.Id_ExpenseType);
+            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(associationId, yearNr, monthNr).OrderBy(ee => ee.Id_ExpenseType);
 
             // add expense panels
             foreach (Expenses expense in allExpenses)
@@ -115,7 +119,7 @@ namespace Admin.Expenses
                     TextBox tb3;
                     var col3 = AddBodyPanelCol3(associationExpense, tb2, out tb3);
 
-                    var col6 = AddBodyPanelCol6(associationExpense, tb3);
+                    var col6 = AddBodyPanelCol6(associationExpense);
                     var col4 = AddBodyPanelCol4(associationExpense, tb2);
                     var col5 = AddBodyPanelCol5(associationExpense, isExpensePerIndex);
 
@@ -132,7 +136,7 @@ namespace Admin.Expenses
             }
         }
 
-        private Panel AddBodyPanelCol5(AssociationExpenses associationExpense, bool isExpensePerIndex)
+        private static Panel AddBodyPanelCol5(AssociationExpenses associationExpense, bool isExpensePerIndex)
         {
             // column 5
             var col5 = new Panel
@@ -200,7 +204,7 @@ namespace Admin.Expenses
             return col4;
         }
 
-        private Panel AddBodyPanelCol6(AssociationExpenses associationExpense, TextBox tb3)
+        private Panel AddBodyPanelCol6(AssociationExpenses associationExpense)
         {
             // column 6
             var col6 = new Panel
@@ -215,7 +219,7 @@ namespace Admin.Expenses
                 Button btnRedistibuteRemainingExpense = new Button
                 {
                     CssClass = "btnRedistibuteRemainingExpense",
-                    Visible = (percentage == "100" || percentage == string.Empty) && !string.IsNullOrEmpty(tb3.Text) ? true : false,
+                    Visible = (percentage == "100" || percentage == string.Empty) ? true : false,
                     Text = (!associationExpense.RedistributeType.HasValue) ? "Redistribuie" : "Redistibuit " + associationExpense.AssociationExpensesRedistributionTypes.Value + ", MODIFICĂ",
                     CommandArgument = associationExpense.Id.ToString()
                 };
@@ -225,7 +229,7 @@ namespace Admin.Expenses
             return col6;
         }
 
-        private Panel AddBodyPanelCol3(AssociationExpenses associationExpense, TextBox tb1, out TextBox tb3)
+        private static Panel AddBodyPanelCol3(AssociationExpenses associationExpense, TextBox tb1, out TextBox tb3)
         {
             // column 3
             var col3 = new Panel
@@ -274,14 +278,14 @@ namespace Admin.Expenses
             //{
             //    //var col3Literal = new Literal { Text = "0" };
 
-            //    //var col3Literal = new Literal { Text = Estate.Tenants.Sum(s => s.Dependents) + " locatari, <b>" + ApartmentExpensesManager.CalculatePertenantPrice(apartmentExpense) + "</b> alocat fiecăruia " };
+            //    //var col3Literal = new Literal { Text = Estate.Tenants.Sum(s => s.Dependents) + " persoane, <b>" + ApartmentExpensesManager.CalculatePertenantPrice(apartmentExpense) + "</b> alocat fiecăruia " };
             //    //col3.Controls.Add(col3Literal);
             //}
 
             return col3;
         }
 
-        private Panel AddBodyPanelCol2(AssociationExpenses associationExpense, out TextBox tb2)
+        private static Panel AddBodyPanelCol2(AssociationExpenses associationExpense, out TextBox tb2)
         {
             // column 2
             var col2 = new Panel
@@ -350,7 +354,7 @@ namespace Admin.Expenses
             return col2;
         }
 
-        private Panel AddBodyPanelCol1(Expenses expense, AssociationExpenses associationExpense)
+        private static Panel AddBodyPanelCol1(Expenses expense, AssociationExpenses associationExpense)
         {
             // column 1
             var col1 = new Panel
@@ -365,7 +369,7 @@ namespace Admin.Expenses
             return col1;
         }
 
-        private Panel AddBodyPanelCol0(AssociationExpenses associationExpense, bool isExpensePerIndex)
+        private static Panel AddBodyPanelCol0(AssociationExpenses associationExpense, bool isExpensePerIndex)
         {
             // column 0
             var col0 = new Panel();
@@ -396,8 +400,6 @@ namespace Admin.Expenses
             var headerCol3 = new Panel { CssClass = "col-md-1 col-sm-1 col-xs-6" };
             var headerCol3Literal3 = new Literal { Text = "Valoare de redistribuit" };
             headerCol3.Controls.Add(headerCol3Literal3);
-
-            var headerCol4 = new Panel { CssClass = "col-md-2 col-sm-3 col-xs-6" };
 
             var headerCol5 = new Panel { CssClass = "col-md-2 col-sm-2 col-xs-6" };
             var headerCol6 = new Panel { CssClass = "col-md-2 col-sm-2 col-xs-6" };
@@ -463,13 +465,11 @@ namespace Admin.Expenses
             decimal redistributeVal;
             if (decimal.TryParse(redistributeValue, out redistributeVal))
             {
-                Associations estate = AssociationsManager.GetByAssociationExpenseId(associationExpenseId);
                 IEnumerable<Apartments> apartmentsForRedistribute = AssociationExpensesManager.GetApartmentsNrThatShouldRedistributeTo(associationExpenseId);
 
                 txtInvoiceRedistributeEqualApartment.Text = apartmentsForRedistribute.Count() + " apartamente, alocă <b>" +
                     Math.Round(redistributeVal / apartmentsForRedistribute.Count(), 2) + "</b> la fiecare apartament";
 
-                var allApartments = ApartmentsManager.GetAllByAssociationId(estate.Id);
                 var allApartmentDependents = apartmentsForRedistribute.Sum(t => t.Dependents);
                 var valuePerApartment = "0";
                 if (allApartmentDependents != 0)
@@ -477,7 +477,7 @@ namespace Admin.Expenses
                     valuePerApartment = Math.Round(redistributeVal / allApartmentDependents, 2).ToString();
                 }
 
-                txtInvoiceRedistributeEqualTenants.Text = allApartmentDependents + " locatari în bloc, alocă <b>" + valuePerApartment + "</b> per fiecare locatar";
+                txtInvoiceRedistributeEqualTenants.Text = allApartmentDependents + " persoane în bloc, alocă <b>" + valuePerApartment + "</b> per fiecare locatar";
 
                 invoiceRedistributeEqualApartment.CommandArgument = associationExpenseId.ToString();
                 invoiceRedistributeEqualTenants.CommandArgument = associationExpenseId.ToString();
@@ -556,7 +556,8 @@ namespace Admin.Expenses
             }
             else
             {
-                AssociationExpensesManager.CloseMonth(Association.Id, year(), month());
+                bool shouldMonthClose = btnCloseMonth.CommandArgument == "0" ? false : true;
+                AssociationExpensesManager.OpenCloseMonth(Association.Id, year(), month(), shouldMonthClose);
                 Response.Redirect(Request.RawUrl);
             }
         }

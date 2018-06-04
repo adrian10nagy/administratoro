@@ -87,12 +87,12 @@
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:BoundField HeaderText="Serie Contor" DataField="Value" />
-            <asp:BoundField HeaderText="Scară" DataField="Id_StairCase" />
+            <asp:BoundField HeaderText="Scară" DataField="AssociationCounterStairCaseIdsString" />
             <asp:TemplateField HeaderText="Scară">
                 <ItemTemplate>
-                    <asp:Label ID="lblStairCaseId" runat="server" Text='<%# Eval("Id_StairCase") %>' Visible="false" />
-                    <asp:DropDownList ID="ddlStairCase" runat="server" Enabled="false">
-                    </asp:DropDownList>
+                    <asp:Label ID="lblStairCaseId" runat="server" Text='<%# Eval("AssociationCounterStairCaseIdsString") %>' Visible="false" />
+                    <asp:CheckBoxList ID="chbStairCase"  runat="server" Enabled="true">
+                    </asp:CheckBoxList>
                 </ItemTemplate>
             </asp:TemplateField>
         </Columns>
@@ -104,12 +104,12 @@
             <asp:DropDownList runat="server" ID="drpAssociationCounterTypeNew" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:DropDownList>
         </div>
         <div class="col-md-12 col-cs-12">
-            <asp:Label runat="server" Text="Scară:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
-            <asp:DropDownList runat="server" ID="drpAssociationStairs" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:DropDownList>
-        </div>
-        <div class="col-md-12 col-cs-12">
             <asp:Label runat="server" Text="Serie contor:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
             <asp:TextBox runat="server" ID="txtAssociationCounterValueNew" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
+        </div>
+        <div class="col-md-12 col-cs-12">
+            <asp:Label runat="server" Text="Scară:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
+            <asp:CheckBoxList runat="server" ID="chbAssociationStairs" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:CheckBoxList>
         </div>
     </asp:Panel>
     <asp:Button runat="server" ID="btnAssociationCountersNew" Text="Adaugă contor" OnClick="btnAssociationCountersNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />

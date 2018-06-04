@@ -17,19 +17,19 @@ namespace Administratoro.DAL
         public AssociationCounters()
         {
             this.AssociationCountersApartment = new HashSet<AssociationCountersApartment>();
+            this.AssociationCountersStairCase = new HashSet<AssociationCountersStairCase>();
             this.InvoiceIndexes = new HashSet<InvoiceIndexes>();
         }
     
         public int Id { get; set; }
         public string Value { get; set; }
         public int Id_Estate { get; set; }
-        public Nullable<int> Id_StairCase { get; set; }
         public Nullable<int> Id_Expense { get; set; }
     
         public virtual ICollection<AssociationCountersApartment> AssociationCountersApartment { get; set; }
+        public virtual ICollection<AssociationCountersStairCase> AssociationCountersStairCase { get; set; }
         public virtual Associations Associations { get; set; }
         public virtual Expenses Expenses { get; set; }
-        public virtual StairCases StairCases { get; set; }
         public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }
     }
 }

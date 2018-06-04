@@ -17,7 +17,7 @@ namespace Administratoro.DAL
         public StairCases()
         {
             this.Apartments = new HashSet<Apartments>();
-            this.AssociationCounters = new HashSet<AssociationCounters>();
+            this.AssociationCountersStairCase = new HashSet<AssociationCountersStairCase>();
             this.Invoices = new HashSet<Invoices>();
         }
     
@@ -27,7 +27,7 @@ namespace Administratoro.DAL
         public Nullable<decimal> Indiviza { get; set; }
     
         public virtual ICollection<Apartments> Apartments { get; set; }
-        public virtual ICollection<AssociationCounters> AssociationCounters { get; set; }
+        public virtual ICollection<AssociationCountersStairCase> AssociationCountersStairCase { get; set; }
         public virtual Associations Associations { get; set; }
         public virtual ICollection<Invoices> Invoices { get; set; }
     }
