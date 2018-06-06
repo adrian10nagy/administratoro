@@ -465,7 +465,7 @@ namespace Administratoro.BL.Managers
             ApartmentExpenses result = null;
 
             var apartmentExpense = ApartmentExpensesManager.GetById(apartmentExpenseId);
-            if (apartmentExpense != null)
+            if (apartmentExpense != null && apartmentExpense.AssociationExpenses != null)
             {
                 result = GetForPreviousMonth(apartmentExpense.AssociationExpenses.Id, apartmentId, apartmentExpense.CounterOrder);
             }
@@ -804,7 +804,7 @@ namespace Administratoro.BL.Managers
                             break;
                     }
 
-                    totalCol[(Expense)associationExpense.Expenses.Id] = rowValue == 0 ? totalCol[(Expense)associationExpense.Expenses.Id] :
+                    totalCol[(Expense)associationExpense.Expenses.Id] = !rowValue.HasValue || rowValue.Value == 0 ? totalCol[(Expense)associationExpense.Expenses.Id] :
                                 totalCol[(Expense)associationExpense.Expenses.Id] + rowValue.Value;
                 }
 
@@ -831,7 +831,7 @@ namespace Administratoro.BL.Managers
                 result = result.HasValue ? result + redistributionValue.Value : redistributionValue.Value;
             }
 
-            result = result.HasValue ? 0.0m : result;
+            result = result.HasValue ? result : 0.0m;
 
             return result;
         }

@@ -21,6 +21,7 @@ namespace Admin
                 {
                     result = (Administratoro.DAL.Associations)Session[SessionConstants.SelectedAssociation];
                 }
+
                 return result;
             }
         }

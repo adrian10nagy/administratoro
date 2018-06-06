@@ -1,4 +1,5 @@
-﻿using Administratoro.DAL;
+﻿using Administratoro.BL.Constants;
+using Administratoro.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Administratoro.BL.Managers
 
         public static Invoices GetById(int invoiceId)
         {
-            return GetContext().Invoices.FirstOrDefault(t => t.Id == invoiceId);
+            return GetContext(true).Invoices.FirstOrDefault(t => t.Id == invoiceId);
         }
 
         public static IEnumerable<Invoices> GetByAssociationExpenseId(int associationExpenseId)
@@ -298,9 +299,10 @@ namespace Administratoro.BL.Managers
                             i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year);
         }
 
-        internal static Invoices GetByAssociationExpense(AssociationExpenses associationExpense)
+        public static Invoices GetByAssociationExpenseForExpense(AssociationExpenses associationExpense, Expense expense)
         {
-            var ae = AssociationExpensesManager.GetById(associationExpense.Id);
+            var ae = AssociationExpensesManager.GetForSameMonthByExpense(associationExpense.Id, expense);
+
             return ae.Invoices.FirstOrDefault();
         }
     }

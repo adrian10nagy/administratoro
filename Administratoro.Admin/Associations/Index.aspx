@@ -62,7 +62,7 @@
     <asp:Panel ID="newStairCasePanel" runat="server" Visible="false">
         <asp:Label runat="server" Text="Nume:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
         <asp:TextBox runat="server" ID="txtAssociationStairCaseName" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
-        <asp:Label runat="server" Text="Serie contor:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
+        <asp:Label runat="server" Text="Cota indiviză:" CssClass="col-md-2 col-xs-2 col-xs-offset-1"></asp:Label>
         <asp:TextBox runat="server" ID="txtAssociationStairCaseIndiviza" CssClass="col-md-6 col-xs-6 col-xs-offset-1"></asp:TextBox>
     </asp:Panel>
     <asp:Button runat="server" ID="btnAssociationStairCasesNew" Text="Adaugă scară" OnClick="btnAssociationstairCasesNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />

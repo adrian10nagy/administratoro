@@ -180,7 +180,8 @@ namespace Admin.Tenants
 
                 TextBox txtNrOfCounters = new TextBox
                 {
-                    CssClass = "col-md-4 col-xs-4"
+                    CssClass = "col-md-4 col-xs-4",
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
 
                 if(ac == null)

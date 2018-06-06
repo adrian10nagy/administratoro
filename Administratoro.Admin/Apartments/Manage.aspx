@@ -9,11 +9,11 @@
     <div class="preLoadIcon"></div>
     <div class="col-md-12 col-sm-12 col-xs-12">
         <asp:Label ID="lblMessage" runat="server"></asp:Label>
-        <span id="apartmentsManageAddNew">
+        <span id="apartmentsManageAddNew" class="btn">
             <i class="fa fa-plus"></i><a href="~/Apartments/Add.aspx" runat="server">Adaugă apartament nou</a>
-            <br />
-            <br />
         </span>
+        <br />
+        <br />
         <div class="x_panel">
             <div class="x_title">
                 <h2>Apartamente</h2>

@@ -61,6 +61,10 @@ namespace Administratoro.BL.Managers
             {
                 subcategoryTypes = new List<int> { 1, 2, 3, 4 };
             }
+            else if (invoice.AssociationExpenses.Id_Expense == (int)Expense.ApaCalda)
+            {
+                subcategoryTypes = new List<int> { 5,6 };
+            }
 
             AddDefault(invoiceId, subcategoryTypes);
         }

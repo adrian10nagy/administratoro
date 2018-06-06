@@ -106,7 +106,7 @@ namespace Administratoro.BL.Managers
 
         public static AssociationCounters GetById(int counterId)
         {
-            return GetContext().AssociationCounters.FirstOrDefault(c => c.Id == counterId);
+            return GetContext(true).AssociationCounters.FirstOrDefault(c => c.Id == counterId);
         }
 
         public static void Update(AssociationCounters newCounter)

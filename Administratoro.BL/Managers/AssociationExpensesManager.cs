@@ -197,46 +197,43 @@ namespace Administratoro.BL.Managers
 
         public static void UpdatePricePerUnit(int idAssociationExpense, List<InvoiceSubcategories> invoiceSubcategories)
         {
-                var associationExpense = AssociationExpensesManager.GetByIdNotSpecialtype(idAssociationExpense);
+            var associationExpense = AssociationExpensesManager.GetByIdNotSpecialtype(idAssociationExpense);
 
-                if (associationExpense != null)
+            if (associationExpense != null)
+            {
+                decimal? newPricePerUnit = null;
+
+                if (associationExpense.Id_Expense == (int)Expense.ApaRece)
                 {
-                    decimal? newPricePerUnit = null;
-
-                    if (associationExpense.Id_Expense == (int)Expense.ApaRece)
-                    {
-                        newPricePerUnit = GetPriceForColdWather(invoiceSubcategories);
-                    }
-                    else if (associationExpense.Id_Expense == (int)Expense.ApaCalda)
-                    {
-                        newPricePerUnit = GetPriceForHotWather(associationExpense, invoiceSubcategories);
-                    }
-
-                    UpdatePricePerUnit(idAssociationExpense, newPricePerUnit);
+                    newPricePerUnit = GetPriceForColdWather(invoiceSubcategories);
                 }
+                else if (associationExpense.Id_Expense == (int)Expense.ApaCalda)
+                {
+                    newPricePerUnit = GetPriceForHotWather(associationExpense, invoiceSubcategories);
+                }
+
+                UpdatePricePerUnit(idAssociationExpense, newPricePerUnit);
+            }
         }
 
         private static decimal? GetPriceForHotWather(AssociationExpenses associationExpense, List<InvoiceSubcategories> invoiceSubcategories)
         {
             decimal? result = null;
-            Invoices invoice = InvoicesManager.GetByAssociationExpense(associationExpense);
+            Invoices invoice = InvoicesManager.GetByAssociationExpenseForExpense(associationExpense, Expense.ApaRece);
 
-            if (invoice != null )
+            if (invoice != null)
             {
                 var invoiceSubcategoryForApaCT = InvoicesSubcategoriesManager.GetByInvoiceId(invoice.Id, (int)InvoiceSubcategoryType.ApaCT);
                 if (invoiceSubcategoryForApaCT != null && invoiceSubcategoryForApaCT.quantity.HasValue)
                 {
                     var coldWAtherExpense = AssociationExpensesManager.GetAssociationExpense(associationExpense.Id_Estate, (int)Expense.ApaRece, associationExpense.Year, associationExpense.Month);
-                    if(coldWAtherExpense != null && coldWAtherExpense.PricePerExpenseUnit.HasValue)
+                    if (coldWAtherExpense != null && coldWAtherExpense.PricePerExpenseUnit.HasValue && invoiceSubcategoryForApaCT.Value.HasValue)
                     {
-                        result = ((coldWAtherExpense.PricePerExpenseUnit.Value * invoiceSubcategoryForApaCT.quantity.Value) + 2 )/ invoiceSubcategoryForApaCT.quantity.Value;
+                        result = ((coldWAtherExpense.PricePerExpenseUnit.Value * invoiceSubcategoryForApaCT.quantity.Value) + invoiceSubcategoryForApaCT.Value.Value) / invoiceSubcategoryForApaCT.quantity.Value;
 
                     }
                 }
             }
-
-            // 2. get preparare AC from hor wather (invoiceSubcategories)
-            // price = (price AR*1(apa ct quantity) + 2) / 1(apa CT quantity)
 
             return result;
         }
@@ -247,9 +244,9 @@ namespace Administratoro.BL.Managers
             int[] subcategoryIds = { (int)InvoiceSubcategoryType.ApaRetea, (int)InvoiceSubcategoryType.ApaCT, (int)InvoiceSubcategoryType.Canal };
 
             var subcategories = invoiceSubcategories.Where(i => subcategoryIds.Any(s => s == i.Id_subCategType));
-            var counsumptionWather = invoiceSubcategories.FirstOrDefault(i => i.Id_subCategType == (int)InvoiceSubcategoryType.ApaRetea);
+            var counsumptionWather = invoiceSubcategories.FirstOrDefault(i => i.Id_subCategType == (int)InvoiceSubcategoryType.Canal);
 
-            if (counsumptionWather != null && counsumptionWather.quantity.HasValue && subcategories.All(s=>s.quantity.HasValue && s.PricePerUnit.HasValue))
+            if (counsumptionWather != null && counsumptionWather.quantity.HasValue && subcategories.All(s => s.quantity.HasValue && s.PricePerUnit.HasValue))
             {
                 foreach (var subcategory in subcategories)
                 {
@@ -661,6 +658,19 @@ namespace Administratoro.BL.Managers
         {
             var counters = CountersManager.GetByApartment(apartmentId);
             return counters.Any(c => c.Id_Expense == expenseId);
+        }
+
+        public static AssociationExpenses GetForSameMonthByExpense(int id, Expense expense)
+        {
+            AssociationExpenses result = null;
+            var ae = GetById(id);
+
+            if (ae != null)
+            {
+                result = GetContext(true).AssociationExpenses.FirstOrDefault(x => x.Year == ae.Year && x.Month == ae.Month && x.Id_Estate == ae.Id_Estate && x.Id_Expense == (int)expense);
+            }
+
+            return result;
         }
     }
 }

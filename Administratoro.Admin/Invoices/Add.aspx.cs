@@ -601,7 +601,8 @@ namespace Admin.Invoices
                 {
                     Text = invoicesIndexe != null && invoicesIndexe.IndexOld.HasValue ? invoicesIndexe.IndexOld.Value.ToString() : string.Empty,
                     CssClass = "form-control",
-                    ID = "tbInsexOld" + invoicesIndexe.Id
+                    ID = "tbInsexOld" + invoicesIndexe.Id,
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
                 panel7.Controls.Add(tbInsexOld);
                 panelMain.Controls.Add(panel7);
@@ -615,7 +616,8 @@ namespace Admin.Invoices
                 {
                     Text = invoicesIndexe != null && invoicesIndexe.IndexNew.HasValue ? invoicesIndexe.IndexNew.Value.ToString() : string.Empty,
                     CssClass = "form-control",
-                    ID = "tbIndexNew" + invoicesIndexe.Id
+                    ID = "tbIndexNew" + invoicesIndexe.Id,
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
                 panel8.Controls.Add(tbIndexNew);
                 panelMain.Controls.Add(panel8);
@@ -801,7 +803,8 @@ namespace Admin.Invoices
                     TextBox tbquantity = new TextBox
                     {
                         Text = invoiceSubcategory.quantity.HasValue ? invoiceSubcategory.quantity.Value.ToString() : string.Empty,
-                        CssClass = "form-control"
+                        CssClass = "form-control",
+                        AutoCompleteType = AutoCompleteType.Disabled
                     };
                     quantityPanel.Controls.Add(tbquantity);
                     innerPanelMain.Controls.Add(quantityPanel);
@@ -814,7 +817,8 @@ namespace Admin.Invoices
                     TextBox tbPrice = new TextBox
                     {
                         Text = invoiceSubcategory.PricePerUnit.HasValue ? invoiceSubcategory.PricePerUnit.Value.ToString() : string.Empty,
-                        CssClass = "form-control"
+                        CssClass = "form-control",
+                        AutoCompleteType = AutoCompleteType.Disabled
                     };
                     pricePanel.Controls.Add(tbPrice);
                     innerPanelMain.Controls.Add(pricePanel);
@@ -828,6 +832,7 @@ namespace Admin.Invoices
                     {
                         Text = invoiceSubcategory.VAT.HasValue ? invoiceSubcategory.VAT.ToString() : string.Empty,
                         CssClass = "form-control",
+                        AutoCompleteType = AutoCompleteType.Disabled
                     };
                     vatPanel.Controls.Add(tbVat);
                     innerPanelMain.Controls.Add(vatPanel);
@@ -840,7 +845,8 @@ namespace Admin.Invoices
                     TextBox tbService = new TextBox
                     {
                         Text = invoiceSubcategory.service.HasValue ? invoiceSubcategory.service.ToString() : string.Empty,
-                        CssClass = "form-control"
+                        CssClass = "form-control",
+                        AutoCompleteType = AutoCompleteType.Disabled
                     };
                     servicePanel.Controls.Add(tbService);
                     innerPanelMain.Controls.Add(servicePanel);
@@ -853,7 +859,8 @@ namespace Admin.Invoices
                     TextBox tbPenalties = new TextBox
                     {
                         Text = invoiceSubcategory.penalties.HasValue ? invoiceSubcategory.penalties.ToString() : string.Empty,
-                        CssClass = "form-control"
+                        CssClass = "form-control",
+                        AutoCompleteType = AutoCompleteType.Disabled
                     };
                     penaltiesPanel.Controls.Add(tbPenalties);
                     innerPanelMain.Controls.Add(penaltiesPanel);
@@ -867,7 +874,8 @@ namespace Admin.Invoices
                     {
                         Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.Value.ToString() : string.Empty,
                         CssClass = "form-control",
-                        ID = "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType
+                        ID = "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType,
+                        AutoCompleteType = AutoCompleteType.Disabled
                     };
                     valuePanel.Controls.Add(tb);
                     innerPanelMain.Controls.Add(valuePanel);
@@ -1021,7 +1029,8 @@ namespace Admin.Invoices
                 {
                     CssClass = "form-control",
                     Text = invoice.Value.HasValue ? invoice.Value.Value.ToString() : string.Empty,
-                    ID = invoice.Id != 0 ? invoice.Id + "tbInvoiceId" : "tbInvoiceId"
+                    ID = invoice.Id != 0 ? invoice.Id + "tbInvoiceId" : "tbInvoiceId",
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
                 panel1.Controls.Add(tbValue);
 
@@ -1034,7 +1043,8 @@ namespace Admin.Invoices
                 {
                     CssClass = "form-control",
                     Text = invoice.Description,
-                    ID = invoice.Id != 0 ? invoice.Id + "tbStairCase" + invoice.Id_StairCase : "-1tbStairCase"
+                    ID = invoice.Id != 0 ? invoice.Id + "tbStairCase" + invoice.Id_StairCase : "-1tbStairCase",
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
                 panel2.Controls.Add(tbDescription);
 
@@ -1104,7 +1114,8 @@ namespace Admin.Invoices
                 {
                     Text = invoice.issueDate.HasValue ? invoice.issueDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : string.Empty,
                     CssClass = "form-control datepicker",
-                    ID = invoice.Id != 0 ? "tbDate" + invoice.Id : "-1tbDate"
+                    ID = invoice.Id != 0 ? "tbDate" + invoice.Id : "-1tbDate",
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
                 panel5.Controls.Add(tbDate);
 
@@ -1117,7 +1128,8 @@ namespace Admin.Invoices
                 {
                     Text = invoice.issueNumber,
                     CssClass = "form-control",
-                    ID = invoice.Id != 0 ? "tbIssueNr" + invoice.Id : "-1tbIssueNr"
+                    ID = invoice.Id != 0 ? "tbIssueNr" + invoice.Id : "-1tbIssueNr",
+                    AutoCompleteType = AutoCompleteType.Disabled
                 };
                 panel6.Controls.Add(tbIssueNr);
 
