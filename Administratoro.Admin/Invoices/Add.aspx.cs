@@ -48,7 +48,7 @@ namespace Admin.Invoices
                 InitializeExpenses();
             }
 
-            InitializeValueField(Page.IsPostBack);
+            InitializeValueFields(Page.IsPostBack);
         }
 
         private void InitializeYearMonth()
@@ -355,6 +355,8 @@ namespace Admin.Invoices
 
                             int theSubcategoryId;
                             int theInvoiceId;
+                            int theAssCounterId;
+                            int? theAssCounterIdValue = null;
 
                             decimal? theQuantityToUpdate = DecimalExtensions.GetNullableDecimal(theQuantity.Text);
                             decimal? thePriceToUpdate = DecimalExtensions.GetNullableDecimal(thePrice.Text);
@@ -364,8 +366,15 @@ namespace Admin.Invoices
                             decimal? theValueToUpdate = DecimalExtensions.GetNullableDecimal(theValue.Text);
 
                             var nameSubStringIndex = theName.ID.IndexOf("tbInvoice") + 9;
+                            var valueSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory") + 20;
+                            var assCounterSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory");
 
-                            if (int.TryParse(theValue.ID.Replace("tbinvoiceSubcategory", string.Empty), out theSubcategoryId) &&
+                            if(int.TryParse(theValue.ID.Substring(0, assCounterSubStringIndex), out theAssCounterId))
+                            {
+                                theAssCounterIdValue = theAssCounterId;
+                            }
+
+                            if (int.TryParse(theValue.ID.Substring(valueSubStringIndex), out theSubcategoryId) &&
                                 int.TryParse(theName.ID.Substring(nameSubStringIndex), out theInvoiceId))
                             {
 
@@ -379,6 +388,7 @@ namespace Admin.Invoices
                                     VAT = theVATToUpdate,
                                     service = theServicesToUpdate,
                                     penalties = thePenaltiesToUpdate,
+                                    id_assCounter = theAssCounterIdValue
                                 };
 
                                 InvoicesSubcategoriesManager.Update(invoiceSubcategory);
@@ -477,7 +487,7 @@ namespace Admin.Invoices
             InitializeExpenses();
             pnInvoiceValues.Controls.Clear();
             pnInvoiceSubcategories.Controls.Clear();
-            InitializeValueField();
+            InitializeValueFields();
         }
 
         protected void drpInvoiceYearMonth_SelectedIndexChanged(object sender, EventArgs e)
@@ -485,7 +495,7 @@ namespace Admin.Invoices
             InitializeExpenses();
             pnInvoiceValues.Controls.Clear();
             pnInvoiceSubcategories.Controls.Clear();
-            InitializeValueField();
+            InitializeValueFields();
         }
 
         protected void drpInvoiceExpenses_SelectedIndexChanged(object sender, EventArgs e)
@@ -493,12 +503,12 @@ namespace Admin.Invoices
             pnInvoiceValues.Controls.Clear();
             pnInvoiceSubcategories.Controls.Clear();
             pnlInvoiceDiverseValues.Controls.Clear();
-            InitializeValueField();
+            InitializeValueFields();
         }
 
         #endregion
 
-        private void InitializeValueField(bool isPostbackFromLoadEvent = false)
+        private void InitializeValueFields(bool isPostbackFromLoadEvent = false)
         {
             var yearMonth = drpInvoiceYearMonth.SelectedValue.Split('-');
 
@@ -547,7 +557,7 @@ namespace Admin.Invoices
             DiverseInitializeValueFieldAddInvoices(new List<Administratoro.DAL.Invoices> { new Administratoro.DAL.Invoices() });
         }
 
-        private void InitializeValueFieldAddInvoicesForIndexExpenses(List<Administratoro.DAL.InvoiceIndexes> invoicesIndexes, List<Administratoro.DAL.AssociationCounters> counters)
+        private void InitializeInvoicesForWatherCold(List<Administratoro.DAL.InvoiceIndexes> invoicesIndexes, List<Administratoro.DAL.AssociationCounters> counters)
         {
             foreach (var invoicesIndexe in invoicesIndexes)
             {
@@ -556,7 +566,7 @@ namespace Admin.Invoices
                     CssClass = "col-md-12 col-xs-12 invoicesRow"
                 };
 
-                Panel panel3 = new Panel
+                Panel panel1 = new Panel
                 {
                     CssClass = "col-md-4"
                 };
@@ -588,11 +598,10 @@ namespace Admin.Invoices
                     }
                 }
 
-                panel3.Controls.Add(drpCunters);
-                panelMain.Controls.Add(panel3);
+                panel1.Controls.Add(drpCunters);
+                panelMain.Controls.Add(panel1);
 
-                /* panel 7 */
-                Panel panel7 = new Panel
+                Panel panel2 = new Panel
                 {
                     CssClass = "col-md-4"
                 };
@@ -604,11 +613,10 @@ namespace Admin.Invoices
                     ID = "tbInsexOld" + invoicesIndexe.Id,
                     AutoCompleteType = AutoCompleteType.Disabled
                 };
-                panel7.Controls.Add(tbInsexOld);
-                panelMain.Controls.Add(panel7);
+                panel2.Controls.Add(tbInsexOld);
+                panelMain.Controls.Add(panel2);
 
-                /* panel 6 */
-                Panel panel8 = new Panel
+                Panel panel3 = new Panel
                 {
                     CssClass = "col-md-4"
                 };
@@ -619,8 +627,8 @@ namespace Admin.Invoices
                     ID = "tbIndexNew" + invoicesIndexe.Id,
                     AutoCompleteType = AutoCompleteType.Disabled
                 };
-                panel8.Controls.Add(tbIndexNew);
-                panelMain.Controls.Add(panel8);
+                panel3.Controls.Add(tbIndexNew);
+                panelMain.Controls.Add(panel3);
 
                 pnInvoiceValues.Controls.Add(panelMain);
             }
@@ -630,12 +638,32 @@ namespace Admin.Invoices
         {
             pnInvoiceSubcategories.Visible = false;
             bool isIndexExpense = associationExpense != null && associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
+            bool isSplitPerStairCase = associationExpense != null && associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase == true;
+
             var invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
 
-            if (invoices.Count != 1)
+            if(isSplitPerStairCase)
             {
-                InvoicesManager.AddDefault(associationId, expenseId, year, month);
-                invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
+                var counters = AssociationCountersManager.GetAllByExpenseType(Association.Id, associationExpense.Id_Expense);
+                if(counters.Count() == 0)
+                {
+                    //add for eeach stairCase
+                }
+                else
+                {
+                    foreach (var counter in counters)
+                    {
+                        
+                    }
+                }
+            }
+            else
+            {
+                if (invoices.Count != 1)
+                {
+                    InvoicesManager.AddDefault(associationId, expenseId, year, month);
+                    invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
+                }
             }
 
             if (!isPostbackFromLoadEvent)
@@ -643,51 +671,39 @@ namespace Admin.Invoices
                 InitializeInvoiceFields(invoices[0]);
             }
 
-            var invoicesIndexes = InvoiceIndexesManager.Get(invoices[0].Id).ToList();
-
             if (isIndexExpense)
             {
-                invoices = ConfigureSubcategories(invoices).ToList();
+                List<AssociationCounters> counters = AssociationCountersManager.GetAllByExpenseType(Association.Id, expenseId).ToList();
+                invoices = InvoicesSubcategoriesManager.ConfigureSubcategories(invoices, counters).ToList();
+                
+                var invoicesIndexes = InvoiceIndexesManager.Get(invoices[0].Id).ToList();
+                invoicesIndexes = InvoiceIndexesManager.ConfigureWatherCold(invoices, invoicesIndexes, counters);
 
-                InitializeValueFieldAddColumnHeadersForIndexExpenses();
-                List<AssociationCounters> counters = CountersManager.GetAllByExpenseType(Association.Id, expenseId).ToList();
-                if (invoicesIndexes.Count < counters.Count)
+                if(invoicesIndexes.Count() > 0)
                 {
-                    InvoiceIndexesManager.AddDefault(invoices[0].Id, counters, invoicesIndexes);
-                    invoicesIndexes = InvoiceIndexesManager.Get(invoices[0].Id).ToList();
+                    // add Counters Index old-new
+                    InitializeValueFieldAddColumnHeadersForIndexExpenses();
+                    InitializeInvoicesForWatherCold(invoicesIndexes, counters);
                 }
-
-                InitializeValueFieldAddInvoicesForIndexExpenses(invoicesIndexes, counters);
-                if (expenseId == (int)Expense.ApaRece || expenseId == (int)Expense.ApaCalda)
+                
+                if (expenseId == (int)Expense.ApaRece)
                 {
-                    pnInvoiceSubcategories.Visible = true;
+                    // add InvoicesSubcategories
+                    InitializeSubInvoices(invoices);
+                }
+                else if (expenseId == (int)Expense.ApaCalda)
+                {
+                    //InvoicesSubcategoriesManager.ConfigureWatherHot(invoices, counters);
+                    // add InvoicesSubcategories
                     InitializeSubInvoices(invoices);
                 }
             }
         }
 
-        private static IEnumerable<Administratoro.DAL.Invoices> ConfigureSubcategories(IEnumerable<Administratoro.DAL.Invoices> invoices)
-        {
-            var result = invoices;
-
-            if (invoices.Any())
-            {
-                foreach (var invoice in invoices)
-                {
-                    if (invoice.InvoiceSubcategories.Count() == 0)
-                    {
-                        InvoicesSubcategoriesManager.AddDefault(invoice.Id);
-                    }
-                }
-
-                result = InvoicesManager.GetByAssociationExpenseId(invoices.FirstOrDefault().Id_EstateExpense.Value);
-            }
-
-            return result;
-        }
-
         private void InitializeSubInvoices(List<Administratoro.DAL.Invoices> invoices)
         {
+            pnInvoiceSubcategories.Visible = true;
+
             Panel panelMain = new Panel
             {
                 CssClass = "col-md-12 col-xs-12 invoicesRow"
@@ -874,7 +890,9 @@ namespace Admin.Invoices
                     {
                         Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.Value.ToString() : string.Empty,
                         CssClass = "form-control",
-                        ID = "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType,
+                        ID = invoiceSubcategory.id_assCounter.HasValue? 
+                                            invoiceSubcategory.id_assCounter.Value + "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType:
+                                            "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType,
                         AutoCompleteType = AutoCompleteType.Disabled
                     };
                     valuePanel.Controls.Add(tb);

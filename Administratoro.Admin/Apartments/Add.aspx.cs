@@ -142,13 +142,13 @@ namespace Admin.Tenants
             drp.Items.Add(defaultNull);
 
             AssociationCountersApartment ac = null;
-            var counters = association.AssociationCounters.Where(c => c.Id_Expense == expense.Id).ToList();
+            var assCounters = association.AssociationCounters.Where(c => c.Id_Expense == expense.Id).ToList();
 
             if (apartment != null)
             {
-                foreach (var counter in counters)
+                foreach (var assCounter in assCounters)
                 {
-                    var assApCounter = apartment.AssociationCountersApartment.FirstOrDefault(a => a.Id_Counters == counter.Id);
+                    AssociationCountersApartment assApCounter = ApartmentCountersManager.Get(apartment.Id, assCounter.Id);
                     if (assApCounter != null)
                     {
                         ac = assApCounter;
@@ -156,7 +156,7 @@ namespace Admin.Tenants
                 }
             }
 
-            if (counters.Count != 0)
+            if (assCounters.Count != 0)
             {
                 Label lbApCounter = new Label
                 {
@@ -165,7 +165,7 @@ namespace Admin.Tenants
                 };
 
                 int i = 0;
-                foreach (var counter in counters)
+                foreach (var counter in assCounters)
                 {
                     ListItem li = new ListItem
                     {
@@ -287,7 +287,7 @@ namespace Admin.Tenants
         private void ProcessSaveCounters(Apartments apartment)
         {
             List<AssociationCountersApartment> counters = GetAllCounters(apartment);
-            CountersManager.AddOrUpdateAssociationCountersApartment(counters);
+            AssociationCountersManager.AddOrUpdateAssociationCountersApartment(counters);
         }
 
         private List<AssociationCountersApartment> GetAllCounters(Apartments apartment)

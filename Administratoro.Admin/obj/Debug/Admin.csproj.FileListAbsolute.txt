@@ -93,3 +93,5 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.csprojResolveAssemblyReference.cache
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Toolbox.Email.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Toolbox.Email.pdb

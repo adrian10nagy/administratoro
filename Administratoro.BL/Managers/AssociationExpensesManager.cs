@@ -1,7 +1,7 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administrataro.BL.Models;
+    using Administratoro.BL.Models;
     using Administratoro.BL.Constants;
     using Administratoro.DAL;
     using System;
@@ -182,17 +182,10 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void UpdatePricePerUnit(int idAssociationExpense, decimal? newPricePerUnit)
+        public static void UpdatePricePerUnit(int idAssociationExpense, decimal? newPricePerUnit, int? stairCase)
         {
-            var associationExpense = AssociationExpensesManager.GetByIdNotSpecialtype(idAssociationExpense);
-
-            if (associationExpense != null)
-            {
-                associationExpense.PricePerExpenseUnit = newPricePerUnit;
-                GetContext().SaveChanges();
-
-                ApartmentExpensesManager.UpdateValueForPriceUpdate(associationExpense.Id, newPricePerUnit);
-            }
+            UnitPricesManager.Update(stairCase, idAssociationExpense, newPricePerUnit);
+            ApartmentExpensesManager.UpdateValueForPriceUpdate(idAssociationExpense, newPricePerUnit);
         }
 
         public static void UpdatePricePerUnit(int idAssociationExpense, List<InvoiceSubcategories> invoiceSubcategories)
@@ -206,13 +199,12 @@ namespace Administratoro.BL.Managers
                 if (associationExpense.Id_Expense == (int)Expense.ApaRece)
                 {
                     newPricePerUnit = GetPriceForColdWather(invoiceSubcategories);
+                    UpdatePricePerUnit(idAssociationExpense, newPricePerUnit, null);
                 }
                 else if (associationExpense.Id_Expense == (int)Expense.ApaCalda)
                 {
                     newPricePerUnit = GetPriceForHotWather(associationExpense, invoiceSubcategories);
                 }
-
-                UpdatePricePerUnit(idAssociationExpense, newPricePerUnit);
             }
         }
 
@@ -220,17 +212,29 @@ namespace Administratoro.BL.Managers
         {
             decimal? result = null;
             Invoices invoice = InvoicesManager.GetByAssociationExpenseForExpense(associationExpense, Expense.ApaRece);
-
+            var coldWAtherExpense = AssociationExpensesManager.GetAssociationExpense(associationExpense.Id_Estate, (int)Expense.ApaRece, associationExpense.Year, associationExpense.Month);
             if (invoice != null)
             {
-                var invoiceSubcategoryForApaCT = InvoicesSubcategoriesManager.GetByInvoiceId(invoice.Id, (int)InvoiceSubcategoryType.ApaCT);
-                if (invoiceSubcategoryForApaCT != null && invoiceSubcategoryForApaCT.quantity.HasValue)
+                foreach (var invoiceSubcategory in invoiceSubcategories.Where(i => i.Id_subCategType == (int)InvoiceSubcategoryType.PreparatApaCalda))
                 {
-                    var coldWAtherExpense = AssociationExpensesManager.GetAssociationExpense(associationExpense.Id_Estate, (int)Expense.ApaRece, associationExpense.Year, associationExpense.Month);
-                    if (coldWAtherExpense != null && coldWAtherExpense.PricePerExpenseUnit.HasValue && invoiceSubcategoryForApaCT.Value.HasValue)
+                    var assCounter = AssociationCountersManager.GetById(invoiceSubcategory.id_assCounter.Value);
+                    foreach (var assCounterStairCase in assCounter.AssociationCountersStairCase)
                     {
-                        result = ((coldWAtherExpense.PricePerExpenseUnit.Value * invoiceSubcategoryForApaCT.quantity.Value) + invoiceSubcategoryForApaCT.Value.Value) / invoiceSubcategoryForApaCT.quantity.Value;
+                        if (invoiceSubcategory.Value.HasValue && invoiceSubcategory.VAT.HasValue)
+                        {
+                            var coldWatherUnitPrice = UnitPricesManager.GetPrice(coldWAtherExpense.Id, assCounterStairCase.Id_StairCase);
+                            var invoiceSubcategoryForApaCT = InvoiceIndexesManager.GetByInvoiceAndCounterFirst(invoice, assCounter);
 
+                            if (coldWatherUnitPrice.HasValue && invoiceSubcategoryForApaCT != null && invoiceSubcategoryForApaCT.IndexNew.HasValue && invoiceSubcategoryForApaCT.IndexOld.HasValue)
+                            {
+                                var difference = invoiceSubcategoryForApaCT.IndexNew.Value - invoiceSubcategoryForApaCT.IndexOld.Value;
+                                if (difference != 0)
+                                {
+                                    var newPricePerUnit = coldWatherUnitPrice + (invoiceSubcategory.Value.Value + invoiceSubcategory.VAT.Value) / difference;
+                                    UpdatePricePerUnit(associationExpense.Id, newPricePerUnit, assCounterStairCase.Id_StairCase);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -276,14 +280,14 @@ namespace Administratoro.BL.Managers
                 .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee => ee.Year).ToList();
         }
 
-        public static void UpdatePricePerUnitDefaultPrevieousMonth(AssociationExpenses newEE, IEnumerable<AssociationExpenses> oldEEs)
+        public static void UpdatePricePerUnitDefaultPreviousMonth(AssociationExpenses newEE, IEnumerable<AssociationExpenses> oldEEs)
         {
             if (newEE != null)
             {
                 AssociationExpenses oldEE = oldEEs.FirstOrDefault(ee => ee.Id_Expense == newEE.Id_Expense && !ee.Expenses.specialType.HasValue);
                 if (oldEE != null && oldEE.Id_ExpenseType == (int)ExpenseType.PerIndex)
                 {
-                    UpdatePricePerUnit(newEE.Id, oldEE.PricePerExpenseUnit);
+                    //UpdatePricePerUnit(newEE.Id, oldEE.PricePerExpenseUnit);
                     UpdateRedistributeMethod(newEE.Id, oldEE.RedistributeType);
                 }
             }
@@ -533,7 +537,7 @@ namespace Administratoro.BL.Managers
 
             int apartmentsWithCountersOfThatExpense = associationExpense.ApartmentExpenses.Count();
 
-            return "<b>" + addedExpenses + "</b> cheltuieli adăugate din <b>" + apartmentsWithCountersOfThatExpense + "</b> ";
+            return "<b>" + addedExpenses + "</b> citiri adăugate din <b>" + apartmentsWithCountersOfThatExpense + "</b> ";
         }
 
         public static void ConfigurePerIndex(Associations association, int year, int month)
@@ -656,7 +660,7 @@ namespace Administratoro.BL.Managers
 
         public static bool HasCounterOfExpense(int apartmentId, int expenseId)
         {
-            var counters = CountersManager.GetByApartment(apartmentId);
+            var counters = AssociationCountersManager.GetByApartment(apartmentId);
             return counters.Any(c => c.Id_Expense == expenseId);
         }
 

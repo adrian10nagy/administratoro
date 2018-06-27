@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AddEditExpense.aspx.cs" Inherits="Admin.Expenses.AddEditExpense" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AddEditExpense.aspx.cs" MaintainScrollPositionOnPostback="true" Inherits="Admin.Expenses.AddEditExpense" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainStyle" runat="server">
 </asp:Content>
@@ -11,9 +11,10 @@
     <br />
 
     <div runat="server">
-         Costul per unitate:
+<%--         Costul per unitate:
         <asp:TextBox ID="txtExpensesPerIndexValue" runat="server" Enabled="false"></asp:TextBox>
-        <asp:Button ID="btnExpensesPerIndexValue" runat="server" Text="Modifică" OnClick="btnExpensesPerIndexValue_Click" /><br /><br />
+        <asp:Button ID="btnExpensesPerIndexValue" runat="server" Text="Modifică" OnClick="btnExpensesPerIndexValue_Click" /><br /><br />--%>
+        <asp:DropDownList runat="server" ID="drpStairCases" AutoPostBack="true" OnSelectedIndexChanged="drpStairCases_SelectedIndexChanged" Visible="false"></asp:DropDownList>
         <asp:GridView ID="gvExpensesPerIndex" runat="server" AutoGenerateColumns="true" AutoGenerateEditButton="true"
             OnRowEditing="gvExpensesPerIndex_RowEditing" OnRowUpdating="gvExpensesPerIndex_RowUpdating"
             OnRowCancelingEdit="gvExpensesPerIndex_RowCancelingEdit" OnRowDataBound="gvExpensesPerIndex_RowDataBound"

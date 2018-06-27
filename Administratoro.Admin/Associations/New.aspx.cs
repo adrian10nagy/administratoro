@@ -340,7 +340,7 @@ namespace Admin.Associations
                 }
             }
 
-            CountersManager.Addcounter(cnts);
+            AssociationCountersManager.Addcounter(cnts);
             association = AssociationsManager.GetById(association.Id);
 
             Session[SessionConstants.SelectedAssociation] = association;
@@ -429,32 +429,7 @@ namespace Admin.Associations
             step3.Visible = true;
         }
 
-        private static ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations association, int controlId)
-        {
-            ListItem[] result = new ListItem[association.StairCases.Count + 1];
-            int i = 0;
-
-            var defaultExpense = new ListItem
-            {
-                Value = "dummyStair" + controlId,
-                Text = "Contor pe bloc"
-            };
-            result[i] = defaultExpense;
-            i++;
-
-            foreach (var srairCase in association.StairCases)
-            {
-                var stair = new ListItem
-                {
-                    Value = srairCase.Id + "dummyStair" + controlId,
-                    Text = "Scara " + srairCase.Nume
-                };
-                result[i] = stair;
-                i++;
-            }
-
-            return result;
-        }
+        
 
         private ListItem[] GetExpensesAsListItemsWithExtradummyValue(int controlID)
         {

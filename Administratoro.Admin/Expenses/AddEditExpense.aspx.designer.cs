@@ -40,22 +40,13 @@ namespace Admin.Expenses {
         protected global::System.Web.UI.WebControls.Button btnRedirect;
         
         /// <summary>
-        /// txtExpensesPerIndexValue control.
+        /// drpStairCases control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtExpensesPerIndexValue;
-        
-        /// <summary>
-        /// btnExpensesPerIndexValue control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpensesPerIndexValue;
+        protected global::System.Web.UI.WebControls.DropDownList drpStairCases;
         
         /// <summary>
         /// gvExpensesPerIndex control.

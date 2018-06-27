@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Index.aspx.cs" Inherits="Admin.Associations.Index" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Index.aspx.cs" MaintainScrollPositionOnPostback="true"  Inherits="Admin.Associations.Index" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainStyle" runat="server">
 </asp:Content>
@@ -113,12 +113,6 @@
         </div>
     </asp:Panel>
     <asp:Button runat="server" ID="btnAssociationCountersNew" Text="Adaugă contor" OnClick="btnAssociationCountersNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />
-
-    <asp:Panel runat="server" ID="associationIndex" Visible="false">
-        <h3>Indiviză</h3>
-        <asp:TextBox runat="server" ID="associationIndiviza" Enabled="false" />
-    </asp:Panel>
-
 
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="MainScript" runat="server">

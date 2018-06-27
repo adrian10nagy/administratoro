@@ -5,7 +5,7 @@ namespace Administratoro.BL.Managers
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class CountersManager
+    public static class AssociationCountersManager
     {
         private static AdministratoroEntities _administratoroEntities;
 
@@ -41,8 +41,8 @@ namespace Administratoro.BL.Managers
         {
             foreach (AssociationCounters counter in counters)
             {
-                AddCounterStairCase(counter);
                 Add(counter);
+                AddCounterStairCase(counter);
             }
         }
 
@@ -217,7 +217,7 @@ namespace Administratoro.BL.Managers
 
             result = allAC.FirstOrDefault(a => a.AssociationCountersStairCase.Any(x => x.Id_StairCase == stairCase));
 
-            if (result == null & allAC.Count() == 1)
+            if (result == null && allAC.Count() == 1)
             {
                 result = allAC.FirstOrDefault();
             }

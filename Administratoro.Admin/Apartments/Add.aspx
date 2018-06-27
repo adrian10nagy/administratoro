@@ -19,7 +19,7 @@
             <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Număr apartament</label>
                 <div class="col-md-9 col-sm-9 col-xs-12">
-                    <input type="number" class="form-control has-feedback-left" id="userNr" runat="server" autocomplete="off">
+                    <input type="number" class="form-control has-feedback-left" id="userNr" runat="server" autocomplete="off" autofocus>
                     <span class="fa fa-list-alt form-control-feedback left" aria-hidden="true"></span>
                     <asp:RequiredFieldValidator ControlToValidate="userNr" runat="server" ErrorMessage="Numărul apartamentului este obligatoriu" CssClass="requiredField"></asp:RequiredFieldValidator>
                 </div>

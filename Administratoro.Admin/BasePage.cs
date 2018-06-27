@@ -9,6 +9,7 @@ namespace Admin
     using System.Linq;
     using System.Web;
     using System.Web.UI;
+    using System.Web.UI.WebControls;
 
     public class BasePage : Page
     {
@@ -53,5 +54,58 @@ namespace Admin
             Session[SessionConstants.SelectedAssociation] = AssociationsManager.GetById(Association.Id);
         }
 
+        public static ListItem[] GetStairCasesAsListItemsWithExtradummyValue(Administratoro.DAL.Associations association, int controlId)
+        {
+            ListItem[] result = new ListItem[association.StairCases.Count + 1];
+            int i = 0;
+
+            var defaultExpense = new ListItem
+            {
+                Value = "dummyStair" + controlId,
+                Text = "Contor pe bloc"
+            };
+            result[i] = defaultExpense;
+            i++;
+
+            foreach (var srairCase in association.StairCases)
+            {
+                var stair = new ListItem
+                {
+                    Value = srairCase.Id + "dummyStair" + controlId,
+                    Text = "Scara " + srairCase.Nume
+                };
+                result[i] = stair;
+                i++;
+            }
+
+            return result;
+        }
+
+        public ListItem[] GetStairCasesAsListItems()
+        {
+            ListItem[] result = new ListItem[Association.StairCases.Count + 1];
+            int i = 0;
+
+            var defaultExpense = new ListItem
+            {
+                Value = "",
+                Text = "Contor pe bloc"
+            };
+            result[i] = defaultExpense;
+            i++;
+
+            foreach (var srairCase in Association.StairCases)
+            {
+                var stair = new ListItem
+                {
+                    Value = srairCase.Id.ToString() ,
+                    Text = "Scara: " + srairCase.Nume
+                };
+                result[i] = stair;
+                i++;
+            }
+
+            return result;
+        }
     }
 }

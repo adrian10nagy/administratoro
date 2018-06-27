@@ -7,6 +7,7 @@ namespace Administratoro.BL.Managers
     using System.Threading.Tasks;
     using System.Linq;
     using System;
+    using Administratoro.BL.Constants;
 
     public static class ApartmentsManager
     {
@@ -22,47 +23,12 @@ namespace Administratoro.BL.Managers
             return _administratoroEntities;
         }
 
-
-        public static List<Apartments> Get(int associationId)
-        {
-            return GetContext().Apartments.Where(t => t.Associations.Id == associationId).OrderBy(a => a.Number).ToList();
-        }
-
-        public static int GetDependentsNr(int associationId)
-        {
-            int result = 0;
-
-            var association =  AssociationsManager.GetById(associationId);
-            if(association != null)
-            {
-                result = association.Apartments.Select(t => t.Dependents).Sum();
-            }
-
-            return result;
-        }
-
-        public static int GetDependentsNr(int associationId, int? stairCase)
-        {
-            int result = 0;
-
-            var association = AssociationsManager.GetById(associationId);
-            if (association != null)
-            {
-                result = association.Apartments.Where(t => t.Id_StairCase == stairCase).Select(t => t.Dependents).Sum();
-            }
-
-            return result;
-        }
-
         public static DbSet<Apartments> GetAsDbSet(int associationId)
         {
             return GetContext().Apartments;
         }
 
-        public static Apartments GetById(int id)
-        {
-            return GetContext(true).Apartments.FirstOrDefault(x => x.Id == id);
-        }
+      
 
         public static void Update(Apartments apartment)
         {
@@ -93,19 +59,28 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static List<Apartments> GetAllThatAreRegisteredWithSpecificCounters(int associationId, int esexId)
+        public static List<Apartments> GetAllThatAreRegisteredWithSpecificCounters(int associationId, int assExpenseId, int? stairCase = null)
         {
             var result = new List<Apartments>();
 
-            AssociationExpenses associationExpense = AssociationExpensesManager.GetById(esexId);
+            AssociationExpenses associationExpense = AssociationExpensesManager.GetById(assExpenseId);
             if (associationExpense != null)
             {
-                List<Apartments> allApartments = Get(associationId);
+                List<Apartments> allApartments;
+                if (stairCase.HasValue)
+                {
+                    allApartments = Get(associationId, stairCase.Value);
+                }
+                else
+                {
+                    allApartments = Get(associationId);
+                }
+
                 foreach (var apartment in allApartments)
                 {
-                    IEnumerable<AssociationCounters> counters = CountersManager.GetByApartment(apartment.Id);
+                    IEnumerable<AssociationCounters> counters = AssociationCountersManager.GetByApartment(apartment.Id);
 
-                    if(counters.Any(c=>c.Id_Expense == associationExpense.Expenses.Id))
+                    if (counters.Any(c => c.Id_Expense == associationExpense.Expenses.Id))
                     {
                         result.Add(apartment);
                     }
@@ -116,42 +91,58 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
+        public static List<Apartments> Get(int associationId)
+        {
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetByAss(associationId);
+        }
+
         public static List<Apartments> Get(int associationId, int stairCaseId)
         {
-            return GetContext().Apartments.Where(t => t.Associations.Id == associationId && t.Id_StairCase == stairCaseId).ToList();
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetByAss(associationId, stairCaseId);
         }
 
-        public static decimal? GetSumOfIndivizaForAllApartments(int associationId)
+        public static decimal GetSumOfIndivizaForAllApartments(int associationId)
         {
-            decimal? result = null;
-
-            var apartments = GetContext().Apartments.Where(t => t.id_Estate == associationId).ToList();
-
-            if (apartments != null && apartments.Count > 0)
-            {
-                result = apartments.Sum(s => s.CotaIndiviza);
-            }
-
-            return result;
-        }
-
-        public static decimal? GetSumOfIndivizaForAllApartments(int associationId, int? stairCase)
-        {
-            decimal? result = null;
-
-            var apartments = GetContext().Apartments.Where(t => t.id_Estate == associationId && t.Id_StairCase == stairCase).ToList();
-
-            if (apartments != null && apartments.Count > 0)
-            {
-                result = apartments.Sum(s => s.CotaIndiviza);
-            }
-
-            return result;
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetSumOfIndiviza(associationId);
         }
 
         public static IEnumerable<Apartments> GetAllEnabledForHeatHelp(int associationId)
         {
-            return GetContext(true).Apartments.Where(t => t.id_Estate == associationId && t.HasHeatHelp.HasValue && t.HasHeatHelp.Value);
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetAllEnabledForHeatHelp(associationId);
+        }
+
+        public static int GetDependentsNr(int associationId)
+        {
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetDependentsNr(associationId);
+        }
+
+        public static int GetDependentsNr(int associationId, int? stairCase)
+        {
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetDependentsNr(associationId, stairCase);
+        }
+
+        public static Apartments GetById(int id)
+        {
+            return Administratoro.DAL.SDK.Kit.Instance.Apartments.Get(id);
+        }
+
+        public static IEnumerable<Apartments> GetForIndividual(int associationId, int associationExpenseId)
+        {
+            var result = Enumerable.Empty<Apartments>();
+            var associationExpense = AssociationExpensesManager.GetById(associationExpenseId);
+            if (associationExpense != null)
+            {
+                if (associationExpense.Id_Expense == (int)Expense.AjutorÎncălzire)
+                {
+                    result = GetAllEnabledForHeatHelp(associationId);
+                }
+                else
+                {
+                    result = GetAllThatAreRegisteredWithSpecificCounters(associationId, associationExpenseId);
+                }
+            }
+
+            return result;
         }
     }
 }

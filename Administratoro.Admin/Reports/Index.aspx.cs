@@ -1,7 +1,7 @@
 ﻿
 namespace Admin.Reports
 {
-    using Administrataro.BL.Models;
+    using Administratoro.BL.Models;
     using Administratoro.BL.Constants;
     using Administratoro.BL.Managers;
     using Administratoro.DAL;

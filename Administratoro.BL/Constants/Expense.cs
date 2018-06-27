@@ -19,7 +19,7 @@ namespace Administratoro.BL.Constants
         Lift = 9,
         IntretinereInstalatii = 10,
         Presedinte = 11,
-        Cenzor = 12,
+        Cenzor = 13,
         Fochist = 15,
         IntretinereAscensor = 17,
         FondDeRulment = 20,

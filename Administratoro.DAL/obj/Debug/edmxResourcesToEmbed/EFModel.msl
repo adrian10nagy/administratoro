@@ -101,7 +101,7 @@
           <ScalarProperty Name="IsClosed" ColumnName="IsClosed" />
           <ScalarProperty Name="RedistributeType" ColumnName="RedistributeType" />
           <ScalarProperty Name="SplitPerStairCase" ColumnName="SplitPerStairCase" />
-          <ScalarProperty Name="PricePerExpenseUnit" ColumnName="PricePerExpenseUnit" />
+          <ScalarProperty Name="PpricePerExpenseUnit" ColumnName="PpricePerExpenseUnit" />
           <ScalarProperty Name="WasDisabled" ColumnName="WasDisabled" />
           <ScalarProperty Name="Year" ColumnName="Year" />
           <ScalarProperty Name="Month" ColumnName="Month" />
@@ -117,6 +117,16 @@
       <EntityTypeMapping TypeName="AdministratoroModel.AssociationExpensesRedistributionTypes">
         <MappingFragment StoreEntitySet="AssociationExpensesRedistributionTypes">
           <ScalarProperty Name="Value" ColumnName="Value" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AssociationExpensesUnitPrices">
+      <EntityTypeMapping TypeName="AdministratoroModel.AssociationExpensesUnitPrices">
+        <MappingFragment StoreEntitySet="AssociationExpensesUnitPrices">
+          <ScalarProperty Name="Id_assExpense" ColumnName="Id_assExpense" />
+          <ScalarProperty Name="Id_assCounter" ColumnName="Id_assCounter" />
+          <ScalarProperty Name="PricePerExpenseUnit" ColumnName="PricePerExpenseUnit" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>
       </EntityTypeMapping>
@@ -200,6 +210,7 @@
     <EntitySetMapping Name="InvoiceSubcategories">
       <EntityTypeMapping TypeName="AdministratoroModel.InvoiceSubcategories">
         <MappingFragment StoreEntitySet="InvoiceSubcategories">
+          <ScalarProperty Name="id_assCounter" ColumnName="id_assCounter" />
           <ScalarProperty Name="PricePerUnit" ColumnName="PricePerUnit" />
           <ScalarProperty Name="penalties" ColumnName="penalties" />
           <ScalarProperty Name="service" ColumnName="service" />

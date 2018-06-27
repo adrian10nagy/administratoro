@@ -23,7 +23,9 @@ namespace Administratoro.DAL
         public Nullable<decimal> service { get; set; }
         public Nullable<decimal> penalties { get; set; }
         public Nullable<decimal> PricePerUnit { get; set; }
+        public Nullable<int> id_assCounter { get; set; }
     
+        public virtual AssociationCounters AssociationCounters { get; set; }
         public virtual Invoices Invoices { get; set; }
         public virtual InvoiceSubcategoryTypes InvoiceSubcategoryTypes { get; set; }
     }

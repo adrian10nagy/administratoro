@@ -137,14 +137,13 @@ namespace Admin.Config
                                 Selected = selected4
                             });
                         }
-                        else
+
+                        dp.Items.Add(new ListItem
                         {
-                            dp.Items.Add(new ListItem
-                            {
-                                Value = "6",
-                                Text = "Individual",
-                            });
-                        }
+                            Value = "6",
+                            Text = "Individual",
+                        });
+
                         expenseType.Controls.Add(dp);
                         row.Cells.Add(expenseType);
 
@@ -250,7 +249,7 @@ namespace Admin.Config
             expenseListHref3.Attributes["class"] = "selected";
 
             int _month = 0;
-            int _year = year().HasValue?year().Value:2017;
+            int _year = year().HasValue ? year().Value : 2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out _month))
             {
                 var estate = (Associations)Session[SessionConstants.SelectedAssociation];

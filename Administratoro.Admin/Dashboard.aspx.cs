@@ -1,6 +1,7 @@
 ﻿
 namespace Admin
 {
+    using Administratoro.BL.Managers;
     using System;
     using System.Linq;
     using System.Text;
@@ -49,12 +50,14 @@ namespace Admin
                         sb.Append("- Scara cu numele <b>" + stairCase.Nume + "</b> nu are indiviza setată <a href='Associations/Index.aspx'>Modifică</a><br />");
                     }
                 }
+
+                if (sumStairCaseIndiviza != 100.0m)
+                {
+                    sb.Append("- Suma cotelor de indiviză a scărilor este de <b>" + sumStairCaseIndiviza.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
+                }
             }
 
-            if (sumStairCaseIndiviza != 100.0m)
-            {
-                sb.Append("- Suma cotelor de indiviză a scărilor este de <b>" + sumStairCaseIndiviza.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
-            }
+            
 
             foreach (var apartment in Association.Apartments)
             {
@@ -68,6 +71,11 @@ namespace Admin
                         + apartment.Id + "'>Modifică</a><br />");
                 }
 
+            }
+
+            if (sumApartmentIndiviza != 100.0m)
+            {
+                sb.Append("- Suma cotelor de indiviză a apartamentelor este de <b>" + sumApartmentIndiviza.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
             }
 
             if (string.IsNullOrEmpty(sb.ToString()))

@@ -11,24 +11,6 @@ namespace Administratoro.BL.Managers
 {
     public static class RedistributionManager
     {
-        public static string RedistributeValueCotaIndivizaAsString(Associations association, AssociationExpenses associationExpense)
-        {
-            decimal? allInvoicesSum = RedistributeValueCotaIndiviza(association, associationExpense);
-
-            return allInvoicesSum.HasValue ? allInvoicesSum.Value.ToString() : string.Empty;
-        }
-
-        public static decimal? RedistributeValueCotaIndiviza(Associations association, AssociationExpenses associationExpense)
-        {
-            decimal? allInvoicesSum = associationExpense.Invoices.Where(i => i.Value.HasValue).Sum(i => i.Value);
-            decimal? sumOfIndiviza = ApartmentsManager.GetSumOfIndivizaForAllApartments(associationExpense.Id_Estate);
-            decimal? result = (sumOfIndiviza != null && association != null && allInvoicesSum.HasValue)
-                ? ((sumOfIndiviza.Value / association.Indiviza) * allInvoicesSum.Value)
-                : null;
-
-            return result;
-        }
-
         public static decimal? RedistributeValueCotaIndivizaForSpecificApartments(Apartments apartment, Invoices invoice, List<Apartments> apartments)
         {
             decimal? sumOfIndiviza = apartments.Sum(t => t.CotaIndiviza);
@@ -44,63 +26,53 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        public static decimal? RedistributeValueCotaIndiviza(Associations association, AssociationExpenses associationExpense, int? stairCaseId)
-        {
-            decimal? allInvoicesSum = associationExpense.Invoices.Where(i => i.Value.HasValue && i.Id_StairCase == stairCaseId).Sum(i => i.Value);
-            decimal? sumOfIndiviza = ApartmentsManager.GetSumOfIndivizaForAllApartments(associationExpense.Id_Estate, stairCaseId);
-            decimal? result = (sumOfIndiviza != null && association != null && allInvoicesSum.HasValue)
-                ? ((sumOfIndiviza.Value / association.Indiviza) * allInvoicesSum.Value)
-                : null;
-
-            return result;
-        }
-
-        public static decimal? RedistributeValuePerIndex(AssociationExpenses associationExpense)
+        public static decimal? GetRedistributeValuePerIndex(AssociationExpenses associationExpense)
         {
             decimal? result = null;
 
-            decimal? sumOfIndexes = ApartmentExpensesManager.GetSumOfIndexesForexpense(associationExpense.Id);
-            //if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
-            //{
-            //    decimal? sumOfInvoices = null;
-            //    foreach (StairCases stairCase in estateExpense.Association.StairCases)
-            //    {
-            //        var invoice = stairCase.Invoices.FirstOrDefault(i => i.Id_StairCase == stairCase.Id && i.Id_EstateExpense == estateExpense.Id);
-            //        if (invoice != null && invoice.Value.HasValue)
-            //        {
-            //            if (!sumOfInvoices.HasValue)
-            //            {
-            //                sumOfInvoices = 0m;
-            //            }
-            //            sumOfInvoices = sumOfInvoices + invoice.Value.Value;
-            //        }
-            //    }
-
-            //    if (sumOfInvoices.HasValue && estateExpense.PricePerExpenseUnit.HasValue && sumOfIndexes.HasValue)
-            //    {
-            //        result = (sumOfInvoices.Value - (estateExpense.PricePerExpenseUnit.Value * sumOfIndexes.Value));
-            //    }
-            //}
-            //else
-            //{
             var invoice = associationExpense.Invoices.FirstOrDefault(i => i.Id_StairCase == null && i.Id_EstateExpense == associationExpense.Id);
-
-            if (sumOfIndexes.HasValue & invoice != null && invoice.Value.HasValue && associationExpense.PricePerExpenseUnit.HasValue)
+            var assCountersForThisExpense = AssociationCountersManager.GetAllByExpenseType(associationExpense.Id_Estate, associationExpense.Id_Expense).ToList();
+            foreach (var counter in assCountersForThisExpense)
             {
-                result = (invoice.Value - (associationExpense.PricePerExpenseUnit * sumOfIndexes.Value));
+                var pricePerUnit = UnitPricesManager.GetPrice(associationExpense.Id, counter.AssociationCountersStairCase.FirstOrDefault().Id_StairCase);
+                decimal? sumOfIndexes = ApartmentExpensesManager.GetSumOfIndexesOnSameCounter(associationExpense.Id, counter.AssociationCountersStairCase.FirstOrDefault().Id_StairCase);
+                if (sumOfIndexes.HasValue & invoice != null && pricePerUnit.HasValue)
+                {
+                    var consummedIndices = InvoiceIndexesManager.GetByInvoiceAndCounterFirst(invoice, counter);
+
+                    if (consummedIndices != null && consummedIndices.IndexOld.HasValue && consummedIndices.IndexNew.HasValue)
+                    {
+                        result = ((consummedIndices.IndexNew.Value - consummedIndices.IndexOld.Value) - sumOfIndexes.Value) * pricePerUnit.Value;
+                    }
+                }
             }
-            //}
 
             return result;
         }
 
-        public static string RedistributeValuePerIndexAsString(AssociationExpenses associationExpense)
+        public static decimal? GetRedistributeValuePerIndex(AssociationExpenses associationExpense, int? stairCase)
         {
-            var result = RedistributeValuePerIndex(associationExpense);
+            decimal? result = null;
 
-            return result.HasValue ? result.Value.ToString() : string.Empty;
+            var invoice = associationExpense.Invoices.FirstOrDefault(i => i.Id_StairCase == null && i.Id_EstateExpense == associationExpense.Id);
+            var assCountersForThisExpense = AssociationCountersManager.GetByExpenseAndStairCase(associationExpense, stairCase);
+            if (assCountersForThisExpense != null)
+            {
+                var pricePerUnit = UnitPricesManager.GetPrice(associationExpense.Id, assCountersForThisExpense.AssociationCountersStairCase.FirstOrDefault().Id_StairCase);
+                decimal? sumOfIndexes = ApartmentExpensesManager.GetSumOfIndexesOnSameCounter(associationExpense.Id, assCountersForThisExpense.AssociationCountersStairCase.FirstOrDefault().Id_StairCase);
+                if (sumOfIndexes.HasValue & invoice != null && pricePerUnit.HasValue)
+                {
+                    var consummedIndices = InvoiceIndexesManager.GetByInvoiceAndCounterFirst(invoice, assCountersForThisExpense);
+
+                    if (consummedIndices != null && consummedIndices.IndexOld.HasValue && consummedIndices.IndexNew.HasValue)
+                    {
+                        result = ((consummedIndices.IndexNew.Value - consummedIndices.IndexOld.Value) - sumOfIndexes.Value) * pricePerUnit.Value;
+                    }
+                }
+            }
+
+            return result;
         }
-
 
         public static decimal? CalculateRedistributeValue(int associationExpenseId)
         {
@@ -110,12 +82,7 @@ namespace Administratoro.BL.Managers
 
             if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
             {
-                result = RedistributionManager.RedistributeValuePerIndex(associationExpense);
-            }
-            else if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
-            {
-                var estate = AssociationsManager.GetById(associationExpenseId);
-                result = RedistributionManager.RedistributeValueCotaIndiviza(estate, associationExpense);
+                result = RedistributionManager.GetRedistributeValuePerIndex(associationExpense);
             }
 
             return result;
@@ -154,26 +121,13 @@ namespace Administratoro.BL.Managers
             decimal? result = null;
             decimal apartmentConsumption = GetApartmentConsumprionAsDecimal(apartmentExpenses);
 
-            if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
-            {
-                var invoice = associationExpense.Invoices.FirstOrDefault(i => i.Id_StairCase == apartment.Id_StairCase && i.Id_EstateExpense == associationExpense.Id);
-                var sumOfIndicesForStairCase = ApartmentExpensesManager.GetSumOfIndexesForexpense(associationExpense.Id, apartment.Id_StairCase);
+            var redistributeValue = GetRedistributeValuePerIndex(associationExpense, apartment.Id_StairCase);
+            decimal? sumOfIndexes = ApartmentExpensesManager.GetSumOfIndexesOnSameCounter(associationExpense.Id, apartment.Id_StairCase);
 
-                if (invoice != null && invoice.Value.HasValue && sumOfIndicesForStairCase.HasValue && associationExpense.PricePerExpenseUnit.HasValue)
-                {
-                    var redistributeValue = invoice.Value - (sumOfIndicesForStairCase * associationExpense.PricePerExpenseUnit);
-                    result = (apartmentConsumption / sumOfIndicesForStairCase) * redistributeValue;
-                }
-
-            }
-            else
+            //var sumOfIndices = ApartmentExpensesManager.GetSumOfIndexesForExpense(associationExpense.Id, apartment.Id_StairCase);
+            if (redistributeValue.HasValue && sumOfIndexes.HasValue && sumOfIndexes.Value != 0)
             {
-                var redistributeValue = RedistributeValuePerIndex(associationExpense);
-                var sumOfIndices = ApartmentExpensesManager.GetSumOfIndexesForexpense(associationExpense.Id);
-                if (redistributeValue.HasValue && sumOfIndices != 0)
-                {
-                    result = ((apartmentConsumption) / sumOfIndices) * redistributeValue;
-                }
+                result = (apartmentConsumption / sumOfIndexes.Value) * redistributeValue;
             }
 
             return result;
@@ -276,6 +230,7 @@ namespace Administratoro.BL.Managers
         {
             decimal? result = null;
             decimal? sumOfInvoiceForCounter = GetSumOfInvoiceForStairCaseCounter(associationExpense, apartment.Id_StairCase);
+
             if (sumOfInvoiceForCounter.HasValue)
             {
                 var sumOfExpensesForCounter = ApartmentExpensesManager.GetConsumption(associationExpense, apartment.Id_StairCase);
@@ -302,15 +257,17 @@ namespace Administratoro.BL.Managers
 
             foreach (var invoiceIndex in invoiceIndexes)
             {
+                var pricePerUnit = UnitPricesManager.GetPrice(invoice.AssociationExpenses.Id, stairCase);
+
                 if (invoiceIndex != null && invoiceIndex.IndexNew.HasValue && invoiceIndex.IndexOld.HasValue && invoiceIndex.Invoices.Value.HasValue
-                    && invoice.AssociationExpenses.PricePerExpenseUnit.HasValue)
+                    && pricePerUnit.HasValue)
                 {
 
                     if (!sumOfInvoices.HasValue)
                     {
                         sumOfInvoices = 0m;
                     }
-                    decimal? valueToAdd = (invoiceIndex.IndexNew - invoiceIndex.IndexOld) * invoice.AssociationExpenses.PricePerExpenseUnit.Value;
+                    decimal? valueToAdd = (invoiceIndex.IndexNew - invoiceIndex.IndexOld) * pricePerUnit.Value;
 
                     sumOfInvoices = sumOfInvoices + valueToAdd;
                 }

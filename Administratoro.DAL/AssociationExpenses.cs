@@ -17,6 +17,7 @@ namespace Administratoro.DAL
         public AssociationExpenses()
         {
             this.ApartmentExpenses = new HashSet<ApartmentExpenses>();
+            this.AssociationExpensesUnitPrices = new HashSet<AssociationExpensesUnitPrices>();
             this.Invoices = new HashSet<Invoices>();
         }
     
@@ -28,12 +29,13 @@ namespace Administratoro.DAL
         public int Month { get; set; }
         public int Year { get; set; }
         public bool WasDisabled { get; set; }
-        public Nullable<decimal> PricePerExpenseUnit { get; set; }
+        public Nullable<decimal> PpricePerExpenseUnit { get; set; }
         public Nullable<bool> SplitPerStairCase { get; set; }
         public Nullable<int> RedistributeType { get; set; }
         public Nullable<bool> IsClosed { get; set; }
     
         public virtual ICollection<ApartmentExpenses> ApartmentExpenses { get; set; }
+        public virtual ICollection<AssociationExpensesUnitPrices> AssociationExpensesUnitPrices { get; set; }
         public virtual AssociationExpensesRedistributionTypes AssociationExpensesRedistributionTypes { get; set; }
         public virtual Associations Associations { get; set; }
         public virtual Expenses Expenses { get; set; }

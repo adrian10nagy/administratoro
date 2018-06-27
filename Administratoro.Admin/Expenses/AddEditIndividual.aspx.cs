@@ -63,7 +63,7 @@ namespace Admin.Expenses
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
             var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
-            var apartments = ApartmentsManager.GetAllEnabledForHeatHelp(Association.Id);
+            var apartments = ApartmentsManager.GetForIndividual(Association.Id, esexId);
 
             AssociationExpenses ee = AssociationExpensesManager.GetById(esexId);
             foreach (var apartment in apartments)

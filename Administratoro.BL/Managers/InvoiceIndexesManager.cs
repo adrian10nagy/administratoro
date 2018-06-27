@@ -31,23 +31,26 @@ namespace Administratoro.BL.Managers
         {
             var result = new List<InvoiceIndexes>();
             // find which counter has on that stairCase
-            var assocCounter = CountersManager.GetByExpenseAndStairCase(invoice, stairCase);
+            var assocCounter = AssociationCountersManager.GetByExpenseAndStairCase(invoice, stairCase);
 
             if (assocCounter != null)
             {
                 // get Invoice inces
-                result = GetByInvoiceAndCounter(invoice, result, assocCounter);
+                result = GetByInvoiceAndCounter(invoice, assocCounter);
             }
 
             return result;
         }
 
-        public static List<InvoiceIndexes> GetByInvoiceAndCounter(Invoices invoice, List<InvoiceIndexes> result, AssociationCounters assocCounter)
+        public static List<InvoiceIndexes> GetByInvoiceAndCounter(Invoices invoice, AssociationCounters assocCounter)
         {
-            result = GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoice.Id && t.AssociationCounters.Id == assocCounter.Id).ToList();
-            return result;
+            return GetContext().InvoiceIndexes.Where(t => t.Id_Invoice == invoice.Id && t.AssociationCounters.Id == assocCounter.Id).ToList();
         }
 
+        public static InvoiceIndexes GetByInvoiceAndCounterFirst(Invoices invoice, AssociationCounters assocCounter)
+        {
+            return GetContext().InvoiceIndexes.FirstOrDefault(t => t.Id_Invoice == invoice.Id && t.AssociationCounters.Id == assocCounter.Id);
+        }
 
         private static IEnumerable<InvoiceIndexes> GetLastMonthIndexes(int invoiceId)
         {
@@ -79,7 +82,7 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
-        public static void AddDefault(int invoiceId, List<AssociationCounters> counters, List<InvoiceIndexes> invoicesIndexes)
+        private static void AddDefault(int invoiceId, List<AssociationCounters> counters, List<InvoiceIndexes> invoicesIndexes)
         {
             var lastMonthIndexes = GetLastMonthIndexes(invoiceId);
 
@@ -122,5 +125,15 @@ namespace Administratoro.BL.Managers
         }
 
         #endregion
+
+        public static List<InvoiceIndexes> ConfigureWatherCold(List<Administratoro.DAL.Invoices> invoices, List<InvoiceIndexes> invoicesIndexes, List<AssociationCounters> counters)
+        {
+            if (invoicesIndexes.Count < counters.Count)
+            {
+                AddDefault(invoices[0].Id, counters, invoicesIndexes);
+                invoicesIndexes = Get(invoices[0].Id).ToList();
+            }
+            return invoicesIndexes;
+        }
     }
 }

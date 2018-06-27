@@ -31,7 +31,6 @@ namespace Admin.Associations
             var assoc = Association;
             txtAssociationName.Text = assoc.Name;
             txtAssociationAddress.Text = assoc.Address;
-            associationIndiviza.Text = assoc.Indiviza.ToString();
             txtAssociationFiscalCode.Text = assoc.FiscalCode;
             txtAssociationBanckAccount.Text = assoc.BanckAccont;
             drpAssociationEqualIndiviza.SelectedValue = (assoc.CotaIndivizaAparments.HasValue) ? "1" : "0";
@@ -130,7 +129,7 @@ namespace Admin.Associations
                         AssociationCountersStairCase = associationCounterStariCases
                     };
 
-                    CountersManager.Add(associationCounters);
+                    AssociationCountersManager.Add(associationCounters);
                     var newAssociation = AssociationsManager.GetById(Association.Id);
                     Session[SessionConstants.SelectedAssociation] = newAssociation;
                     Response.Redirect(Request.RawUrl);
@@ -358,7 +357,7 @@ namespace Admin.Associations
                 }
                 else
                 {
-                    AssociationCounters associationCounters = CountersManager.GetById(counterId);
+                    AssociationCounters associationCounters = AssociationCountersManager.GetById(counterId);
                     List<AssociationCountersStairCase> associationCounterStariCases = GetStairCases(stairCases);
                     if (associationCounters != null)
                     {
@@ -368,7 +367,7 @@ namespace Admin.Associations
                             AssociationCountersStairCase = associationCounterStariCases,
                             Id = counterId
                         };
-                        CountersManager.Update(newCounter);
+                        AssociationCountersManager.Update(newCounter);
                     }
 
                     gvStaircases.EditIndex = -1;

@@ -14,10 +14,11 @@ using System.Drawing;
 
 namespace Admin.Expenses
 {
-    public partial class AddEditExpense : System.Web.UI.Page
+    public partial class AddEditExpense : BasePage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            this.InitializeStairCases();
             var id_exes = Request.QueryString["id_exes"];
             int idExpenseEstate;
             if (int.TryParse(id_exes, out idExpenseEstate))
@@ -36,8 +37,10 @@ namespace Admin.Expenses
                         DataTable dt = new DataTable();
                         if (!Page.IsPostBack)
                         {
-                            txtExpensesPerIndexValue.Text = ee.PricePerExpenseUnit.ToString();
+                            //todo1 - work around counters and staircase
+                            //txtExpensesPerIndexValue.Text = ee.AssociationExpensesUnitPrices.FirstOrDefault().PricePerExpenseUnit.ToString();
                         }
+
                         if (ViewState["dtPerIndex"] == null)
                         {
                             this.InitializeGridViewExpensesPerIndex(dt, ee.Id);
@@ -65,26 +68,49 @@ namespace Admin.Expenses
             }
         }
 
+        private void InitializeStairCases()
+        {
+            if (Association.HasStaircase && !Page.IsPostBack)
+            {
+                var stairCases = GetStairCasesAsListItems();
+                drpStairCases.Items.Clear();
+                drpStairCases.Items.AddRange(stairCases);
+                drpStairCases.Visible = true;
+            }
+        }
+
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
             var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
             AssociationExpenses ee = AssociationExpensesManager.GetById(esexId);
 
-            var apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId);
+            int stairCase;
+            List<Apartments> apartments;
+            if (Association.HasStaircase && !string.IsNullOrEmpty(drpStairCases.SelectedValue) && int.TryParse(drpStairCases.SelectedValue, out stairCase))
+            {
+                apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId, stairCase);
+            }
+            else
+            {
+                apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId);
+            }
+
+
             ApartmentExpensesManager.ConfigurePerIndex(ee, apartments);
 
             foreach (var apartment in apartments)
             {
                 string query = @"
                     Select 
-                    TE.Id as Id,
+                    AE.Id as Id,
                     A.Number as Apartament,
-                    cast(TE.IndexOld as float) as 'Index vechi',
-                    cast(TE.IndexNew as float) as 'Index nou',
-                    TE.Value as 'Valoare'
-                    from ApartmentExpenses TE
+                    cast(AE.IndexOld as float) as 'Index vechi',
+                    cast(AE.IndexNew as float) as 'Index nou',
+                    (AE.IndexNew - AE.IndexOld ) as 'Consum',
+                    AE.Value as 'Valoare'
+                    from ApartmentExpenses AE
                     Inner join Apartments A
-                    ON TE.Id_Tenant = A.Id
+                    ON AE.Id_Tenant = A.Id
                     where Id_EstateExpense = " + esexId + " and Id_Tenant = " + apartment.Id +
                                                " and A.Id_Estate = " + estate.Id;
 
@@ -170,40 +196,51 @@ namespace Admin.Expenses
         {
             if (true)
             {
-                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare" };
+                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare", "Consum" };
             }
             else
             {
-                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare", "Index vechi" };
+                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare", "Index vechi", "Consum" };
             }
 
             e.Row.Cells[1].Visible = false;
         }
 
-        protected void btnExpensesPerIndexValue_Click(object sender, EventArgs e)
+        protected void drpStairCases_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (txtExpensesPerIndexValue.Enabled)
+            var id_exes = Request.QueryString["id_exes"];
+            int idExpenseEstate;
+            if (int.TryParse(id_exes, out idExpenseEstate))
             {
-                decimal newPricePerUnit;
-                txtExpensesPerIndexValue.Attributes.CssStyle.Add("color", "");
-                var id_exes = Request.QueryString["id_exes"];
-                int idExpenseEstate;
-                if (decimal.TryParse(txtExpensesPerIndexValue.Text, out newPricePerUnit) && int.TryParse(id_exes, out idExpenseEstate))
-                {
-                    txtExpensesPerIndexValue.Enabled = false;
-                    AssociationExpensesManager.UpdatePricePerUnit(idExpenseEstate, newPricePerUnit);
-                    Response.Redirect(Request.RawUrl);
-                }
-                else
-                {
-                    txtExpensesPerIndexValue.Attributes.CssStyle.Add("color", "red");
-                }
+                this.InitializeGridViewExpensesPerIndex(new DataTable(), idExpenseEstate);
             }
-            else
-            {
-                txtExpensesPerIndexValue.Enabled = true;
-            }
-
         }
+
+        //protected void btnExpensesPerIndexValue_Click(object sender, EventArgs e)
+        //{
+        //    if (txtExpensesPerIndexValue.Enabled)
+        //    {
+        //        decimal newPricePerUnit;
+        //        txtExpensesPerIndexValue.Attributes.CssStyle.Add("color", "");
+        //        var id_exes = Request.QueryString["id_exes"];
+        //        int idExpenseEstate;
+        //        if (decimal.TryParse(txtExpensesPerIndexValue.Text, out newPricePerUnit) && int.TryParse(id_exes, out idExpenseEstate))
+        //        {
+        //            txtExpensesPerIndexValue.Enabled = false;
+        //            //todo1 - work around counters and staircase
+        //            AssociationExpensesManager.UpdatePricePerUnit(idExpenseEstate, newPricePerUnit, null);
+        //            Response.Redirect(Request.RawUrl);
+        //        }
+        //        else
+        //        {
+        //            txtExpensesPerIndexValue.Attributes.CssStyle.Add("color", "red");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        txtExpensesPerIndexValue.Enabled = true;
+        //    }
+
+        //}
     }
 }

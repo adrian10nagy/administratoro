@@ -6,7 +6,7 @@ namespace Administratoro.BL.Managers
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class CountersApartmentManager
+    public static class ApartmentCountersManager
     {
         private static AdministratoroEntities _administratoroEntities;
 
@@ -23,6 +23,11 @@ namespace Administratoro.BL.Managers
         internal static AssociationCountersApartment GetByApartmentAndExpense(int apartmentid, int expenseId)
         {
             return GetContext(true).AssociationCountersApartment.FirstOrDefault(aca => aca.Id_Apartment == apartmentid && aca.AssociationCounters.Id_Expense == expenseId);
+        }
+
+        public static AssociationCountersApartment Get(int apartmentId, int associationCounterId)
+        {
+            return GetContext(true).AssociationCountersApartment.FirstOrDefault(a => a.Id_Apartment == apartmentId && a.Id_Counters == associationCounterId);
         }
     }
 }

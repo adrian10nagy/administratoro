@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Admin</RootNamespace>
     <AssemblyName>Admin</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -73,9 +73,9 @@
       <HintPath>..\packages\System.IO.Packaging.4.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
@@ -162,10 +162,11 @@
     <Content Include="Content\select2.min.css" />
     <Content Include="Error.aspx" />
     <Content Include="Expenses\AddEditExpense.aspx" />
-    <Content Include="Expenses\AddEditHeatHelp.aspx" />
+    <Content Include="Expenses\AddEditIndividual.aspx" />
     <Content Include="Expenses\Invoices.aspx" />
     <Content Include="Invoices\Add.aspx" />
     <Content Include="Invoices\List.aspx" />
+    <Content Include="Payment\Add.aspx" />
     <Content Include="Reports\Flyers.aspx" />
     <Content Include="Reports\Index.aspx" />
     <Content Include="Reports\Monthly.aspx" />
@@ -369,12 +370,12 @@
     <Compile Include="Expenses\AddEditExpense.aspx.designer.cs">
       <DependentUpon>AddEditExpense.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Expenses\AddEditHeatHelp.aspx.cs">
-      <DependentUpon>AddEditHeatHelp.aspx</DependentUpon>
+    <Compile Include="Expenses\AddEditIndividual.aspx.cs">
+      <DependentUpon>AddEditIndividual.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Expenses\AddEditHeatHelp.aspx.designer.cs">
-      <DependentUpon>AddEditHeatHelp.aspx</DependentUpon>
+    <Compile Include="Expenses\AddEditIndividual.aspx.designer.cs">
+      <DependentUpon>AddEditIndividual.aspx</DependentUpon>
     </Compile>
     <Compile Include="Expenses\Invoices.aspx.cs">
       <DependentUpon>Invoices.aspx</DependentUpon>
@@ -397,6 +398,13 @@
     </Compile>
     <Compile Include="Invoices\List.aspx.designer.cs">
       <DependentUpon>List.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Payment\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Payment\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
     <Compile Include="Reports\Flyers.aspx.cs">
       <DependentUpon>Flyers.aspx</DependentUpon>

@@ -64,6 +64,7 @@
     <Compile Include="Managers\CountersManager.cs" />
     <Compile Include="Managers\AssociationExpensesManager.cs" />
     <Compile Include="Managers\AssociationsManager.cs" />
+    <Compile Include="Managers\EmailsManager.cs" />
     <Compile Include="Managers\ExpensesManager.cs" />
     <Compile Include="Managers\InvoiceIndexesManager.cs" />
     <Compile Include="Managers\InvoicesManager.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Managers\StairCasesManager.cs" />
     <Compile Include="Managers\ApartmentExpensesManager.cs" />
     <Compile Include="Managers\ApartmentsManager.cs" />
+    <Compile Include="Managers\UnitPricesManager.cs" />
     <Compile Include="Models\ExpenseReport.cs" />
     <Compile Include="Models\FormatedAssociationCounter.cs" />
     <Compile Include="Models\YearMonth.cs" />
@@ -84,6 +86,10 @@
     <ProjectReference Include="..\Administratoro.DAL\Administratoro.DAL.csproj">
       <Project>{29865747-d54e-41f2-913e-a8dd273237b2}</Project>
       <Name>Administratoro.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toolbox.Email\Toolbox.Email.csproj">
+      <Project>{3a5e5df2-3b9b-4426-8094-cf9a7ec9ee24}</Project>
+      <Name>Toolbox.Email</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

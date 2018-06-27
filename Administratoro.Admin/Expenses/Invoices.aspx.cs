@@ -144,14 +144,14 @@ namespace Admin.Expenses
                 CssClass = "col-md-3 col-sm-2 col-xs-6"
             };
 
-            if (associationExpense.Id_Expense != (int)Expense.AjutorÎncălzire)
+            if (associationExpense.Id_ExpenseType != (int)ExpenseType.Individual)
             {
                 if (isExpensePerIndex && associationExpense.Associations.Apartments.Count() > 0)
                 {
                     var message = AssociationExpensesManager.ExpensePercentageFilledInMessage(associationExpense);
                     var col5Literal = new Literal { Text = message };
                     col5.Controls.Add(col5Literal);
-                    if (!message.Contains("<b>0</b> cheltuieli adăugate din <b>0</b"))
+                    if (!message.Contains("<b>0</b> citiri adăugate din <b>0</b"))
                     {
                         Button btnAddExpense = new Button
                         {
@@ -167,7 +167,7 @@ namespace Admin.Expenses
             {
                 Button btnAddHeatHelp = new Button
                 {
-                    PostBackUrl = "AddEditHeatHelp.aspx?id_exes=" + associationExpense.Id,
+                    PostBackUrl = "AddEditIndividual.aspx?id_exes=" + associationExpense.Id,
                     Text = "Adaugă/Modifică"
                 };
 
@@ -245,7 +245,8 @@ namespace Admin.Expenses
                     var percentage = AssociationExpensesManager.GetPercentageAsString(associationExpense);
                     if (percentage == "100")
                     {
-                        tb3.Text = RedistributionManager.RedistributeValuePerIndexAsString(associationExpense);
+                        var redistributeResult = RedistributionManager.GetRedistributeValuePerIndex(associationExpense);
+                        tb3.Text = redistributeResult.HasValue ? redistributeResult.Value.ToString() : string.Empty;
                     }
 
                     if (tb3.Text == "0,0000000")
@@ -455,6 +456,7 @@ namespace Admin.Expenses
             invoiceRedistribute.Visible = true;
             invoiceMain.Visible = false;
             lblExpenseMeessageConfigure.Visible = false;
+            btnCloseMonth.Visible = false;
         }
 
         private void ConfigureRedistributeMessages(int associationExpenseId)
@@ -520,6 +522,7 @@ namespace Admin.Expenses
 
         protected void invoiceRedistributeCancel_Click(object sender, EventArgs e)
         {
+            btnCloseMonth.Visible = true;
             invoiceRedistribute.Visible = false;
             invoiceMain.Visible = true;
             lblExpenseMeessageConfigure.Visible = true;

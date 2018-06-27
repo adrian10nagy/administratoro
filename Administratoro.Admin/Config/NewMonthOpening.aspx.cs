@@ -1,7 +1,7 @@
 ﻿
 namespace Admin.Config
 {
-    using Administrataro.BL.Models;
+    using Administratoro.BL.Models;
     using Administratoro.BL.Constants;
     using Administratoro.BL.Extensions;
     using Administratoro.BL.Managers;
@@ -340,7 +340,7 @@ namespace Admin.Config
                             {
                                 AssociationExpenses newEe = AssociationExpensesManager.Add(Association.Id, expenseId,
                                     month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected);
-                                AssociationExpensesManager.UpdatePricePerUnitDefaultPrevieousMonth(newEe, oldEE);
+                                AssociationExpensesManager.UpdatePricePerUnitDefaultPreviousMonth(newEe, oldEE);
                             }
                         }
                     }

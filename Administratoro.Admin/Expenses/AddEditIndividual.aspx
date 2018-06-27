@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AddEditHeatHelp.aspx.cs" Inherits="Admin.Expenses.AddEditHeatHelp" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AddEditIndividual.aspx.cs" Inherits="Admin.Expenses.AddEditHeatHelp" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainStyle" runat="server">
 </asp:Content>

@@ -32,3 +32,5 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.csprojResolveAssemblyReference.cache
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Toolbox.Email.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Toolbox.Email.pdb

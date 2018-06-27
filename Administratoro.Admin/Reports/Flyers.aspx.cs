@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -44,36 +45,36 @@ namespace Admin.Reports
 
         }
 
-        private int GetYear()
+        protected void btnEmail_Click(object sender, EventArgs e)
         {
-            var yearMonth = drpAvailableMonths.SelectedValue.Split('-');
-            if (yearMonth.Length == 2)
-            {
-                int year;
+            btnEmail_Confirm.Visible = true;
+            StringBuilder sb = new StringBuilder();
 
-                if (int.TryParse(yearMonth[0], out year))
+            foreach (var apartment in Association.Apartments)
+            {
+                if (string.IsNullOrEmpty(apartment.Email))
                 {
-                    return year;
+                    sb.Append("Apartamentul " + apartment.Number + " nu are email-ul setat <br>");
                 }
             }
 
-            throw new NotImplementedException();
+            lblMessage.Text = sb.ToString();
+            lblMessage.Style.Add("color", "red");
         }
-
-        private int GetMonth()
+        
+        protected void btnEmail_Confirm_Click(object sender, EventArgs e)
         {
-            var yearMonth = drpAvailableMonths.SelectedValue.Split('-');
-            if (yearMonth.Length == 2)
+            foreach (var apartment in Association.Apartments)
             {
-                int month;
-
-                if (int.TryParse(yearMonth[1], out month))
+                if(!string.IsNullOrEmpty(apartment.Email))
                 {
-                    return month;
+                    EmailsManager.SendEmail("adrian10nagy@gmail.com", "adrian10nagy@gmail.com", "Fluturasi de cheltuieli pentru luna Mai", "Buna ziua " + apartment.Name + ", <br> <br> Atasat gasiti fluturasii cu cheltuieli pentru luna mai 2018. <br> Cu stima, asociatia de proprietari" );
                 }
             }
 
-            throw new NotImplementedException();
+            btnEmail_Confirm.Visible = false;
+            lblMessage.Text = "Email-uri trimise cu success<br>";
+            lblMessage.Style.Add("color", "green");
         }
 
         protected void btnDownload_Click(object sender, EventArgs e)
@@ -147,6 +148,38 @@ namespace Admin.Reports
                 ShowPdf(filename);
             }
 
+        }
+
+        private int GetYear()
+        {
+            var yearMonth = drpAvailableMonths.SelectedValue.Split('-');
+            if (yearMonth.Length == 2)
+            {
+                int year;
+
+                if (int.TryParse(yearMonth[0], out year))
+                {
+                    return year;
+                }
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private int GetMonth()
+        {
+            var yearMonth = drpAvailableMonths.SelectedValue.Split('-');
+            if (yearMonth.Length == 2)
+            {
+                int month;
+
+                if (int.TryParse(yearMonth[1], out month))
+                {
+                    return month;
+                }
+            }
+
+            throw new NotImplementedException();
         }
 
         private static PdfPTable AddTenantsTable(List<AssociationExpenses> assocExpenses, int apartmentId)
@@ -263,9 +296,11 @@ namespace Admin.Reports
                 table.AddCell(ConvertToDecimalPrintable(apExpense.IndexOld, 1));
                 table.AddCell(ConvertToDecimalPrintable(apExpense.IndexNew, 1));
                 table.AddCell(ConvertToDecimalPrintable((apExpense.IndexNew - apExpense.IndexOld), 1));
-                table.AddCell(ConvertToDecimalPrintable(apExpense.AssociationExpenses.PricePerExpenseUnit, 4));
-                var subValue = ((apExpense.IndexNew - apExpense.IndexOld) * apExpense.AssociationExpenses.PricePerExpenseUnit);
-                table.AddCell(ConvertToDecimalPrintable(subValue, 4));
+                table.AddCell(string.Empty);
+                //table.AddCell(ConvertToDecimalPrintable(apExpense.AssociationExpenses.PricePerExpenseUnit, 4));
+                //var subValue = ((apExpense.IndexNew - apExpense.IndexOld) * apExpense.AssociationExpenses.PricePerExpenseUnit);
+                //table.AddCell(ConvertToDecimalPrintable(subValue, 4));
+                table.AddCell(string.Empty);
 
                 if (apExpense.IndexOld.HasValue)
                 {
@@ -282,10 +317,10 @@ namespace Admin.Reports
                     sumConsum = sumConsum.HasValue ? (sumConsum + (apExpense.IndexNew - apExpense.IndexOld)) : (apExpense.IndexNew - apExpense.IndexOld);
                 }
 
-                if (subValue.HasValue)
-                {
-                    sumValue = sumValue.HasValue ? (sumValue + subValue) : subValue;
-                }
+                //if (subValue.HasValue)
+                //{
+                //    sumValue = sumValue.HasValue ? (sumValue + subValue) : subValue;
+                //}
             }
 
             table.AddCell("TOTAL");
