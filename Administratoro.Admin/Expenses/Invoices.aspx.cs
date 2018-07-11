@@ -341,13 +341,14 @@ namespace Admin.Expenses
             //else
             //{
             tb2.Attributes.Add("eeId", associationExpense.Id.ToString());
-            var invoice = associationExpense.Invoices.FirstOrDefault(i => i.Id_EstateExpense == associationExpense.Id && i.Id_StairCase == null);
+            var invoices = associationExpense.Invoices;
 
             string message = string.Empty;
-            if (invoice != null && invoice.Value.HasValue)
+            if (invoices != null && invoices.Any(i=>i.Value.HasValue))
             {
-                message = invoice.Value.Value.ToString();
+                message = invoices.Where(i=>i.Value.HasValue).Sum(i=>i.Value.Value).ToString();
             }
+
             tb2.Text = message;
             col2.Controls.Add(tb2);
             //}

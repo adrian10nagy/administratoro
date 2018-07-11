@@ -34,3 +34,5 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\obj\Debug\Administratoro.BL.pdb
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Toolbox.Email.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\Toolbox.Email.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\EntityFramework.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.BL\bin\Debug\EntityFramework.SqlServer.xml

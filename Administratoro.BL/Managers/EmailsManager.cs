@@ -5,9 +5,9 @@ namespace Administratoro.BL.Managers
 
     public static class EmailsManager
     {
-        public static bool SendEmail(string addressFrom, string addressTo, string mailSubject, string mailBody)
+        public static bool SendEmail(string addressFrom, string addressTo, string mailSubject, string mailBody, string filePath)
         {
-            return EmailClient.Send(addressFrom, addressTo, mailSubject, mailBody);
+            return EmailClient.Send(addressFrom, addressTo, mailSubject, mailBody, filePath);
         }
     }
 }

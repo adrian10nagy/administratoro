@@ -27,6 +27,11 @@ namespace Administratoro.BL.Managers
             return GetContext(true).Invoices.FirstOrDefault(t => t.Id == invoiceId);
         }
 
+        public static Invoices GetByAssociationExpenseIdAndCounter(int associationExpenseId, int assCounterId)
+        {
+            return GetContext(true).Invoices.FirstOrDefault(t => t.Id_EstateExpense == associationExpenseId && t.id_assCounter == assCounterId);
+        }
+
         public static IEnumerable<Invoices> GetByAssociationExpenseId(int associationExpenseId)
         {
             return GetContext(true).Invoices.Where(t => t.Id_EstateExpense == associationExpenseId);
@@ -46,7 +51,7 @@ namespace Administratoro.BL.Managers
         }
 
         public static void Update(Invoices invoice, decimal? value, int? stairCaseId, string description, int? redistributionId,
-            string issueNumber, DateTime? issueDate)
+            string issueNumber, DateTime? issueDate, int? assCounterId)
         {
             Invoices result = new Invoices();
             result = GetContext(true).Invoices.FirstOrDefault(c => c.Id == invoice.Id);
@@ -67,40 +72,12 @@ namespace Administratoro.BL.Managers
                     var ee = AssociationExpensesManager.GetById(invoice.Id_EstateExpense.Value);
                     if (ee != null)
                     {
-                        ApartmentExpensesManager.UpdateApartmentExpenses(ee, value, stairCaseId);
+                        ApartmentExpensesManager.UpdateApartmentExpenses(ee, value, stairCaseId, result.id_assCounter);
                     }
                 }
+
                 GetContext().SaveChanges();
-
             }
-        }
-
-        public static void AddOrUpdate(AssociationExpenses associationExpense, decimal? value, string description = null)
-        {
-            Invoices result = new Invoices();
-            result = GetContext(true).Invoices.FirstOrDefault(c => c.Id_EstateExpense == associationExpense.Id && c.Id_StairCase == null);
-
-            if (result != null)
-            {
-                result.Value = value;
-                result.Description = description;
-                GetContext().Entry(result).CurrentValues.SetValues(result);
-            }
-            else
-            {
-                result = new Invoices
-                {
-                    Id_EstateExpense = associationExpense.Id,
-                    Value = value,
-                    Id_StairCase = null,
-                    Description = description
-                };
-                GetContext().Invoices.Add(result);
-            }
-
-            ApartmentExpensesManager.UpdateApartmentExpenses(associationExpense, value);
-
-            GetContext().SaveChanges();
         }
 
         public static void Update(Invoices invoice, decimal? value, int stairCaseId)
@@ -121,69 +98,37 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void AddOrUpdate(AssociationExpenses associationExpense, decimal? value, int? stairCaseId, string description = null,
-            string issueNumber = null, DateTime? issueDate = null)
-        {
-            Invoices invoice = new Invoices();
-
-            invoice = GetContext(true).Invoices.FirstOrDefault(c => c.Id_StairCase == stairCaseId && c.Id_EstateExpense == associationExpense.Id);
-
-            if (invoice != null)
-            {
-                invoice.Value = value;
-                invoice.Description = description;
-                invoice.issueDate = issueDate;
-                invoice.issueNumber = issueNumber;
-                GetContext().Entry(invoice).CurrentValues.SetValues(invoice);
-            }
-            else
-            {
-                invoice = new Invoices
-                {
-                    Id_StairCase = stairCaseId,
-                    Value = value,
-                    Id_EstateExpense = associationExpense.Id,
-                    Description = description
-                };
-                GetContext().Invoices.Add(invoice);
-            }
-
-            ApartmentExpensesManager.UpdateApartmentExpenses(associationExpense, value, stairCaseId);
-
-            GetContext().SaveChanges();
-        }
-
-        public static void Add(decimal? theValue, int year, int month, int expenseId, int? stairCaseId, int associationId)
-        {
-            var associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
-
-            if (associationExpense != null)
-            {
-                AddOrUpdate(associationExpense, theValue, stairCaseId);
-            }
-        }
-
         public static void AddDefault(int associationId, int expenseId, int year, int month)
         {
             var associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+            AddDefault(associationExpense);
+        }
 
-            if (associationExpense != null)
+        public static void AddDefault(AssociationExpenses associationExpense)
+        {
+            if (associationExpense == null)
             {
-                //if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
-                //{
-                //    foreach (var stairCase in estateExpense.Associations.StairCases)
-                //    {
-                //        var result = new Invoices
-                //        {
-                //            Id_EstateExpense = estateExpense.Id,
-                //            Value = null,
-                //            Id_StairCase = stairCase.Id
-                //        };
-                //        GetContext().Invoices.Add(result);
-                //    }
-                //}
-                //else
-                //{
+                return;
+            }
+
+            if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
+            {
+                var assCounters = AssociationCountersManager.GetAllByExpenseType(associationExpense.Id_Estate, associationExpense.Id_Expense);
+
+                foreach (var assCounter in assCounters)
+                {
+                    var result = new Invoices
+                    {
+                        Id_EstateExpense = associationExpense.Id,
+                        Value = null,
+                        Id_StairCase = null,
+                        id_assCounter = assCounter.Id
+                    };
+                    GetContext().Invoices.Add(result);
+                }
+            }
+            else
+            {
                 var result = new Invoices
                 {
                     Id_EstateExpense = associationExpense.Id,
@@ -191,10 +136,10 @@ namespace Administratoro.BL.Managers
                     Id_StairCase = null
                 };
                 GetContext().Invoices.Add(result);
-                //}
 
-                GetContext().SaveChanges();
             }
+
+            GetContext().SaveChanges();
         }
 
         public static IEnumerable<Invoices> GetDiverseByAssociationAssociationExpense(int associationExpenseId)
@@ -284,7 +229,7 @@ namespace Administratoro.BL.Managers
                 }
 
                 var associationExpense = AssociationExpensesManager.GetAssociationExpense(ee.Id_Estate, ee.Id_Expense, year, month);
-                if(associationExpense != null)
+                if (associationExpense != null)
                 {
                     result = associationExpense.Invoices.FirstOrDefault();
                 }
@@ -304,6 +249,18 @@ namespace Administratoro.BL.Managers
             var ae = AssociationExpensesManager.GetForSameMonthByExpense(associationExpense.Id, expense);
 
             return ae.Invoices.FirstOrDefault();
+        }
+
+        internal static int GetInvoicesNr(AssociationExpenses associationExpense)
+        {
+            if (associationExpense.SplitPerStairCase.HasValue && associationExpense.SplitPerStairCase.Value)
+            {
+                return AssociationCountersManager.GetAllByExpenseType(associationExpense.Id_Estate, associationExpense.Id_Expense).Count();
+            }
+            else
+            {
+                return 1;
+            }
         }
     }
 }

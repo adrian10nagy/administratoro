@@ -31,6 +31,24 @@ namespace Admin.Invoices {
         protected global::System.Web.UI.WebControls.DropDownList drpInvoiceExpenses;
         
         /// <summary>
+        /// pnlInvoiceCounter control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlInvoiceCounter;
+        
+        /// <summary>
+        /// drpInvoiceCounters control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList drpInvoiceCounters;
+        
+        /// <summary>
         /// pnlInvoiceBody control.
         /// </summary>
         /// <remarks>

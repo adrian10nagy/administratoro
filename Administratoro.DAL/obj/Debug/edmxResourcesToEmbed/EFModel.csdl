@@ -108,6 +108,10 @@
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
       <End Role="InvoiceIndexes" EntitySet="InvoiceIndexes" />
     </AssociationSet>
+    <AssociationSet Name="FK__Invoices__id_ass__53A266AC" Association="AdministratoroModel.FK__Invoices__id_ass__53A266AC">
+      <End Role="AssociationCounters" EntitySet="AssociationCounters" />
+      <End Role="Invoices" EntitySet="Invoices" />
+    </AssociationSet>
     <AssociationSet Name="FK__InvoiceSu__id_as__2022C2A6" Association="AdministratoroModel.FK__InvoiceSu__id_as__2022C2A6">
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
       <End Role="InvoiceSubcategories" EntitySet="InvoiceSubcategories" />
@@ -265,6 +269,7 @@
     <NavigationProperty Name="Associations" Relationship="AdministratoroModel.FK__Counters__Id_Est__0B5CAFEA" FromRole="AssociationCounters" ToRole="Associations" />
     <NavigationProperty Name="Expenses" Relationship="AdministratoroModel.FK__Counters__Id_Exp__0D44F85C" FromRole="AssociationCounters" ToRole="Expenses" />
     <NavigationProperty Name="InvoiceIndexes" Relationship="AdministratoroModel.FK__InvoiceIn__Id_Co__6ABAD62E" FromRole="AssociationCounters" ToRole="InvoiceIndexes" />
+    <NavigationProperty Name="Invoices" Relationship="AdministratoroModel.FK__Invoices__id_ass__53A266AC" FromRole="AssociationCounters" ToRole="Invoices" />
     <NavigationProperty Name="InvoiceSubcategories" Relationship="AdministratoroModel.FK__InvoiceSu__id_as__2022C2A6" FromRole="AssociationCounters" ToRole="InvoiceSubcategories" />
   </EntityType>
   <EntityType Name="AssociationCountersApartment">
@@ -414,6 +419,8 @@
     <Property Name="id_Redistributiontype" Type="Int32" />
     <Property Name="issueDate" Type="DateTime" Precision="0" />
     <Property Name="issueNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="id_assCounter" Type="Int32" />
+    <NavigationProperty Name="AssociationCounters" Relationship="AdministratoroModel.FK__Invoices__id_ass__53A266AC" FromRole="Invoices" ToRole="AssociationCounters" />
     <NavigationProperty Name="AssociationExpenses" Relationship="AdministratoroModel.FK__Invoices__Id_Est__3FD07829" FromRole="Invoices" ToRole="AssociationExpenses" />
     <NavigationProperty Name="AssociationExpensesRedistributionTypes" Relationship="AdministratoroModel.FK__Invoices__id_Red__4589517F" FromRole="Invoices" ToRole="AssociationExpensesRedistributionTypes" />
     <NavigationProperty Name="InvoiceIndexes" Relationship="AdministratoroModel.FK__InvoiceIn__Id_In__67DE6983" FromRole="Invoices" ToRole="InvoiceIndexes" />
@@ -683,6 +690,18 @@
       </Principal>
       <Dependent Role="InvoiceIndexes">
         <PropertyRef Name="Id_Counter" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Invoices__id_ass__53A266AC">
+    <End Type="AdministratoroModel.AssociationCounters" Role="AssociationCounters" Multiplicity="0..1" />
+    <End Type="AdministratoroModel.Invoices" Role="Invoices" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AssociationCounters">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Invoices">
+        <PropertyRef Name="id_assCounter" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

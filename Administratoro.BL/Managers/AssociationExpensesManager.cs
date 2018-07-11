@@ -356,7 +356,8 @@ namespace Administratoro.BL.Managers
             }
             else
             {
-                if (StatusAllInvoicesHaveValue(associationExpense, 1))
+                int invoicesNr = InvoicesManager.GetInvoicesNr(associationExpense);
+                if (StatusAllInvoicesHaveValue(associationExpense, invoicesNr))
                 {
                     result = "<i class='fa fa-check'></i> 100%";
                 }

@@ -4,6 +4,7 @@ using Administratoro.BL.Managers;
 using Administratoro.DAL;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.draw;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,14 +62,33 @@ namespace Admin.Reports
             lblMessage.Text = sb.ToString();
             lblMessage.Style.Add("color", "red");
         }
-        
+
         protected void btnEmail_Confirm_Click(object sender, EventArgs e)
         {
             foreach (var apartment in Association.Apartments)
             {
-                if(!string.IsNullOrEmpty(apartment.Email))
+                if (!string.IsNullOrEmpty(apartment.Email))
                 {
-                    EmailsManager.SendEmail("adrian10nagy@gmail.com", "adrian10nagy@gmail.com", "Fluturasi de cheltuieli pentru luna Mai", "Buna ziua " + apartment.Name + ", <br> <br> Atasat gasiti fluturasii cu cheltuieli pentru luna mai 2018. <br> Cu stima, asociatia de proprietari" );
+                    var filePath = string.Format("C:\\Users\\Adrian\\Documents\\fluturasi\\p{0}.pdf", apartment.Number);
+
+                    string message = @"Buna ziua, <br> <br> 
+Vă  facem  cunoscut  că  s-au  afișat  listele  de  cheltuileli  aferente  lunii  mai  2018.<br> 
+Nota  de  plată  aferentă  apartamentului  dumneavoastră  este  anexata prezentului  mail.<br> 
+Vă  rugăm  să  efectuați  plata  în  contul  acociației  deschis  la  Banca  Transilvania  Cluj  cu  IBAN  RO13BTRLRONCRT0409298101  specificând  numărul  
+apartamentului  pentru  care  faceți  plata.  Pentru  încasari  în  numerar  vă  așteptăm  joi  19.07.2018  între  orele  19.30 - 21  la  etajul  tehnic.<br> <br> 
+Termenul  scadent  este  28.07.2018.<br> <br> 
+PS:<br> 
+<b>MIERCURI  11.07.2018, ORA   19.30</b>   SE  CONVOACĂ   <b>ADUNAREA  GENERALĂ</b>, CU  ORDINEA  DE  ZI:<br>
+1.RAPORT  DE  ACTIVITATE  COMITET  EXECUTIV <br>
+2.PROPUNERI  RECALCULARE  COSTURI  AGENT  TERMIC  PENTRU  SEZONUL  RECE  2017 – 2018  SAU  ASUMAREA  ACTIONARII  IN  JUDECATA  A  ASOCIATIEI  DE  PROPRIETARI  SI  INSUSIREA  SENTINTEI  JUDECATORESTI<br>
+3.ALTE  PROBLEME  ORGANIZATORICE  <br><br>
+
+<b>DACA  NU  SE  INTRUNESTE  CVORUMUL  DE  50% + 1  DINTRE  MEMBRII  ASOCIATIEI,  SEDINTA  SE  VA  RECONVOCA  PENTRU  DATA   DE  MIERCURI  11.07.2018  ORA  20.30  CAND  HOTARARILE  SE  VOR  LUA  CU  VOTUL  MAJORITATII  CELOR  PREZENTI.</b>
+<b>CHIRIASII  AU  OBLIGATIA  SA  ANUNTE  PROPRIETARII  DE  DATA  SI  ORA  ADUNARII  GENERALE.</b>                           
+<br><br>
+COMITET  EXECUTIV <br>03.07.2018";
+
+                    EmailsManager.SendEmail("asociatie.online@gmail.com", apartment.Email, "Fluturasi de cheltuieli pentru luna Mai 2018", message, filePath);
                 }
             }
 
@@ -87,7 +107,8 @@ namespace Admin.Reports
             var apartments = ApartmentsManager.Get(Association.Id);
 
             //Create new PDF document
-            Document document = new Document(PageSize.A4, 20f, 20f, 20f, 20f);
+            Document document = new Document(PageSize.A4, 80f, 80f, 20f, 20f);
+            var association = Association;
 
             try
             {
@@ -96,11 +117,25 @@ namespace Admin.Reports
 
                 foreach (var apartment in apartments)
                 {
+                    PdfPTable tblHeader = new PdfPTable(2);
+                    tblHeader.WidthPercentage = 100;
+                    tblHeader.AddCell(getCell("ASOCIATIA DE PROPRIETARI " + association.Name + ", CF " + association.FiscalCode, PdfPCell.ALIGN_LEFT));
+                    tblHeader.AddCell(getCell("CONTUL BANCAR " + association.BanckAccont, PdfPCell.ALIGN_RIGHT));
+                    document.Add(tblHeader);
+                    document.Add(new Phrase("\n"));
 
-                    document.Add(new Paragraph(Association.Name));
-                    document.Add(new Paragraph("Apartamentul: " + apartment.Number));
+                    PdfPTable tbAp = new PdfPTable(4);
+                    tbAp.WidthPercentage = 100;
+                    tbAp.AddCell(getCell("Ap.: " + apartment.Number.ToString(), PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(getCell("Nume: " + apartment.Name, PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(getCell("Cota: " + (apartment.CotaIndiviza.HasValue ? apartment.CotaIndiviza.Value.ToString() : string.Empty), PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(getCell("Nr. Pers: " + apartment.Dependents.ToString(), PdfPCell.ALIGN_CENTER));
+                    document.Add(tbAp);
 
-                    var associationExpensesGrouped = AssociationExpensesManager.GetByMonthAndYearNotDisabled(Association.Id, GetYear(), GetMonth())
+
+                    document.Add(new Phrase("\n"));
+
+                    var associationExpensesGrouped = AssociationExpensesManager.GetByMonthAndYearNotDisabled(association.Id, GetYear(), GetMonth())
                         .GroupBy(ee => ee.Id_ExpenseType).OrderBy(er => er.Key);
 
                     foreach (var assocExpenses in associationExpensesGrouped)
@@ -150,6 +185,14 @@ namespace Admin.Reports
 
         }
 
+        public PdfPCell getCell(String text, int alignment)
+        {
+            PdfPCell cell = new PdfPCell(new Phrase(text));
+            cell.HorizontalAlignment = alignment;
+            cell.Border = 0; ;
+            return cell;
+        }
+
         private int GetYear()
         {
             var yearMonth = drpAvailableMonths.SelectedValue.Split('-');
@@ -184,8 +227,9 @@ namespace Admin.Reports
 
         private static PdfPTable AddTenantsTable(List<AssociationExpenses> assocExpenses, int apartmentId)
         {
+            Font font = new Font(null, 12, Font.BOLD); 
             PdfPTable table = new PdfPTable(2);
-            table.TotalWidth = 550f;
+            table.TotalWidth = 450f;
             //fix the absolute width of the table
             table.LockedWidth = true;
             table.HorizontalAlignment = 1;
@@ -194,7 +238,7 @@ namespace Admin.Reports
             table.SpacingBefore = 10f;
             table.SpacingAfter = 10f;
 
-            table.AddCell("Cheltuială");
+            table.AddCell("Cheltuiala");
             table.AddCell("Valoare");
             decimal? sum = null;
 
@@ -218,7 +262,8 @@ namespace Admin.Reports
                 }
             }
 
-            table.AddCell("TOTAL");
+            var tc = new Phrase("TOTAL", font);
+            table.AddCell(tc);
             table.AddCell(ConvertToDecimalPrintable(sum));
 
             return table;
@@ -227,7 +272,7 @@ namespace Admin.Reports
         private static PdfPTable AddCotaTable(List<AssociationExpenses> assocExpenses, int apartmentId)
         {
             PdfPTable table = new PdfPTable(2);
-            table.TotalWidth = 550f;
+            table.TotalWidth = 450f;
             //fix the absolute width of the table
             table.LockedWidth = true;
             table.HorizontalAlignment = 1;
@@ -236,7 +281,7 @@ namespace Admin.Reports
             table.SpacingBefore = 10f;
             table.SpacingAfter = 10f;
 
-            table.AddCell("Cheltuială");
+            table.AddCell("Cheltuiala");
             table.AddCell("Valoare");
             decimal? sum = null;
 
@@ -269,10 +314,10 @@ namespace Admin.Reports
         private static PdfPTable AddIndexTable(List<ApartmentExpenses> apExpenses)
         {
             PdfPTable table = new PdfPTable(6);
-            table.TotalWidth = 550f;
+            table.TotalWidth = 450f;
             //fix the absolute width of the table
             table.LockedWidth = true;
-            table.HorizontalAlignment = 1;
+            table.HorizontalAlignment = PdfPCell.ALIGN_CENTER;
 
             //leave a gap before and after the table
             table.SpacingBefore = 10f;

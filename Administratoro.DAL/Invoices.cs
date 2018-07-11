@@ -28,7 +28,9 @@ namespace Administratoro.DAL
         public Nullable<int> id_Redistributiontype { get; set; }
         public Nullable<System.DateTime> issueDate { get; set; }
         public string issueNumber { get; set; }
+        public Nullable<int> id_assCounter { get; set; }
     
+        public virtual AssociationCounters AssociationCounters { get; set; }
         public virtual AssociationExpenses AssociationExpenses { get; set; }
         public virtual AssociationExpensesRedistributionTypes AssociationExpensesRedistributionTypes { get; set; }
         public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }

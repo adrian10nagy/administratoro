@@ -10,15 +10,16 @@
             <asp:DropDownList runat="server" ID="drpApartaments" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="drpApartament_SelectedIndexChanged">
             </asp:DropDownList>
         </div>
-         <div class="form-group">
+        <div class="form-group " runat="server" id="pnlWhatToPay" visible="false">
             <label>Cheltuielile de plată</label>
-            <asp:CheckBox runat="server" ID="chbWhatToPay" CssClass="form-control">
-            </asp:CheckBox>
+            <asp:CheckBoxList runat="server" ID="chbWhatToPay" CssClass="form-control pnlWhatToPay">
+            </asp:CheckBoxList>
+            Plată suplimentară<asp:TextBox runat="server" ID="tbWhatToPayExtra" CssClass="form-control"></asp:TextBox>
         </div>
-      
-         <div class="form-group" runat="server">
+
+        <div class="form-group" runat="server">
             <asp:Button runat="server" ID="btnCancel" Text="Anulează" OnClick="btnCancel_Click" CausesValidation="false" />
-            <asp:Button runat="server" ID="btnSave" Text="Plătește" OnClick="btnSave_Click" Enabled="false"/>
+            <asp:Button runat="server" ID="btnSave" Text="Plătește" OnClick="btnSave_Click" Enabled="false" />
         </div>
     </div>
 

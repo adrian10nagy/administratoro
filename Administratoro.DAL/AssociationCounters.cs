@@ -20,6 +20,7 @@ namespace Administratoro.DAL
             this.AssociationExpensesUnitPrices = new HashSet<AssociationExpensesUnitPrices>();
             this.AssociationCountersStairCase = new HashSet<AssociationCountersStairCase>();
             this.InvoiceIndexes = new HashSet<InvoiceIndexes>();
+            this.Invoices = new HashSet<Invoices>();
             this.InvoiceSubcategories = new HashSet<InvoiceSubcategories>();
         }
     
@@ -34,6 +35,7 @@ namespace Administratoro.DAL
         public virtual Associations Associations { get; set; }
         public virtual Expenses Expenses { get; set; }
         public virtual ICollection<InvoiceIndexes> InvoiceIndexes { get; set; }
+        public virtual ICollection<Invoices> Invoices { get; set; }
         public virtual ICollection<InvoiceSubcategories> InvoiceSubcategories { get; set; }
     }
 }

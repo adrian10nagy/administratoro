@@ -22,13 +22,31 @@ namespace Admin.Payment {
         protected global::System.Web.UI.WebControls.DropDownList drpApartaments;
         
         /// <summary>
+        /// pnlWhatToPay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlWhatToPay;
+        
+        /// <summary>
         /// chbWhatToPay control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chbWhatToPay;
+        protected global::System.Web.UI.WebControls.CheckBoxList chbWhatToPay;
+        
+        /// <summary>
+        /// tbWhatToPayExtra control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbWhatToPayExtra;
         
         /// <summary>
         /// btnCancel control.

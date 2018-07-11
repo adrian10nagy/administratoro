@@ -244,7 +244,7 @@ namespace Admin.Invoices
                                     var invoice = InvoicesManager.GetDiverseById(invoiceId.Value);
                                     if (invoice != null)
                                     {
-                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId, theNumber.Text, theDateId);
+                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId, theNumber.Text, theDateId, null);
                                     }
                                 }
                                 else
@@ -282,6 +282,13 @@ namespace Admin.Invoices
                 theInvoideValue = tempInvoideValue;
             }
 
+            int? assCounter = null;
+            int assCounterId;
+            if (int.TryParse(drpInvoiceCounters.SelectedValue, out assCounterId))
+            {
+                assCounter = assCounterId;
+            }
+
             // get issue date
             DateTime? theInvoiceDate = null;
             DateTime theInvoiceDateValue;
@@ -295,7 +302,8 @@ namespace Admin.Invoices
             //update
             if (theInvoice != null && theInvoice.Count > 0)
             {
-                InvoicesManager.Update(theInvoice[0], theInvoideValue, null, txtInvoiceDescription.Text, null, txtInvoiceNumber.Text, theInvoiceDate);
+                var invoice = theInvoice.FirstOrDefault(i => i.id_assCounter == assCounter);
+                InvoicesManager.Update(invoice, theInvoideValue, null, txtInvoiceDescription.Text, null, txtInvoiceNumber.Text, theInvoiceDate, assCounter);
             }
             else
             {
@@ -369,7 +377,7 @@ namespace Admin.Invoices
                             var valueSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory") + 20;
                             var assCounterSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory");
 
-                            if(int.TryParse(theValue.ID.Substring(0, assCounterSubStringIndex), out theAssCounterId))
+                            if (int.TryParse(theValue.ID.Substring(0, assCounterSubStringIndex), out theAssCounterId))
                             {
                                 theAssCounterIdValue = theAssCounterId;
                             }
@@ -642,23 +650,31 @@ namespace Admin.Invoices
 
             var invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
 
-            if(isSplitPerStairCase)
+            if (isSplitPerStairCase)
             {
-                var counters = AssociationCountersManager.GetAllByExpenseType(Association.Id, associationExpense.Id_Expense);
-                if(counters.Count() == 0)
+                var assCounters = AssociationCountersManager.GetAllByExpenseType(Association.Id, associationExpense.Id_Expense);
+                InitializeInvoiceCounterSplit(assCounters, isPostbackFromLoadEvent);
+                if (invoices.Count() == 0)
                 {
-                    //add for eeach stairCase
+                    InvoicesManager.AddDefault(associationExpense);
                 }
                 else
                 {
-                    foreach (var counter in counters)
+                    if (invoices.Count() != assCounters.Count())
                     {
-                        
+                        foreach (var counter in assCounters)
+                        {
+
+                        }
                     }
+
                 }
+
+                invoices = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(associationId, expenseId, year, month).ToList();
             }
             else
             {
+                pnlInvoiceCounter.Visible = false;
                 if (invoices.Count != 1)
                 {
                     InvoicesManager.AddDefault(associationId, expenseId, year, month);
@@ -666,26 +682,38 @@ namespace Admin.Invoices
                 }
             }
 
+            var theInvoice = invoices[0];
+
             if (!isPostbackFromLoadEvent)
             {
-                InitializeInvoiceFields(invoices[0]);
+                int assCounterId;
+                if (pnlInvoiceCounter.Visible && int.TryParse(drpInvoiceCounters.SelectedValue, out assCounterId))
+                {
+                    var assCounter = AssociationCountersManager.GetById(assCounterId);
+                    if (assCounter != null)
+                    {
+                        theInvoice = InvoicesManager.GetByAssociationExpenseIdAndCounter(theInvoice.Id_EstateExpense.Value, assCounter.Id);
+                    }
+                }
+
+                InitializeInvoiceFields(theInvoice);
             }
 
             if (isIndexExpense)
             {
                 List<AssociationCounters> counters = AssociationCountersManager.GetAllByExpenseType(Association.Id, expenseId).ToList();
                 invoices = InvoicesSubcategoriesManager.ConfigureSubcategories(invoices, counters).ToList();
-                
-                var invoicesIndexes = InvoiceIndexesManager.Get(invoices[0].Id).ToList();
+
+                var invoicesIndexes = InvoiceIndexesManager.Get(theInvoice.Id).ToList();
                 invoicesIndexes = InvoiceIndexesManager.ConfigureWatherCold(invoices, invoicesIndexes, counters);
 
-                if(invoicesIndexes.Count() > 0)
+                if (invoicesIndexes.Count() > 0)
                 {
                     // add Counters Index old-new
                     InitializeValueFieldAddColumnHeadersForIndexExpenses();
                     InitializeInvoicesForWatherCold(invoicesIndexes, counters);
                 }
-                
+
                 if (expenseId == (int)Expense.ApaRece)
                 {
                     // add InvoicesSubcategories
@@ -696,6 +724,24 @@ namespace Admin.Invoices
                     //InvoicesSubcategoriesManager.ConfigureWatherHot(invoices, counters);
                     // add InvoicesSubcategories
                     InitializeSubInvoices(invoices);
+                }
+            }
+        }
+
+        private void InitializeInvoiceCounterSplit(IEnumerable<AssociationCounters> assCounters, bool postbackFromLoad)
+        {
+            pnlInvoiceCounter.Visible = true;
+            if (!postbackFromLoad)
+            {
+                drpInvoiceCounters.Items.Clear();
+
+                foreach (var assCounter in assCounters)
+                {
+                    drpInvoiceCounters.Items.Add(new ListItem
+                    {
+                        Text = "Contorul " + assCounter.Value,
+                        Value = assCounter.Id.ToString(),
+                    });
                 }
             }
         }
@@ -890,8 +936,8 @@ namespace Admin.Invoices
                     {
                         Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.Value.ToString() : string.Empty,
                         CssClass = "form-control",
-                        ID = invoiceSubcategory.id_assCounter.HasValue? 
-                                            invoiceSubcategory.id_assCounter.Value + "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType:
+                        ID = invoiceSubcategory.id_assCounter.HasValue ?
+                                            invoiceSubcategory.id_assCounter.Value + "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType :
                                             "tbinvoiceSubcategory" + invoiceSubcategory.Id_subCategType,
                         AutoCompleteType = AutoCompleteType.Disabled
                     };
@@ -1163,5 +1209,34 @@ namespace Admin.Invoices
         }
 
         #endregion
+
+        protected void drpInvoiceCounters_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var yearMonth = drpInvoiceYearMonth.SelectedValue.Split('-');
+            int assCounterId;
+
+            if (pnlInvoiceCounter.Visible && yearMonth.Length == 2 && int.TryParse(drpInvoiceCounters.SelectedValue, out assCounterId))
+            {
+                int year;
+                int month;
+                int expenseId;
+                if (int.TryParse(drpInvoiceExpenses.SelectedValue, out expenseId) &&
+                    int.TryParse(yearMonth[0], out year) &&
+                    int.TryParse(yearMonth[1], out month))
+                {
+                    AssociationExpenses associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
+                    var assCounter = AssociationCountersManager.GetById(assCounterId);
+
+                    if (associationExpense != null && assCounter != null)
+                    {
+                        var theInvoice = InvoicesManager.GetByAssociationExpenseIdAndCounter(associationExpense.Id, assCounter.Id);
+                        if (theInvoice != null)
+                        {
+                            InitializeInvoiceFields(theInvoice);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

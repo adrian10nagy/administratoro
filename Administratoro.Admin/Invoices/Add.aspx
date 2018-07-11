@@ -12,6 +12,10 @@
             <label>Cheltuială</label>
             <asp:DropDownList runat="server" ID="drpInvoiceExpenses" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="drpInvoiceExpenses_SelectedIndexChanged"></asp:DropDownList>
         </div>
+        <div class="form-group" runat="server" id="pnlInvoiceCounter" visible="false">
+            <label>Contorul</label>
+            <asp:DropDownList runat="server" ID="drpInvoiceCounters" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="drpInvoiceCounters_SelectedIndexChanged"></asp:DropDownList>
+        </div>
         <div class="form-group" runat="server" id="pnlInvoiceBody">
             <div class="col-md-3 col-sm-6 col-xs-12 form-group has-feedback" runat="server" id="divInvoiceMainValue">
                 <label>Valoare</label>

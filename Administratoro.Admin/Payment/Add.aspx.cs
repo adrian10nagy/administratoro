@@ -37,7 +37,27 @@ namespace Admin.Payment
 
         private void InitializeWhatCanPay()
         {
-            
+            pnlWhatToPay.Visible = true;
+            chbWhatToPay.Items.Clear();
+            chbWhatToPay.Items.Add(new ListItem
+            {
+                Value = string.Empty,
+                Text = "Luna Mai: " + "242 RON"
+            });
+            chbWhatToPay.Items.Add(new ListItem
+            {
+                Value = string.Empty,
+                Text = "Luna iunie: " + "112 RON"
+            }); chbWhatToPay.Items.Add(new ListItem
+            {
+                Value = string.Empty,
+                Text = "Luna iulie: " + "242 RON"
+            });
+            chbWhatToPay.Items.Add(new ListItem
+            {
+                Value = string.Empty,
+                Text = "Luna august: " + "112 RON"
+            });
         }
 
         private void InitializeYearMonth()

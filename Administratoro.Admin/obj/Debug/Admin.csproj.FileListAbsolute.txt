@@ -95,3 +95,9 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\obj\Debug\Admin.pdb
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Toolbox.Email.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Toolbox.Email.pdb
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\ClosedXML.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\DocumentFormat.OpenXml.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\System.Web.Optimization.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Newtonsoft.Json.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.AspNet.FriendlyUrls.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\EntityFramework.xml

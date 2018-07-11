@@ -196,6 +196,7 @@
     <EntitySetMapping Name="Invoices">
       <EntityTypeMapping TypeName="AdministratoroModel.Invoices">
         <MappingFragment StoreEntitySet="Invoices">
+          <ScalarProperty Name="id_assCounter" ColumnName="id_assCounter" />
           <ScalarProperty Name="issueNumber" ColumnName="issueNumber" />
           <ScalarProperty Name="issueDate" ColumnName="issueDate" />
           <ScalarProperty Name="id_Redistributiontype" ColumnName="id_Redistributiontype" />

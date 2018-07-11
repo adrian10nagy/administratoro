@@ -5169,17 +5169,21 @@ input#MainContent_estateStairs_1 {
     white-space: normal;
 }
 
-.invoicesRow{
-    padding-bottom:7px;
+.invoicesRow {
+    padding-bottom: 7px;
 }
 
-.invoicesListHeader{
+.invoicesListHeader {
     background-color: #2a3f54;
     color: white;
-    padding: 5px; 
+    padding: 5px;
 }
 
-.countersTableHeader{
+.countersTableHeader {
     background-color: #2a3f54;
-    color:white;
+    color: white;
+}
+
+.pnlWhatToPay {
+    height: auto;
 }
