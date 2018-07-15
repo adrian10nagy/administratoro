@@ -2,12 +2,6 @@
 
 namespace Administratoro.BL.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
     public class ExpenseReport
     {
         public string CotaIndiviza { get; set; }
@@ -21,7 +15,7 @@ namespace Administratoro.BL.Models
         public decimal? WatherWarm { get; set; }
         public decimal? Cleaning { get; set; }
         public decimal? Gas { get; set; }
-        public decimal? HeatRAT { get; set; }
+        public decimal? HeatRat { get; set; }
         public decimal? Trash { get; set; }
         public decimal? Electricity { get; set; }
         public decimal? Elevator { get; set; }

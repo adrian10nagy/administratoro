@@ -2,10 +2,7 @@
 namespace Administratoro.DAL.Settings
 {
     using System;
-    using System.Collections.Generic;
     using System.Data;
-    using System.Data.SqlClient;
-    using System.Linq;
 
     public class SqlDatabase<ConnectionType, CommandType, ParameterType>
         where ConnectionType : IDbConnection, new()
@@ -32,53 +29,7 @@ namespace Administratoro.DAL.Settings
         }
 
         #region Execute
-        public List<Object> Execute(string query, ParameterType[] parameters)
-        {
-            return Execute(ConnectionStringSet, CommandTypeSet, query, parameters);
-        }
-
-        public List<Object> Execute(string connectionString, System.Data.CommandType commandType, string query, ParameterType[] parameters)
-        {
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                using (var command = connection.CreateCommand())
-                {
-                    connection.ConnectionString = connectionString;
-                    command.CommandText = query;
-                    command.CommandType = commandType;
-                    if (parameters != null)
-                    {
-                        Array.ForEach(parameters, p => command.Parameters.Add(p));
-                    }
-
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        var columns = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
-                        var Object = new Object();
-
-                        List<Object> personList = new List<Object>();
-
-
-                        while (reader.Read())
-                        {
-                            foreach (var column in columns)
-                            {
-                                var col = reader[column];
-                            }
-                        }
-                    }
-                    var results = new List<Object>();
-
-                    connection.Close();
-                    return results;
-                }
-            }
-        }
-
-        #endregion
+       
 
         public void Execute(string query, ParameterType[] parameters, ReadRow rowMethod)
         {
@@ -124,6 +75,8 @@ namespace Administratoro.DAL.Settings
                 }
             }
         }
+
+        #endregion
 
         #region Execute Non Scalar
 

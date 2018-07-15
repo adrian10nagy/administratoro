@@ -1,17 +1,18 @@
 ﻿
-namespace Admin.Tenants
-{
-    using Administratoro.BL.Constants;
-    using Administratoro.BL.Extensions;
-    using Administratoro.BL.Managers;
-    using Administratoro.DAL;
-    using Helpers.Constants;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Web.UI;
-    using System.Web.UI.WebControls;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Admin.Helpers.Constants;
+using Administratoro.BL.Constants;
+using Administratoro.BL.Extensions;
+using Administratoro.BL.Managers;
+using Administratoro.DAL;
 
+namespace Admin.Apartments
+{
     public partial class Add : BasePage
     {
         protected void Page_Init(object sender, EventArgs e)
@@ -74,13 +75,13 @@ namespace Admin.Tenants
 
         }
 
-        private void PopulateCounters(Associations association, int? apartmentId)
+        private void PopulateCounters(Administratoro.DAL.Associations association, int? apartmentId)
         {
             estateCounters.Visible = false;
 
             if (association.HasStaircase)
             {
-                Apartments apartment = null;
+                Administratoro.DAL.Apartments apartment = null;
                 if (apartmentId.HasValue)
                 {
                     apartment = ApartmentsManager.GetById(apartmentId.Value);
@@ -111,7 +112,7 @@ namespace Admin.Tenants
 
                 estateCounters.Controls.Add(headerPanel);
 
-                IEnumerable<Expenses> expenses = ExpensesManager.GetAllExpenses();
+                IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses();
                 foreach (var expense in expenses)
                 {
                     PopulateCountersData(association, expense, apartment);
@@ -119,7 +120,7 @@ namespace Admin.Tenants
             }
         }
 
-        private void PopulateCountersData(Associations association, Expenses expense, Apartments apartment)
+        private void PopulateCountersData(Administratoro.DAL.Associations association, Administratoro.DAL.Expenses expense, Administratoro.DAL.Apartments apartment)
         {
             Panel mainPanel = new Panel();
 
@@ -174,7 +175,7 @@ namespace Admin.Tenants
                         Selected = (ac != null && ac.Id_Counters == counter.Id) || (apartment == null && i == 0)
                     };
                     drp.Items.Add(li);
-                    
+
                     i++;
                 }
 
@@ -184,7 +185,7 @@ namespace Admin.Tenants
                     AutoCompleteType = AutoCompleteType.Disabled
                 };
 
-                if(ac == null)
+                if (ac == null)
                 {
                     txtNrOfCounters.Text = "0";
                 }
@@ -208,15 +209,15 @@ namespace Admin.Tenants
             }
         }
 
-        private void PopulateApartmentLogic(Associations association)
+        private void PopulateApartmentLogic(Administratoro.DAL.Associations association)
         {
             if (association.CotaIndivizaAparments.HasValue)
             {
-                apartmentCota.Value = association.CotaIndivizaAparments.Value.ToString();
+                apartmentCota.Value = association.CotaIndivizaAparments.Value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
-        private void PopulateStairCase(Associations association)
+        private void PopulateStairCase(Administratoro.DAL.Associations association)
         {
             var staircases = StairCasesManager.GetAllByAssociation(association.Id);
             if (association.HasStaircase)
@@ -248,12 +249,12 @@ namespace Admin.Tenants
             }
 
             var cota = apartmentCota.Value.ToNullableDecimal();
-            var apartment = new Apartments
+            var apartment = new Administratoro.DAL.Apartments
             {
                 Name = userName.Value,
                 Dependents = userDependents.Value.ToNullableInt().Value,
                 ExtraInfo = userExtraInfo.Value,
-                CotaIndiviza = (cota.HasValue) ? cota.Value : 0,
+                CotaIndiviza = cota ?? 0,
                 Number = userNr.Value.ToNullableInt().Value,
                 Telephone = userPhone.Value,
                 Email = userEmail.Value,
@@ -284,13 +285,13 @@ namespace Admin.Tenants
             Response.Redirect("~/Apartments/Manage.aspx?Message=UserUpdatedSuccess");
         }
 
-        private void ProcessSaveCounters(Apartments apartment)
+        private void ProcessSaveCounters(Administratoro.DAL.Apartments apartment)
         {
             List<AssociationCountersApartment> counters = GetAllCounters(apartment);
             AssociationCountersManager.AddOrUpdateAssociationCountersApartment(counters);
         }
 
-        private List<AssociationCountersApartment> GetAllCounters(Apartments apartment)
+        private List<AssociationCountersApartment> GetAllCounters(Administratoro.DAL.Apartments apartment)
         {
             var result = new List<AssociationCountersApartment>();
 
@@ -307,40 +308,36 @@ namespace Admin.Tenants
                         var counterId = (DropDownList)mainPanel.Controls[2];
                         var counterNr = (TextBox)mainPanel.Controls[3];
 
-                        if (apCounterId != null && counterId != null)
+                        int apCntId;
+                        int apCntIdResult = -1;
+                        if (int.TryParse(apCounterId.Text, out apCntId))
                         {
-                            int apCntId;
-                            int apCntIdResult = -1;
-                            if (int.TryParse(apCounterId.Text, out apCntId))
-                            {
-                                apCntIdResult = apCntId;
-                            }
-
-                            int cntId;
-                            int cntIdResult = -1;
-                            if (int.TryParse(counterId.Text, out cntId))
-                            {
-                                cntIdResult = cntId;
-                            }
-
-                            int nrCountersId;
-                            int? nrCountersIdResult = null;
-                            if (int.TryParse(counterNr.Text, out nrCountersId))
-                            {
-                                nrCountersIdResult = nrCountersId;
-                            }
-
-                            var counter = new AssociationCountersApartment
-                            {
-                                Id = apCntIdResult,
-                                Id_Counters = cntIdResult,
-                                Id_Apartment = apartment.Id,
-                                CountersInsideApartment = nrCountersIdResult
-                            };
-
-                            result.Add(counter);
+                            apCntIdResult = apCntId;
                         }
 
+                        int cntId;
+                        int cntIdResult = -1;
+                        if (int.TryParse(counterId.Text, out cntId))
+                        {
+                            cntIdResult = cntId;
+                        }
+
+                        int nrCountersId;
+                        int? nrCountersIdResult = null;
+                        if (int.TryParse(counterNr.Text, out nrCountersId))
+                        {
+                            nrCountersIdResult = nrCountersId;
+                        }
+
+                        var counter = new AssociationCountersApartment
+                        {
+                            Id = apCntIdResult,
+                            Id_Counters = cntIdResult,
+                            Id_Apartment = apartment.Id,
+                            CountersInsideApartment = nrCountersIdResult
+                        };
+
+                        result.Add(counter);
                     }
                 }
             }

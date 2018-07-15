@@ -1,14 +1,10 @@
 ﻿
 namespace Administratoro.DAL.SDK
 {
-    using Administratoro.DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+    using Repositories;
+    using System.Collections.Generic;
 
- public class Apartments
+    public class Apartments
     {
         private static IApartmentRepository _repository;
 

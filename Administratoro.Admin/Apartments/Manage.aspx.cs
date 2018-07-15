@@ -1,19 +1,11 @@
 ﻿
-namespace Admin.Tenants
+using System;
+using System.Web.UI.WebControls;
+using Admin.Helpers.Constants;
+using Administratoro.BL.Managers;
+
+namespace Admin.Apartments
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
-    using System.Web;
-    using System.Web.UI;
-    using System.Web.UI.WebControls;
-    using Helpers.Constants;
-    using Administratoro.BL.Constants;
-    using Administratoro.DAL;
-    using Administratoro.BL.Managers;
-
-
     public partial class Manage : BasePage
     {
         protected void Page_Load(object sender, EventArgs e)
@@ -35,7 +27,7 @@ namespace Admin.Tenants
         {
             var apartments = ApartmentsManager.Get(Association.Id);
 
-            foreach (Apartments ap in apartments)
+            foreach (Administratoro.DAL.Apartments ap in apartments)
             {
                 TableRow row = new TableRow();
 

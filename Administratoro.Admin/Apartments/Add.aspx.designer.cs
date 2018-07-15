@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Admin.Tenants {
+namespace Admin.Apartments {
     
     
     public partial class Add {

@@ -1,9 +1,7 @@
 ﻿
-
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.DAL;
-    using System.Collections.Generic;
+    using DAL;
     using System.Linq;
 
     public static class ApartmentCountersManager

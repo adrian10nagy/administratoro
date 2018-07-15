@@ -1,7 +1,7 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.DAL.SDK;
+    using DAL.SDK;
 
     public static class PartnersManager
     {

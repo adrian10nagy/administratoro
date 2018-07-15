@@ -1,14 +1,13 @@
-﻿using Administratoro.BL.Constants;
-using Administratoro.BL.Extensions;
-using Administratoro.DAL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.Globalization;
 
 namespace Administratoro.BL.Managers
 {
+    using Constants;
+    using DAL;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class RedistributionManager
     {
         public static decimal? RedistributeValueCotaIndivizaForSpecificApartments(Apartments apartment, Invoices invoice, List<Apartments> apartments)
@@ -19,7 +18,7 @@ namespace Administratoro.BL.Managers
             {
                 decimal? allInvoicesSum = invoice.Value;
                 result = (sumOfIndiviza != null && allInvoicesSum.HasValue && sumOfIndiviza.Value != 0)
-                ? ((allInvoicesSum.Value * apartment.CotaIndiviza) / sumOfIndiviza.Value)
+                ? (allInvoicesSum.Value * apartment.CotaIndiviza) / sumOfIndiviza.Value
                 : null;
             }
 
@@ -82,7 +81,7 @@ namespace Administratoro.BL.Managers
 
             if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex)
             {
-                result = RedistributionManager.GetRedistributeValuePerIndex(associationExpense);
+                result = GetRedistributeValuePerIndex(associationExpense);
             }
 
             return result;
@@ -96,19 +95,19 @@ namespace Administratoro.BL.Managers
 
             if (!associationExpense.RedistributeType.HasValue)
             {
-                return result;
+                return null;
             }
 
             switch (associationExpense.RedistributeType.Value)
             {
                 case (int)RedistributionType.PerApartament:
-                    result = RedistributionManager.RedistributeValuePerApartment(associationExpense, apartment);
+                    result = RedistributeValuePerApartment(associationExpense, apartment);
                     break;
                 case (int)RedistributionType.PerDependents:
-                    result = RedistributionManager.RedistributeValuePerApartmentDependents(associationExpense, apartment);
+                    result = RedistributeValuePerApartmentDependents(associationExpense, apartment);
                     break;
                 case (int)RedistributionType.PerConsumption:
-                    result = RedistributionManager.RedistributeValuePerConsumption(associationExpense, apartment, apartmentExpenses);
+                    result = RedistributeValuePerConsumption(associationExpense, apartment, apartmentExpenses);
                     break;
 
             }
@@ -124,7 +123,6 @@ namespace Administratoro.BL.Managers
             var redistributeValue = GetRedistributeValuePerIndex(associationExpense, apartment.Id_StairCase);
             decimal? sumOfIndexes = ApartmentExpensesManager.GetSumOfIndexesOnSameCounter(associationExpense.Id, apartment.Id_StairCase);
 
-            //var sumOfIndices = ApartmentExpensesManager.GetSumOfIndexesForExpense(associationExpense.Id, apartment.Id_StairCase);
             if (redistributeValue.HasValue && sumOfIndexes.HasValue && sumOfIndexes.Value != 0)
             {
                 result = (apartmentConsumption / sumOfIndexes.Value) * redistributeValue;
@@ -250,7 +248,7 @@ namespace Administratoro.BL.Managers
 
             if (invoice == null)
             {
-                return sumOfInvoices;
+                return null;
             }
 
             var invoiceIndexes = InvoiceIndexesManager.Get(invoice, stairCase);
@@ -280,7 +278,7 @@ namespace Administratoro.BL.Managers
         {
             var result = CalculateRedistributeValue(associationExpenseId);
 
-            return result.HasValue ? result.Value.ToString() : string.Empty;
+            return result.HasValue ? result.Value.ToString(CultureInfo.InvariantCulture) : string.Empty;
         }
 
         private static decimal GetApartmentConsumprionAsDecimal(IEnumerable<ApartmentExpenses> apartmentExpenses)

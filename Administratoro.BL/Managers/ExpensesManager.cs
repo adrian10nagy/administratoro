@@ -1,16 +1,9 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Constants;
-    using Administratoro.BL.Models;
-    using Administratoro.DAL;
-    using System;
+    using DAL;
     using System.Collections.Generic;
-    using System.Data;
-    using System.Data.Entity;
-    using System.Data.SqlClient;
     using System.Linq;
-    using System.Threading.Tasks;
 
     public static class ExpensesManager
     {

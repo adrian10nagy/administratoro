@@ -1,12 +1,8 @@
 ﻿
 namespace Administratoro.BL.Models
 {
-    using Administratoro.DAL;
-    using System;
+    using DAL;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Web;
 
     public class FormatedAssociationCounter : AssociationCounters
     {

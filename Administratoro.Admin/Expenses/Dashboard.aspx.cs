@@ -1,13 +1,9 @@
 ﻿using Administratoro.BL.Models;
 using Administratoro.BL.Constants;
 using Administratoro.BL.Managers;
-using Administratoro.DAL;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Admin.Expenses
@@ -18,7 +14,7 @@ namespace Admin.Expenses
         {
             var estate = (Administratoro.DAL.Associations)Session[SessionConstants.SelectedAssociation];
             var defaultCssClass = "col-md-2 col-sm-3 col-xs-12";
-            List<YearMonth> yearMonths = AssociationExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
+            var yearMonths = AssociationExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(estate.Id);
             foreach (var yearMonth in yearMonths)
             {
                 var month = new Panel
@@ -49,9 +45,9 @@ namespace Admin.Expenses
 
         private void link_Click(object sender, EventArgs e)
         {
-            LinkButton lb = (LinkButton)sender;
-            string year = lb.CommandArgument.Substring(0, 4);
-            string month = (lb.CommandArgument.Count() == 5) ? lb.CommandArgument.Substring(4, 1) : lb.CommandArgument.Substring(4, 2);
+            var lb = (LinkButton)sender;
+            var year = lb.CommandArgument.Substring(0, 4);
+            var month = (lb.CommandArgument.Count() == 5) ? lb.CommandArgument.Substring(4, 1) : lb.CommandArgument.Substring(4, 2);
 
             Response.Redirect("~/Expenses/Invoices.aspx?year=" + year + "&month=" + month);
         }

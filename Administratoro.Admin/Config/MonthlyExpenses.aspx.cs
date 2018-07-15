@@ -9,12 +9,11 @@ namespace Admin.Config
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Web.UI;
     using System.Web.UI.WebControls;
 
     public partial class MonthlyExpenses : System.Web.UI.Page
     {
-        private int? year()
+        private int? Year()
         {
             var yearId = Request.QueryString["year"];
             int year;
@@ -26,7 +25,7 @@ namespace Admin.Config
             return year;
         }
 
-        private int? month()
+        private int? Month()
         {
             var monthId = Request.QueryString["month"];
             int month;
@@ -43,7 +42,7 @@ namespace Admin.Config
             if (!Page.IsPostBack)
             {
                 InitializeExpenses();
-                InitializeMonths(year(), month());
+                InitializeMonths(Year(), Month());
             }
             else if (Page.IsPostBack && step22.Visible)
             {
@@ -57,7 +56,7 @@ namespace Admin.Config
             expenseListHref3.Attributes["class"] = "disabled";
             expenseListHref3.Attributes["isdone"] = "0";
 
-            if (year() != null && month() != null && step11.Visible)
+            if (Year() != null && Month() != null && step11.Visible)
             {
                 ConfigureStep1();
             }
@@ -67,7 +66,7 @@ namespace Admin.Config
         {
             //tblMonthlyExpenses.Rows.Clear();
             int month;
-            int _year = year().HasValue ? year().Value : 2017;
+            int _year = Year().HasValue ? Year().Value : 2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out month))
             {
                 var estate = (Associations)Session[SessionConstants.SelectedAssociation];
@@ -76,7 +75,7 @@ namespace Admin.Config
                     var ee = AssociationExpensesManager.GetByMonthAndYearNotDisabled(estate.Id, _year, month);
                     var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, _year, month);
 
-                    IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses();
+                    IEnumerable<Expenses> expenses = ExpensesManager.GetAllExpenses();
 
                     foreach (var expense in expenses)
                     {
@@ -87,7 +86,7 @@ namespace Admin.Config
                         CheckBox esexExists = new CheckBox();
                         esexExists.AutoPostBack = false;
                         esexExists.ID = String.Format("esateExpense{0}", expense.Id);
-                        esexExists.Checked = isExpenseSelected(expense, ee, _year, month);
+                        esexExists.Checked = IsExpenseSelected(expense, ee, _year, month);
                         expenseExists.Controls.Add(esexExists);
                         row.Cells.Add(expenseExists);
 
@@ -105,7 +104,7 @@ namespace Admin.Config
                         DropDownList dp = new DropDownList();
                         if (expense.Id != (int)Expense.AjutorÎncălzire)
                         {
-                            var selected1 = isDplExpenseTypesSelected(esex, ExpenseType.PerIndex);
+                            var selected1 = IsDplExpenseTypesSelected(esex, ExpenseType.PerIndex);
                             dp.Items.Add(new ListItem
                             {
                                 Value = "1",
@@ -113,7 +112,7 @@ namespace Admin.Config
                                 Selected = selected1
                             });
 
-                            var selected2 = isDplExpenseTypesSelected(esex, ExpenseType.PerCotaIndiviza);
+                            var selected2 = IsDplExpenseTypesSelected(esex, ExpenseType.PerCotaIndiviza);
                             dp.Items.Add(new ListItem
                             {
                                 Value = "2",
@@ -121,7 +120,7 @@ namespace Admin.Config
                                 Selected = selected2
                             });
 
-                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerNrTenants);
+                            var selected3 = IsDplExpenseTypesSelected(esex, ExpenseType.PerNrTenants);
                             dp.Items.Add(new ListItem
                             {
                                 Value = "3",
@@ -129,7 +128,7 @@ namespace Admin.Config
                                 Selected = selected3
                             });
 
-                            var selected4 = isDplExpenseTypesSelected(esex, ExpenseType.PerApartament);
+                            var selected4 = IsDplExpenseTypesSelected(esex, ExpenseType.PerApartament);
                             dp.Items.Add(new ListItem
                             {
                                 Value = ((int)ExpenseType.PerApartament).ToString(),
@@ -152,7 +151,7 @@ namespace Admin.Config
                             TableCell tcStairCase = new TableCell();
                             CheckBox stairCaseSplit = new CheckBox();
                             stairCaseSplit.AutoPostBack = false;
-                            stairCaseSplit.Checked = isStairCaseSplitSelected(expense, ee, _year, month);
+                            stairCaseSplit.Checked = IsStairCaseSplitSelected(expense, ee, _year, month);
                             tcStairCase.Controls.Add(stairCaseSplit);
                             row.Cells.Add(tcStairCase);
                         }
@@ -167,30 +166,18 @@ namespace Admin.Config
             }
         }
 
-        private static bool isStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
+        private static bool IsStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
 
-            bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value).Any())
-            {
-                result = true;
-            }
-
-            return result;
+            return ee.Any(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value);
         }
 
-        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
+        private static bool IsExpenseSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
-            bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled).Any())
-            {
-                result = true;
-            }
-
-            return result;
+            return ee.Any(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year && !e.WasDisabled);
         }
 
-        private static bool isDplExpenseTypesSelected(Administratoro.DAL.AssociationExpenses expense, ExpenseType expenseType)
+        private static bool IsDplExpenseTypesSelected(AssociationExpenses expense, ExpenseType expenseType)
         {
             bool result = false;
 
@@ -248,8 +235,8 @@ namespace Admin.Config
             expenseListHref2.Attributes["class"] = "done";
             expenseListHref3.Attributes["class"] = "selected";
 
-            int _month = 0;
-            int _year = year().HasValue ? year().Value : 2017;
+            int _month;
+            int _year = Year().HasValue ? Year().Value : 2017;
             if (int.TryParse(drpExpenseMonth.SelectedValue, out _month))
             {
                 var estate = (Associations)Session[SessionConstants.SelectedAssociation];
@@ -337,9 +324,9 @@ namespace Admin.Config
                 }
             }
 
-            if (year() != null && month() != null && step33.Visible)
+            if (Year() != null && Month() != null && step33.Visible)
             {
-                Response.Redirect("~/Expenses/Invoices.aspx?year=" + year() + "&month=" + month());
+                Response.Redirect("~/Expenses/Invoices.aspx?year=" + Year() + "&month=" + Month());
             }
         }
 

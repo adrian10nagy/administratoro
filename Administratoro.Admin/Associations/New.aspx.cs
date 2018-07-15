@@ -3,11 +3,9 @@ using Administratoro.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Administratoro.BL.Constants;
-using Administratoro.BL.Extensions;
 
 namespace Admin.Associations
 {
@@ -15,7 +13,7 @@ namespace Admin.Associations
     {
         #region variables
 
-        private int _step
+        private int Step
         {
             get
             {
@@ -124,13 +122,15 @@ namespace Admin.Associations
                 }
 
                 //add button
-                Button btnAddNext = new Button();
-                btnAddNext.Text = "Adaugă scară nouă";
-                btnAddNext.ID = "btnAddNext";
-                btnAddNext.CausesValidation = false;
-                btnAddNext.Visible = true;
+                var btnAddNext = new Button
+                {
+                    Text = "Adaugă scară nouă",
+                    ID = "btnAddNext",
+                    CausesValidation = false,
+                    Visible = true
+                };
 
-                btnAddNext.Command += new CommandEventHandler(btnAddNext_Command);
+                btnAddNext.Command += btnAddNext_Command;
                 PlaceholderControls.Controls.Add(btnAddNext);
             }
         }
@@ -148,8 +148,7 @@ namespace Admin.Associations
 
         private void AddCounterHeader()
         {
-            var association = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
-            var headerCssClass = association.HasStaircase ? "col-md-4 col-xs-4 countersHeadersNew" : "col-md-6 col-xs-6 countersHeadersNew";
+            var headerCssClass = Association.HasStaircase ? "col-md-4 col-xs-4 countersHeadersNew" : "col-md-6 col-xs-6 countersHeadersNew";
 
             //var cssClass = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
 
@@ -170,7 +169,7 @@ namespace Admin.Associations
             };
             headerPanel.Controls.Add(expenseCounterHeader);
 
-            if (association.HasStaircase && association.StairCases.Count != 00)
+            if (Association.HasStaircase && Association.StairCases.Count != 00)
             {
                 // add coounter header
                 Label expenseStairHeader = new Label
@@ -195,12 +194,12 @@ namespace Admin.Associations
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (_step == 2)
+            if (Step == 2)
             {
                 ConfigureStep2();
             }
 
-            if (_step == 3)
+            if (Step == 3)
             {
                 Step2PopulateExpenses();
                 ConfigureStep3();
@@ -221,7 +220,7 @@ namespace Admin.Associations
         protected void btnSave_Click(object sender, EventArgs e)
         {
             Partners partner = Session[SessionConstants.LoggedPartner] as Partners;
-            _step = 2;
+            Step = 2;
             decimal? indivizaAparmentsResult = null;
 
             if (associationStairs.SelectedIndex == 1)
@@ -294,7 +293,6 @@ namespace Admin.Associations
 
         protected void btnSave3_Click(object sender, EventArgs e)
         {
-            var association = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
             List<AssociationCounters> cnts = new List<AssociationCounters>();
 
             foreach (var control in countersConfiguration.Controls)
@@ -324,12 +322,12 @@ namespace Admin.Associations
                         // to do, add checkbox and select multiple
 
                         int expenseId;
-                        if (valueControl != null && !string.IsNullOrEmpty(expenseControl.Text) &&
+                        if (!string.IsNullOrEmpty(expenseControl.Text) &&
                             int.TryParse(expenseCleaned, out expenseId))
                         {
                             var cnt = new AssociationCounters()
                             {
-                                Id_Estate = association.Id,
+                                Id_Estate = Association.Id,
                                 Id_Expense = expenseId,
                                 Value = valueControl.Text,
                                 AssociationCountersStairCase = new List<AssociationCountersStairCase> { new AssociationCountersStairCase { Id_StairCase = stairIdResult }}
@@ -341,7 +339,7 @@ namespace Admin.Associations
             }
 
             AssociationCountersManager.Addcounter(cnts);
-            association = AssociationsManager.GetById(association.Id);
+            var association = AssociationsManager.GetById(Association.Id);
 
             Session[SessionConstants.SelectedAssociation] = association;
             Response.Redirect("~/?message=newEstate");
@@ -422,16 +420,14 @@ namespace Admin.Associations
 
         private void ConfigureStep3()
         {
-            _step = 3;
+            Step = 3;
             AddDymanicCounters();
             step1.Visible = false;
             step2.Visible = false;
             step3.Visible = true;
         }
 
-        
-
-        private ListItem[] GetExpensesAsListItemsWithExtradummyValue(int controlID)
+        private ListItem[] GetExpensesAsListItemsWithExtradummyValue(int controlId)
         {
             Dictionary<int, int> expenses = GetSelectdExpenses();
 
@@ -443,7 +439,7 @@ namespace Admin.Associations
                 var ex = ExpensesManager.GetById(expense.Key);
                 var theExpense = new ListItem
                 {
-                    Value = ex.Id + "dummyExpense" + controlID,
+                    Value = ex.Id + "dummyExpense" + controlId,
                     Text = ex.Name
                 };
 
@@ -487,16 +483,16 @@ namespace Admin.Associations
         {
         }
 
-        private void AddStairsControl(int ControlNumber, out string key, out string value)
+        private void AddStairsControl(int controlNumber, out string key, out string value)
         {
             TextBox txtValue = new TextBox();
-            txtValue.ID = "txtValue" + ControlNumber;
+            txtValue.ID = "txtValue" + controlNumber;
             txtValue.CssClass = "col-md-3 col-md-offset-3 col-xs-3";
 
             PlaceholderControls.Controls.Add(txtValue);
 
             TextBox txtIndiviza = new TextBox();
-            txtIndiviza.ID = "txtIndiviza" + ControlNumber;
+            txtIndiviza.ID = "txtIndiviza" + controlNumber;
             txtIndiviza.CssClass = "col-md-3 col-md-offset-3 col-xs-3";
 
             PlaceholderControls.Controls.Add(txtIndiviza);
@@ -507,11 +503,11 @@ namespace Admin.Associations
             value = txtIndiviza.UniqueID;
         }
 
-        private DymanicCounter AddCounterControl(int ControlNumber)
+        private DymanicCounter AddCounterControl(int controlNumber)
         {
             var result = new DymanicCounter();
-            var expenses = GetExpensesAsListItemsWithExtradummyValue(ControlNumber);
-            var stairCases = GetStairCasesAsListItemsWithExtradummyValue(Association, ControlNumber);
+            var expenses = GetExpensesAsListItemsWithExtradummyValue(controlNumber);
+            var stairCases = GetStairCasesAsListItemsWithExtradummyValue(Association, controlNumber);
 
             var cssClassRow = Association.HasStaircase ? "col-md-4 col-xs-4" : "col-md-6 col-xs-6";
             Panel rowPanel = new Panel { CssClass = "col-md-12 col-xs-12 associationsNewCounters" };
@@ -519,7 +515,7 @@ namespace Admin.Associations
             var dpdCounterExpense = new DropDownList()
             {
                 CssClass = cssClassRow,
-                ID = "dpdCounterExpense" + ControlNumber
+                ID = "dpdCounterExpense" + controlNumber
             };
 
             dpdCounterExpense.Items.AddRange(expenses);
@@ -527,7 +523,7 @@ namespace Admin.Associations
 
             TextBox txtContorValue = new TextBox()
             {
-                ID = "txtContorValue" + ControlNumber,
+                ID = "txtContorValue" + controlNumber,
                 CssClass = cssClassRow
             };
             rowPanel.Controls.Add(txtContorValue);
@@ -537,7 +533,7 @@ namespace Admin.Associations
                 var dpdStairCases = new DropDownList()
                 {
                     CssClass = cssClassRow,
-                    ID = "dpdStairCases" + ControlNumber,
+                    ID = "dpdStairCases" + controlNumber,
                     EnableViewState = false
                 };
                 dpdStairCases.Items.AddRange(stairCases);

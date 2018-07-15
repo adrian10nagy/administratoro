@@ -6,7 +6,6 @@ namespace Administratoro.DAL.Repositories
     using System;
     using System.Collections.Generic;
     using System.Data.SqlClient;
-    using System.Linq;
 
     public interface IApartmentRepository
     {
@@ -155,7 +154,7 @@ namespace Administratoro.DAL.Repositories
             return apartment;
         }
 
-        public List<DAL.Apartments> GetAllEnabledForHeatHelp(int associationId)
+        public List<Apartments> GetAllEnabledForHeatHelp(int associationId)
         {
             var apartments = new List<Apartments>();
 

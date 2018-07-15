@@ -112,6 +112,29 @@
     <Property Name="CotaIndivizaAparments" Type="decimal" Precision="14" Scale="4" />
     <Property Name="HasRoundUpColumn" Type="bit" />
   </EntityType>
+  <EntityType Name="DocumentApartmentFlyers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="AssociationId" Type="int" Nullable="false" />
+    <Property Name="ApartmentId" Type="int" Nullable="false" />
+    <Property Name="year" Type="int" Nullable="false" />
+    <Property Name="month" Type="int" Nullable="false" />
+    <Property Name="rawFile" Type="varchar(max)" Nullable="false" />
+    <Property Name="fileType" Type="varchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="DocumentAssociationMonthlyExpenses">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="AssociationId" Type="int" Nullable="false" />
+    <Property Name="year" Type="int" Nullable="false" />
+    <Property Name="month" Type="int" Nullable="false" />
+    <Property Name="rawFile" Type="varchar(max)" Nullable="false" />
+    <Property Name="fileType" Type="varchar(max)" Nullable="false" />
+  </EntityType>
   <EntityType Name="ErrorLogs">
     <Key>
       <PropertyRef Name="Id" />
@@ -352,6 +375,42 @@
       </Principal>
       <Dependent Role="AssociationCounters">
         <PropertyRef Name="Id_Expense" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__DocumentA__Apart__5B438874">
+    <End Role="Apartments" Type="Self.Apartments" Multiplicity="1" />
+    <End Role="DocumentApartmentFlyers" Type="Self.DocumentApartmentFlyers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Apartments">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="DocumentApartmentFlyers">
+        <PropertyRef Name="ApartmentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__DocumentA__Assoc__5A4F643B">
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
+    <End Role="DocumentApartmentFlyers" Type="Self.DocumentApartmentFlyers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Associations">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="DocumentApartmentFlyers">
+        <PropertyRef Name="AssociationId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__DocumentA__Assoc__5E1FF51F">
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
+    <End Role="DocumentAssociationMonthlyExpenses" Type="Self.DocumentAssociationMonthlyExpenses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Associations">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="DocumentAssociationMonthlyExpenses">
+        <PropertyRef Name="AssociationId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -721,6 +780,8 @@
     <EntitySet Name="AssociationExpensesRedistributionTypes" EntityType="Self.AssociationExpensesRedistributionTypes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="AssociationExpensesUnitPrices" EntityType="Self.AssociationExpensesUnitPrices" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Associations" EntityType="Self.Associations" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="DocumentApartmentFlyers" EntityType="Self.DocumentApartmentFlyers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="DocumentAssociationMonthlyExpenses" EntityType="Self.DocumentAssociationMonthlyExpenses" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ErrorLogs" EntityType="Self.ErrorLogs" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Expenses" EntityType="Self.Expenses" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ExpenseTypes" EntityType="Self.ExpenseTypes" Schema="dbo" store:Type="Tables" />
@@ -767,6 +828,18 @@
     <AssociationSet Name="FK__Counters__Id_Exp__0D44F85C" Association="Self.FK__Counters__Id_Exp__0D44F85C">
       <End Role="Expenses" EntitySet="Expenses" />
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
+    </AssociationSet>
+    <AssociationSet Name="FK__DocumentA__Apart__5B438874" Association="Self.FK__DocumentA__Apart__5B438874">
+      <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="DocumentApartmentFlyers" EntitySet="DocumentApartmentFlyers" />
+    </AssociationSet>
+    <AssociationSet Name="FK__DocumentA__Assoc__5A4F643B" Association="Self.FK__DocumentA__Assoc__5A4F643B">
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="DocumentApartmentFlyers" EntitySet="DocumentApartmentFlyers" />
+    </AssociationSet>
+    <AssociationSet Name="FK__DocumentA__Assoc__5E1FF51F" Association="Self.FK__DocumentA__Assoc__5E1FF51F">
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="DocumentAssociationMonthlyExpenses" EntitySet="DocumentAssociationMonthlyExpenses" />
     </AssociationSet>
     <AssociationSet Name="FK__EstateExp__Redis__44952D46" Association="Self.FK__EstateExp__Redis__44952D46">
       <End Role="AssociationExpensesRedistributionTypes" EntitySet="AssociationExpensesRedistributionTypes" />

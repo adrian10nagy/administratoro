@@ -147,6 +147,31 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="DocumentApartmentFlyers">
+      <EntityTypeMapping TypeName="AdministratoroModel.DocumentApartmentFlyers">
+        <MappingFragment StoreEntitySet="DocumentApartmentFlyers">
+          <ScalarProperty Name="fileType" ColumnName="fileType" />
+          <ScalarProperty Name="rawFile" ColumnName="rawFile" />
+          <ScalarProperty Name="month" ColumnName="month" />
+          <ScalarProperty Name="year" ColumnName="year" />
+          <ScalarProperty Name="ApartmentId" ColumnName="ApartmentId" />
+          <ScalarProperty Name="AssociationId" ColumnName="AssociationId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DocumentAssociationMonthlyExpenses">
+      <EntityTypeMapping TypeName="AdministratoroModel.DocumentAssociationMonthlyExpenses">
+        <MappingFragment StoreEntitySet="DocumentAssociationMonthlyExpenses">
+          <ScalarProperty Name="fileType" ColumnName="fileType" />
+          <ScalarProperty Name="rawFile" ColumnName="rawFile" />
+          <ScalarProperty Name="month" ColumnName="month" />
+          <ScalarProperty Name="year" ColumnName="year" />
+          <ScalarProperty Name="AssociationId" ColumnName="AssociationId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="ErrorLogs">
       <EntityTypeMapping TypeName="AdministratoroModel.ErrorLogs">
         <MappingFragment StoreEntitySet="ErrorLogs">

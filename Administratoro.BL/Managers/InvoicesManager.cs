@@ -1,13 +1,12 @@
-﻿using Administratoro.BL.Constants;
-using Administratoro.DAL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Administratoro.BL.Managers
 {
+    using Constants;
+    using DAL;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class InvoicesManager
     {
         private static AdministratoroEntities _administratoroEntities;
@@ -43,17 +42,10 @@ namespace Administratoro.BL.Managers
                 i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year && i.AssociationExpenses.Id_Expense == expenseId);
         }
 
-        public static Invoices GetAllByAssotiationYearMonthExpenseIdstairCase(int associationId, int expenseId, int year, int month, int stairsCaseId)
-        {
-            return GetContext().Invoices.FirstOrDefault(i => i.AssociationExpenses.Id_Estate == associationId &&
-                i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year && i.AssociationExpenses.Id_Expense == expenseId
-                && i.Id_StairCase == stairsCaseId);
-        }
-
         public static void Update(Invoices invoice, decimal? value, int? stairCaseId, string description, int? redistributionId,
-            string issueNumber, DateTime? issueDate, int? assCounterId)
+            string issueNumber, DateTime? issueDate)
         {
-            Invoices result = new Invoices();
+            Invoices result;
             result = GetContext(true).Invoices.FirstOrDefault(c => c.Id == invoice.Id);
 
             if (result != null)
@@ -75,24 +67,6 @@ namespace Administratoro.BL.Managers
                         ApartmentExpensesManager.UpdateApartmentExpenses(ee, value, stairCaseId, result.id_assCounter);
                     }
                 }
-
-                GetContext().SaveChanges();
-            }
-        }
-
-        public static void Update(Invoices invoice, decimal? value, int stairCaseId)
-        {
-            Invoices theInvoice = new Invoices();
-
-            theInvoice = GetContext(true).Invoices.FirstOrDefault(c => c.Id_StairCase == stairCaseId && c.Id == invoice.Id);
-
-            if (theInvoice != null)
-            {
-                theInvoice.Value = value;
-                GetContext().Entry(theInvoice).CurrentValues.SetValues(theInvoice);
-
-
-                ApartmentExpensesManager.UpdateApartmentExpenses(invoice.AssociationExpenses, value, stairCaseId);
 
                 GetContext().SaveChanges();
             }
@@ -194,25 +168,13 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static Invoices GetByIndexInvoiceId(int indexInvoiceId)
-        {
-            Invoices result = null;
-            var invoiceIndex = GetContext(true).InvoiceIndexes.FirstOrDefault(i => i.Id == indexInvoiceId);
-            if (invoiceIndex != null)
-            {
-                result = invoiceIndex.Invoices;
-            }
-
-            return result;
-        }
-
         public static Invoices GetPreviousMonthById(int invoiceId)
         {
             Invoices result = null;
 
             var invoice = GetById(invoiceId);
 
-            if (invoice != null)
+            if (invoice != null && invoice.Id_EstateExpense.HasValue)
             {
                 var ee = AssociationExpensesManager.GetById(invoice.Id_EstateExpense.Value);
                 var month = ee.Month;
@@ -236,12 +198,6 @@ namespace Administratoro.BL.Managers
             }
 
             return result;
-        }
-
-        public static IEnumerable<Invoices> GetAllByAssotiationYearMonth(int associationId, int year, int month)
-        {
-            return GetContext().Invoices.Where(i => i.AssociationExpenses.Id_Estate == associationId &&
-                            i.AssociationExpenses.Month == month && i.AssociationExpenses.Year == year);
         }
 
         public static Invoices GetByAssociationExpenseForExpense(AssociationExpenses associationExpense, Expense expense)

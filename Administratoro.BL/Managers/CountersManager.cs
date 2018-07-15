@@ -1,7 +1,7 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.DAL;
+    using DAL;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -48,9 +48,9 @@ namespace Administratoro.BL.Managers
 
         private static void AddCounterStairCase(AssociationCounters counter)
         {
-            foreach (var assCounterSC in counter.AssociationCountersStairCase)
+            foreach (var assCounterSc in counter.AssociationCountersStairCase)
             {
-                Add(assCounterSC);
+                Add(assCounterSc);
             }
         }
 
@@ -90,9 +90,9 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
-        private static void Add(AssociationCountersStairCase assCounterSC)
+        private static void Add(AssociationCountersStairCase assCounterSc)
         {
-            GetContext().AssociationCountersStairCase.Add(assCounterSC);
+            GetContext().AssociationCountersStairCase.Add(assCounterSc);
             GetContext().SaveChanges();
         }
 
@@ -142,28 +142,29 @@ namespace Administratoro.BL.Managers
         {
             var exitingCounter = GetContext(true).AssociationCounters.FirstOrDefault(c => c.Id == newCounter.Id);
 
-            var stairCaseToBeAdded = newCounter.AssociationCountersStairCase.Select(n => n.Id_StairCase)
-                .Except(exitingCounter.AssociationCountersStairCase.Select(o => o.Id_StairCase));
-
-            var stairCaseToBeDeleted = exitingCounter.AssociationCountersStairCase.Select(n => n.Id_StairCase)
-                .Except(newCounter.AssociationCountersStairCase.Select(o => o.Id_StairCase));
-
-            var add = newCounter.AssociationCountersStairCase.Where(ne => stairCaseToBeAdded.Contains(ne.Id_StairCase)).ToList();
-            var del = exitingCounter.AssociationCountersStairCase.Where(ne => stairCaseToBeDeleted.Contains(ne.Id_StairCase)).ToList();
-
-            foreach (var assCounterSC in add)
+            if (exitingCounter != null)
             {
-                assCounterSC.Id_AssCounter = exitingCounter.Id;
-                Add(assCounterSC);
-            }
+                var stairCaseToBeAdded = newCounter.AssociationCountersStairCase.Select(n => n.Id_StairCase)
+                    .Except(exitingCounter.AssociationCountersStairCase.Select(o => o.Id_StairCase));
 
-            foreach (var assCounterSC in del)
-            {
-                Remove(assCounterSC);
+                var stairCaseToBeDeleted = exitingCounter.AssociationCountersStairCase.Select(n => n.Id_StairCase)
+                    .Except(newCounter.AssociationCountersStairCase.Select(o => o.Id_StairCase));
+
+                var add = newCounter.AssociationCountersStairCase.Where(ne => stairCaseToBeAdded.Contains(ne.Id_StairCase)).ToList();
+                var del = exitingCounter.AssociationCountersStairCase.Where(ne => stairCaseToBeDeleted.Contains(ne.Id_StairCase)).ToList();
+
+                foreach (var assCounterSc in add)
+                {
+                    assCounterSc.Id_AssCounter = exitingCounter.Id;
+                    Add(assCounterSc);
+                }
+
+                foreach (var assCounterSc in del)
+                {
+                    Remove(assCounterSc);
+                }
             }
         }
-
-
 
         public static IEnumerable<AssociationCounters> GetAllByExpenseType(int associationId, int expense)
         {
@@ -211,15 +212,15 @@ namespace Administratoro.BL.Managers
 
         public static AssociationCounters GetByExpenseAndStairCase(int associationId, int expenseId, int? stairCase)
         {
-            AssociationCounters result = null;
+            AssociationCounters result;
 
-            var allAC = GetAllByExpenseType(associationId, expenseId);
+            var allAc = GetAllByExpenseType(associationId, expenseId);
 
-            result = allAC.FirstOrDefault(a => a.AssociationCountersStairCase.Any(x => x.Id_StairCase == stairCase));
+            result = allAc.FirstOrDefault(a => a.AssociationCountersStairCase.Any(x => x.Id_StairCase == stairCase));
 
-            if (result == null && allAC.Count() == 1)
+            if (result == null && allAc.Count() == 1)
             {
-                result = allAC.FirstOrDefault();
+                result = allAc.FirstOrDefault();
             }
 
             return result;

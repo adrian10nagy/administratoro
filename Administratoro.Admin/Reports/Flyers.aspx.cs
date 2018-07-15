@@ -4,15 +4,13 @@ using Administratoro.BL.Managers;
 using Administratoro.DAL;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.draw;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using Font = iTextSharp.text.Font;
 
 namespace Admin.Reports
 {
@@ -99,6 +97,10 @@ COMITET  EXECUTIV <br>03.07.2018";
 
         protected void btnDownload_Click(object sender, EventArgs e)
         {
+            BaseFont bfTimes = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1250, false);
+
+            Font times = new Font(bfTimes, 12, Font.ITALIC, BaseColor.BLACK);
+
             //server folder path which is stored your PDF documents       
             string path = Server.MapPath("");
             string filename = path + "\\Doc1.pdf";
@@ -108,6 +110,16 @@ COMITET  EXECUTIV <br>03.07.2018";
 
             //Create new PDF document
             Document document = new Document(PageSize.A4, 80f, 80f, 20f, 20f);
+            using (Document doc = new Document())
+            {
+                MemoryStream msPDFData = new MemoryStream();
+                PdfWriter writer = PdfWriter.GetInstance(doc, msPDFData);
+                doc.Open();
+                doc.Add(new Paragraph("I'm a pdf!"));
+                byte[] pdfData = msPDFData.ToArray();
+
+            }
+
             var association = Association;
 
             try
@@ -117,21 +129,19 @@ COMITET  EXECUTIV <br>03.07.2018";
 
                 foreach (var apartment in apartments)
                 {
-                    PdfPTable tblHeader = new PdfPTable(2);
-                    tblHeader.WidthPercentage = 100;
-                    tblHeader.AddCell(getCell("ASOCIATIA DE PROPRIETARI " + association.Name + ", CF " + association.FiscalCode, PdfPCell.ALIGN_LEFT));
+                    PdfPTable tblHeader = new PdfPTable(2) {WidthPercentage = 100};
+                    tblHeader.AddCell(getCell("ASOCIAIA DE PROPRIETARI " + association.Name + ", CF " + association.FiscalCode, PdfPCell.ALIGN_LEFT));
                     tblHeader.AddCell(getCell("CONTUL BANCAR " + association.BanckAccont, PdfPCell.ALIGN_RIGHT));
                     document.Add(tblHeader);
                     document.Add(new Phrase("\n"));
 
                     PdfPTable tbAp = new PdfPTable(4);
                     tbAp.WidthPercentage = 100;
-                    tbAp.AddCell(getCell("Ap.: " + apartment.Number.ToString(), PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(getCell("Ap.: " + apartment.Number, PdfPCell.ALIGN_CENTER));
                     tbAp.AddCell(getCell("Nume: " + apartment.Name, PdfPCell.ALIGN_CENTER));
-                    tbAp.AddCell(getCell("Cota: " + (apartment.CotaIndiviza.HasValue ? apartment.CotaIndiviza.Value.ToString() : string.Empty), PdfPCell.ALIGN_CENTER));
-                    tbAp.AddCell(getCell("Nr. Pers: " + apartment.Dependents.ToString(), PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(getCell("Cota: " + (apartment.CotaIndiviza.HasValue ? apartment.CotaIndiviza.Value.ToString(CultureInfo.InvariantCulture) : string.Empty), PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(getCell("Nr. Pers: " + apartment.Dependents, PdfPCell.ALIGN_CENTER));
                     document.Add(tbAp);
-
 
                     document.Add(new Phrase("\n"));
 
@@ -141,14 +151,14 @@ COMITET  EXECUTIV <br>03.07.2018";
                     foreach (var assocExpenses in associationExpensesGrouped)
                     {
                         // add header
-                        document.Add(new Paragraph("Cheltuielile de tipul " + assocExpenses.FirstOrDefault().ExpenseTypes.Name));
+                        document.Add(new Paragraph("Cheltuielile de tipulîățșț " + assocExpenses.FirstOrDefault().ExpenseTypes.Name, times));
 
                         if (assocExpenses.FirstOrDefault().Id_ExpenseType == (int)ExpenseType.PerIndex)
                         {
                             foreach (var assocExpense in assocExpenses)
                             {
                                 var apExpenses = assocExpense.ApartmentExpenses.Where(w => w.Id_Tenant == apartment.Id).ToList();
-                                if (apExpenses.Count() > 0)
+                                if (apExpenses.Any())
                                 {
                                     PdfPTable table = AddIndexTable(apExpenses);
                                     document.Add(table);

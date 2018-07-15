@@ -10,24 +10,25 @@ namespace Administratoro.DAL.SDK
 
     public class Kit : IKit
     {
-        private static Kit _instance = new Kit();
+        private static readonly Kit _instance = new Kit();
         public static Kit Instance
         {
             get
             {
-                return _instance ?? getInstance();
+                return _instance ?? GetInstance();
             }
         }
 
-        private static Kit getInstance()
+        private static Kit GetInstance()
         {
             return new Kit();
         }
 
-        public SDK.Localities Localities { get { return new SDK.Localities(); } }
+        public Localities Localities { get { return new Localities(); } }
         public ErrorLogs ErrorLogs { get { return new ErrorLogs(); } }
-        public SDK.Partners Partners { get { return new SDK.Partners(); } }
-        public SDK.Apartments Apartments { get { return new SDK.Apartments(); } }
+        public Partners Partners { get { return new Partners(); } }
+        public Apartments Apartments { get { return new Apartments(); } }
+        public Documents Documents { get { return new Documents(); } }
 
         public void Dispose()
         {

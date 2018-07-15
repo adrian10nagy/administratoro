@@ -2,7 +2,7 @@
 
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.DAL;
+    using DAL;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -69,19 +69,6 @@ namespace Administratoro.BL.Managers
 
         #region Add
 
-        public static void Add(int invoiceId, decimal? indexOld, decimal? indexNew)
-        {
-            var result = new InvoiceIndexes
-            {
-                Id_Invoice = invoiceId,
-                IndexOld = indexOld,
-                IndexNew = indexNew
-            };
-
-            GetContext().InvoiceIndexes.Add(result);
-            GetContext().SaveChanges();
-        }
-
         private static void AddDefault(int invoiceId, List<AssociationCounters> counters, List<InvoiceIndexes> invoicesIndexes)
         {
             var lastMonthIndexes = GetLastMonthIndexes(invoiceId);
@@ -110,9 +97,9 @@ namespace Administratoro.BL.Managers
 
         #region Update
 
-        public static void Update(int invoiceIndexId, int invoiceId, decimal? indexOld, decimal? indexNew)
+        public static void Update(int invoiceIndexId, decimal? indexOld, decimal? indexNew)
         {
-            InvoiceIndexes result = new InvoiceIndexes();
+            InvoiceIndexes result;
             result = GetContext(true).InvoiceIndexes.FirstOrDefault(c => c.Id == invoiceIndexId);
 
             if (result != null)
@@ -126,7 +113,7 @@ namespace Administratoro.BL.Managers
 
         #endregion
 
-        public static List<InvoiceIndexes> ConfigureWatherCold(List<Administratoro.DAL.Invoices> invoices, List<InvoiceIndexes> invoicesIndexes, List<AssociationCounters> counters)
+        public static List<InvoiceIndexes> ConfigureWatherCold(List<Invoices> invoices, List<InvoiceIndexes> invoicesIndexes, List<AssociationCounters> counters)
         {
             if (invoicesIndexes.Count < counters.Count)
             {

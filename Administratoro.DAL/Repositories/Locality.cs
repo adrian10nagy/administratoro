@@ -2,9 +2,7 @@
 namespace Administratoro.DAL.Repositories
 {
     using DAL;
-    using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
 
     public interface ILocalityRepository
     {

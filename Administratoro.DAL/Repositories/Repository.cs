@@ -1,7 +1,7 @@
 ﻿
 namespace Administratoro.DAL.Repositories
 {
-    using DAL.Settings;
+    using Settings;
     using System;
     using System.Data;
     using System.Data.SqlClient;

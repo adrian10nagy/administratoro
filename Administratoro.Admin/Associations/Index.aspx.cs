@@ -1,4 +1,6 @@
 ﻿
+using System.Globalization;
+
 namespace Admin.Associations
 {
     using Administratoro.BL.Constants;
@@ -7,12 +9,8 @@ namespace Admin.Associations
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Web;
-    using System.Web.UI;
     using System.Web.UI.WebControls;
     using Administratoro.BL.Extensions;
-    using System.Data;
-    using System.Data.SqlClient;
     using Administratoro.BL.Models;
 
     public partial class Index : BasePage
@@ -36,7 +34,7 @@ namespace Admin.Associations
             drpAssociationEqualIndiviza.SelectedValue = (assoc.CotaIndivizaAparments.HasValue) ? "1" : "0";
             if (assoc.CotaIndivizaAparments.HasValue)
             {
-                txtAssociationCotaIndivizaApartments.Text = assoc.CotaIndivizaAparments.Value.ToString();
+                txtAssociationCotaIndivizaApartments.Text = assoc.CotaIndivizaAparments.Value.ToString(CultureInfo.InvariantCulture);
                 btnAssociationEqualIndiviza.Visible = true;
                 txtAssociationCotaIndivizaApartments.Visible = true;
             }
@@ -241,8 +239,8 @@ namespace Admin.Associations
                     var addedAssociation = AssociationsManager.GetById(Association.Id);
 
                     Session[SessionConstants.SelectedAssociation] = addedAssociation;
-                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = Associations;
+                    var associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -429,10 +427,10 @@ namespace Admin.Associations
                     txtAssociationName.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
                     es.Name = txtAssociationName.Text;
-                    AssociationsManager.Update(es.Id, es);
+                    AssociationsManager.Update(es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = Associations;
+                    var associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -456,10 +454,10 @@ namespace Admin.Associations
                     txtAssociationAddress.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
                     es.Address = txtAssociationAddress.Text;
-                    AssociationsManager.Update(es.Id, es);
+                    AssociationsManager.Update(es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = Associations;
+                    var associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -483,10 +481,10 @@ namespace Admin.Associations
                     txtAssociationFiscalCode.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
                     es.FiscalCode = txtAssociationFiscalCode.Text;
-                    AssociationsManager.Update(es.Id, es);
+                    AssociationsManager.Update(es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = Associations;
+                    var associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -510,10 +508,10 @@ namespace Admin.Associations
                     txtAssociationBanckAccount.Enabled = false;
                     var es = AssociationsManager.GetById(Association.Id);
                     es.BanckAccont = txtAssociationBanckAccount.Text;
-                    AssociationsManager.Update(es.Id, es);
+                    AssociationsManager.Update(es);
                     Session[SessionConstants.SelectedAssociation] = es;
-                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = Associations;
+                    var associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -529,7 +527,7 @@ namespace Admin.Associations
             if (es.CotaIndivizaAparments.HasValue && drpAssociationEqualIndiviza.SelectedIndex == 0)
             {
                 es.CotaIndivizaAparments = null;
-                AssociationsManager.Update(es.Id, es);
+                AssociationsManager.Update(es);
                 Session[SessionConstants.SelectedAssociation] = es;
             }
 
@@ -570,7 +568,7 @@ namespace Admin.Associations
                         cotaIndivizaAparmentsResult = null;
                     }
                     es.CotaIndivizaAparments = cotaIndivizaAparments;
-                    AssociationsManager.Update(es.Id, es);
+                    AssociationsManager.Update(es);
                     Session[SessionConstants.SelectedAssociation] = es;
                     var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
                     Session[SessionConstants.AllAssociations] = Associations;

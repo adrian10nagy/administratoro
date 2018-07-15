@@ -1,13 +1,10 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.DAL;
+    using DAL;
     using System.Collections.Generic;
-    using System.Data.Entity;
-    using System.Threading.Tasks;
     using System.Linq;
-    using System;
-    using Administratoro.BL.Constants;
+    using Constants;
 
     public static class ApartmentsManager
     {
@@ -22,13 +19,6 @@ namespace Administratoro.BL.Managers
 
             return _administratoroEntities;
         }
-
-        public static DbSet<Apartments> GetAsDbSet(int associationId)
-        {
-            return GetContext().Apartments;
-        }
-
-      
 
         public static void Update(Apartments apartment)
         {
@@ -51,9 +41,7 @@ namespace Administratoro.BL.Managers
 
         public static Apartments Add(Apartments apartment)
         {
-            Apartments result = null;
-
-            result = GetContext().Apartments.Add(apartment);
+            var result = GetContext().Apartments.Add(apartment);
             GetContext().SaveChanges();
 
             return result;
@@ -93,27 +81,22 @@ namespace Administratoro.BL.Managers
 
         public static List<Apartments> Get(int associationId)
         {
-            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetByAss(associationId);
+            return DAL.SDK.Kit.Instance.Apartments.GetByAss(associationId);
         }
 
         public static List<Apartments> Get(int associationId, int stairCaseId)
         {
-            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetByAss(associationId, stairCaseId);
+            return DAL.SDK.Kit.Instance.Apartments.GetByAss(associationId, stairCaseId);
         }
 
         public static decimal GetSumOfIndivizaForAllApartments(int associationId)
         {
-            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetSumOfIndiviza(associationId);
+            return DAL.SDK.Kit.Instance.Apartments.GetSumOfIndiviza(associationId);
         }
 
         public static IEnumerable<Apartments> GetAllEnabledForHeatHelp(int associationId)
         {
-            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetAllEnabledForHeatHelp(associationId);
-        }
-
-        public static int GetDependentsNr(int associationId)
-        {
-            return Administratoro.DAL.SDK.Kit.Instance.Apartments.GetDependentsNr(associationId);
+            return DAL.SDK.Kit.Instance.Apartments.GetAllEnabledForHeatHelp(associationId);
         }
 
         public static int GetDependentsNr(int associationId, int? stairCase)

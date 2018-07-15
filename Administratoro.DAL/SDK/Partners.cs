@@ -1,10 +1,7 @@
 ﻿
 namespace Administratoro.DAL.SDK
 {
-    using DAL;
-    using DAL.Repositories;
-    using System.Collections;
-    using System.Collections.Generic;
+    using Repositories;
 
     public class Partners
     {

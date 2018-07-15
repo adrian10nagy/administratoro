@@ -1,9 +1,8 @@
 ﻿
-
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Constants;
-    using Administratoro.DAL;
+    using Constants;
+    using DAL;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -33,12 +32,12 @@ namespace Administratoro.BL.Managers
 
         public static void Update(InvoiceSubcategories invoiceSubcategory)
         {
-            InvoiceSubcategories result = new InvoiceSubcategories();
+            InvoiceSubcategories result;
             result = GetByInvoiceId(invoiceSubcategory.Id_Invoice, invoiceSubcategory.Id_subCategType, invoiceSubcategory.id_assCounter);
 
-            if (result != null && result.Value != invoiceSubcategory.Value ||
-                result.quantity != invoiceSubcategory.quantity || result.PricePerUnit != invoiceSubcategory.PricePerUnit ||
-                result.VAT != invoiceSubcategory.VAT || result.service != invoiceSubcategory.service || result.penalties != invoiceSubcategory.penalties)
+            if (result != null && (result.Value != invoiceSubcategory.Value || result.quantity != invoiceSubcategory.quantity || 
+                result.PricePerUnit != invoiceSubcategory.PricePerUnit || result.VAT != invoiceSubcategory.VAT ||
+                result.service != invoiceSubcategory.service || result.penalties != invoiceSubcategory.penalties))
             {
                 result.quantity = invoiceSubcategory.quantity;
                 result.PricePerUnit = invoiceSubcategory.PricePerUnit;
@@ -59,7 +58,7 @@ namespace Administratoro.BL.Managers
 
         public static void AddDefault(int invoiceId, List<AssociationCounters> assCounters)
         {
-            List<int> subcategoryTypes = new List<int>();
+            List<int> subcategoryTypes;
             var invoice = InvoicesManager.GetById(invoiceId);
 
             if (invoice == null)
@@ -104,7 +103,7 @@ namespace Administratoro.BL.Managers
             GetContext().SaveChanges();
         }
 
-        public static IEnumerable<Administratoro.DAL.Invoices> ConfigureSubcategories(IEnumerable<Administratoro.DAL.Invoices> invoices, List<AssociationCounters> counters)
+        public static IEnumerable<Invoices> ConfigureSubcategories(IEnumerable<Invoices> invoices, List<AssociationCounters> counters)
         {
             var result = invoices;
 
@@ -114,7 +113,7 @@ namespace Administratoro.BL.Managers
                 {
                     if (invoice.AssociationExpenses.Id_Expense == (int)Expense.ApaRece)
                     {
-                        if (invoice.InvoiceSubcategories.Count() == 0)
+                        if (invoice.InvoiceSubcategories.Any())
                         {
                             AddDefault(invoice.Id);
                         }

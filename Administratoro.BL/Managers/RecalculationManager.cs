@@ -2,10 +2,9 @@
 
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Constants;
-    using Administratoro.DAL;
+    using Constants;
+    using DAL;
     using System.Linq;
-    using System;
 
     public static class RecalculationManager
     {
@@ -21,20 +20,21 @@ namespace Administratoro.BL.Managers
 
         private static void RelalculateExpense(AssociationExpenses item)
         {
-            if (item.Id_ExpenseType == (int)ExpenseType.PerNrTenants || item.Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
+            switch (item.Id_ExpenseType)
             {
-                if(item.Invoices.Count == 1)
-                {
+                case (int)ExpenseType.PerNrTenants:
+                case (int)ExpenseType.PerCotaIndiviza:
+                    if (item.Invoices.Count != 1) return;
                     var invoice = item.Invoices.FirstOrDefault();
                     if(invoice!=null && invoice.Value.HasValue)
                     {
                         ApartmentExpensesManager.UpdateApartmentExpenses(invoice.AssociationExpenses, invoice.Value.Value, null);
                     }
-                }
-            }
-            else if (item.Id_ExpenseType == (int)ExpenseType.PerIndex)
-            {
-                //redistribute
+
+                    break;
+                case (int)ExpenseType.PerIndex:
+                    //redistribute
+                    break;
             }
         }
     }

@@ -68,16 +68,12 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Administratoro.BL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Administratoro.DAL.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Antlr3.Runtime.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\AspNet.ScriptManager.bootstrap.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\AspNet.ScriptManager.jQuery.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\ClosedXML.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\DocumentFormat.OpenXml.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\FastMember.Signed.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\itextsharp.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.AspNet.FriendlyUrls.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.AspNet.Web.Optimization.WebForms.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.MSAjax.dll
-C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.WebForms.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.Web.Infrastructure.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Newtonsoft.Json.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\System.IO.FileSystem.Primitives.dll
@@ -101,3 +97,7 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Newtonsoft.Json.xml
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.AspNet.FriendlyUrls.xml
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\EntityFramework.xml
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\AspNet.ScriptManager.bootstrap.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\AspNet.ScriptManager.jQuery.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.MSAjax.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.WebForms.dll

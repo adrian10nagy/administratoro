@@ -1,9 +1,7 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Constants;
-    using Administratoro.DAL;
-    using System;
+    using DAL;
     using System.Collections.Generic;
     using System.Linq;
 

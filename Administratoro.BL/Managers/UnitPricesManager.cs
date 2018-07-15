@@ -1,9 +1,7 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Constants;
-    using Administratoro.DAL;
-    using System.Collections.Generic;
+    using DAL;
     using System.Linq;
 
     public static class UnitPricesManager
@@ -82,26 +80,13 @@ namespace Administratoro.BL.Managers
             return result;
         }
 
-        private static void Update(int assCounterId, int assExpenseId, int? newPrice)
-        {
-            AssociationExpensesUnitPrices result = new AssociationExpensesUnitPrices();
-            result = GetContext().AssociationExpensesUnitPrices.FirstOrDefault(b => b.Id_assCounter == assCounterId && b.Id_assExpense == assExpenseId);
-
-            if (result != null)
-            {
-                result.PricePerExpenseUnit = newPrice;
-                GetContext().Entry(result).CurrentValues.SetValues(result);
-
-                GetContext().SaveChanges();
-            }
-        }
         #endregion
 
         #region update
 
         public static void Update(int associationExpensesUnitPricesId, decimal? newPrice)
         {
-            AssociationExpensesUnitPrices result = new AssociationExpensesUnitPrices();
+            AssociationExpensesUnitPrices result;
             result = GetContext().AssociationExpensesUnitPrices.FirstOrDefault(b => b.Id == associationExpensesUnitPricesId);
 
             if (result != null)
@@ -113,7 +98,7 @@ namespace Administratoro.BL.Managers
             }
         }
 
-        public static void Update(int? stairCase, int assExpenseId, decimal? newPrice)
+        public static void AddOrUpdate(int? stairCase, int assExpenseId, decimal? newPrice)
         {
             var associationExpense = AssociationExpensesManager.GetById(assExpenseId);
 
@@ -122,14 +107,30 @@ namespace Administratoro.BL.Managers
                 var assCounter = AssociationCountersManager.GetByExpenseAndStairCase(associationExpense.Id_Estate, associationExpense.Id_Expense, stairCase);
                 if (assCounter != null)
                 {
-                    var x = Get(assExpenseId, assCounter.Id);
-                    if(x!= null)
+                    var assExUnitPrice = Get(assExpenseId, assCounter.Id);
+                    if (assExUnitPrice == null)
                     {
-                        Update(x.Id, newPrice);
+                        Add(assExpenseId, assCounter.Id, newPrice);
                     }
-                    //Update(assCounter.Id, assExpenseId, newPrice);
+                    else
+                    {
+                        Update(assExUnitPrice.Id, newPrice);
+                    }
                 }
             }
+        }
+
+        private static void Add(int assExpenseId, int assCounterId, decimal? newPrice)
+        {
+            AssociationExpensesUnitPrices associationExpensesUnitPrices = new AssociationExpensesUnitPrices
+            {
+                Id_assCounter = assCounterId,
+                Id_assExpense = assExpenseId,
+                PricePerExpenseUnit = newPrice
+            };
+
+            GetContext().AssociationExpensesUnitPrices.Add(associationExpensesUnitPrices);
+            GetContext().SaveChanges();
         }
 
         #endregion

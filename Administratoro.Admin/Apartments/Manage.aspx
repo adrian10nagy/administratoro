@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manage.aspx.cs" Inherits="Admin.Tenants.Manage" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manage.aspx.cs" Inherits="Admin.Apartments.Manage" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainStyle" runat="server">
     <link href="/Content/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />

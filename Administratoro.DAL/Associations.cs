@@ -19,6 +19,8 @@ namespace Administratoro.DAL
             this.Apartments = new HashSet<Apartments>();
             this.AssociationCounters = new HashSet<AssociationCounters>();
             this.AssociationExpenses = new HashSet<AssociationExpenses>();
+            this.DocumentApartmentFlyers = new HashSet<DocumentApartmentFlyers>();
+            this.DocumentAssociationMonthlyExpenses = new HashSet<DocumentAssociationMonthlyExpenses>();
             this.StairCases = new HashSet<StairCases>();
         }
     
@@ -36,6 +38,8 @@ namespace Administratoro.DAL
         public virtual ICollection<Apartments> Apartments { get; set; }
         public virtual ICollection<AssociationCounters> AssociationCounters { get; set; }
         public virtual ICollection<AssociationExpenses> AssociationExpenses { get; set; }
+        public virtual ICollection<DocumentApartmentFlyers> DocumentApartmentFlyers { get; set; }
+        public virtual ICollection<DocumentAssociationMonthlyExpenses> DocumentAssociationMonthlyExpenses { get; set; }
         public virtual Partners Partners { get; set; }
         public virtual ICollection<StairCases> StairCases { get; set; }
     }

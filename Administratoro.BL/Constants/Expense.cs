@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Administratoro.BL.Constants
 {
     public enum Expense
@@ -14,7 +9,7 @@ namespace Administratoro.BL.Constants
         Gaz = 4,
         Administrator = 5,
         PersonalServiciu = 6,
-        IncalzireRAT = 7,
+        IncalzireRat = 7,
         EnergieElectrica = 8,
         Lift = 9,
         IntretinereInstalatii = 10,

@@ -1,21 +1,18 @@
 ﻿using Administratoro.BL.Constants;
-using Administratoro.BL.Managers;
 using Administratoro.BL.Extensions;
+using Administratoro.BL.Managers;
 using Administratoro.DAL;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using Administratoro.BL.Extensions;
 using System.Globalization;
+using System.Linq;
+using System.Web.UI.WebControls;
 
 namespace Admin.Invoices
 {
     public partial class Add : BasePage
     {
-        public int? _year
+        public int? Year
         {
             get
             {
@@ -23,7 +20,7 @@ namespace Admin.Invoices
             }
         }
 
-        public int? _month
+        public int? Month
         {
             get
             {
@@ -31,7 +28,7 @@ namespace Admin.Invoices
             }
         }
 
-        private int? _expense
+        private int? Expense
         {
             get
             {
@@ -55,7 +52,7 @@ namespace Admin.Invoices
         {
             drpInvoiceYearMonth.Items.Clear();
             var yearMonths = AssociationExpensesManager.GetAllMonthsAndYearsNotClosedByAssociationId(Association.Id);
-            bool hasValue = _year.HasValue && _month.HasValue;
+            bool hasValue = Year.HasValue && Month.HasValue;
             for (int i = 0; i < yearMonths.Count; i++)
             {
                 var yearMonth = yearMonths[i];
@@ -63,7 +60,7 @@ namespace Admin.Invoices
                 {
                     Value = yearMonth.Year + "-" + yearMonth.Month,
                     Text = "Anul:" + yearMonth.Year + " Luna:" + yearMonth.Month,
-                    Selected = hasValue ? (yearMonth.Month == _month.Value && yearMonth.Year == _year.Value) : i + 1 == yearMonths.Count
+                    Selected = hasValue ? (yearMonth.Month == Month.Value && yearMonth.Year == Year.Value) : i + 1 == yearMonths.Count
                 });
             }
 
@@ -82,8 +79,8 @@ namespace Admin.Invoices
                 drpInvoiceExpenses.Items.Add(new ListItem
                 {
                     Value = associationExpense.Expenses.Id.ToString(),
-                    Text = associationExpense.Expenses.Name.ToString(),
-                    Selected = _expense.HasValue && _expense.Value == associationExpense.Id_Expense
+                    Text = associationExpense.Expenses.Name,
+                    Selected = Expense.HasValue && Expense.Value == associationExpense.Id_Expense
                 });
             }
 
@@ -91,10 +88,10 @@ namespace Admin.Invoices
             {
                 Value = "24",
                 Text = "Diverse",
-                Selected = _expense.HasValue && _expense.Value == 24
+                Selected = Expense.HasValue && Expense.Value == 24
             });
 
-            if (_expense.HasValue)
+            if (Expense.HasValue)
             {
                 drpInvoiceExpenses.Enabled = false;
             }
@@ -124,7 +121,10 @@ namespace Admin.Invoices
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Expenses/Invoices.aspx?year=" + _year.Value + "&month=" + _month.Value);
+            if (Year != null && Month != null)
+            {
+                Response.Redirect("~/Expenses/Invoices.aspx?year=" + Year.Value + "&month=" + Month.Value);
+            }
         }
 
         #region save
@@ -144,7 +144,7 @@ namespace Admin.Invoices
                     int.TryParse(yearMonth[0], out year) &&
                     int.TryParse(yearMonth[1], out month))
                 {
-                    if (expenseId == (int)Expense.Diverse)
+                    if (expenseId == (int)Administratoro.BL.Constants.Expense.Diverse)
                     {
                         SaveDiverse(year, month, Association.Id, expenseId);
                     }
@@ -157,9 +157,9 @@ namespace Admin.Invoices
 
             var estate = AssociationsManager.GetById(Association.Id);
             Session[SessionConstants.SelectedAssociation] = estate;
-            if (_year.HasValue && _month.HasValue)
+            if (Year.HasValue && Month.HasValue)
             {
-                Response.Redirect("~/Expenses/Invoices.aspx?year=" + _year.Value + "&month=" + _month.Value);
+                Response.Redirect("~/Expenses/Invoices.aspx?year=" + Year.Value + "&month=" + Month.Value);
             }
             else
             {
@@ -244,7 +244,7 @@ namespace Admin.Invoices
                                     var invoice = InvoicesManager.GetDiverseById(invoiceId.Value);
                                     if (invoice != null)
                                     {
-                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId, theNumber.Text, theDateId, null);
+                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId, theNumber.Text, theDateId);
                                     }
                                 }
                                 else
@@ -272,7 +272,7 @@ namespace Admin.Invoices
         private void SaveDefault(int year, int month, int associationId, int expenseId)
         {
             AssociationExpenses associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
-            bool isIndexExpense = associationExpense != null && associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
+            var isIndexExpense = associationExpense != null && associationExpense.Id_ExpenseType == (int)ExpenseType.PerIndex;
 
             decimal? theInvoideValue = null;
             decimal tempInvoideValue;
@@ -300,10 +300,10 @@ namespace Admin.Invoices
             var theInvoice = InvoicesManager.GetAllByAssotiationYearMonthExpenseId(Association.Id, expenseId, year, month).ToList();
 
             //update
-            if (theInvoice != null && theInvoice.Count > 0)
+            if (theInvoice.Count > 0)
             {
                 var invoice = theInvoice.FirstOrDefault(i => i.id_assCounter == assCounter);
-                InvoicesManager.Update(invoice, theInvoideValue, null, txtInvoiceDescription.Text, null, txtInvoiceNumber.Text, theInvoiceDate, assCounter);
+                InvoicesManager.Update(invoice, theInvoideValue, null, txtInvoiceDescription.Text, null, txtInvoiceNumber.Text, theInvoiceDate);
             }
             else
             {
@@ -340,7 +340,7 @@ namespace Admin.Invoices
                         Panel theNameControl = thePanelControl.Controls[0] as Panel;
                         Panel theQuantityControl = thePanelControl.Controls[1] as Panel;
                         Panel thePriceControl = thePanelControl.Controls[2] as Panel;
-                        Panel theVATControl = thePanelControl.Controls[3] as Panel;
+                        Panel theVatControl = thePanelControl.Controls[3] as Panel;
                         Panel theServicesControl = thePanelControl.Controls[4] as Panel;
                         Panel thePenaltiesControl = thePanelControl.Controls[5] as Panel;
                         Panel theValueControl = thePanelControl.Controls[6] as Panel;
@@ -348,7 +348,7 @@ namespace Admin.Invoices
                         if (theNameControl != null && theNameControl.Controls.Count == 1 && theNameControl.Controls[0] is Label &&
                             (theQuantityControl != null && theQuantityControl.Controls.Count == 1 && theQuantityControl.Controls[0] is TextBox) &&
                             (thePriceControl != null && thePriceControl.Controls.Count == 1 && thePriceControl.Controls[0] is TextBox) &&
-                            (theVATControl != null && theVATControl.Controls.Count == 1 && theVATControl.Controls[0] is TextBox) &&
+                            (theVatControl != null && theVatControl.Controls.Count == 1 && theVatControl.Controls[0] is TextBox) &&
                             (theServicesControl != null && theServicesControl.Controls.Count == 1 && theServicesControl.Controls[0] is TextBox) &&
                             (thePenaltiesControl != null && thePenaltiesControl.Controls.Count == 1 && thePenaltiesControl.Controls[0] is TextBox) &&
                             (theValueControl != null && theValueControl.Controls.Count == 1 && theValueControl.Controls[0] is TextBox))
@@ -356,7 +356,7 @@ namespace Admin.Invoices
                             Label theName = theNameControl.Controls[0] as Label;
                             TextBox theQuantity = theQuantityControl.Controls[0] as TextBox;
                             TextBox thePrice = thePriceControl.Controls[0] as TextBox;
-                            TextBox theVAT = theVATControl.Controls[0] as TextBox;
+                            TextBox theVat = theVatControl.Controls[0] as TextBox;
                             TextBox theServices = theServicesControl.Controls[0] as TextBox;
                             TextBox thePenalties = thePenaltiesControl.Controls[0] as TextBox;
                             TextBox theValue = theValueControl.Controls[0] as TextBox;
@@ -368,14 +368,14 @@ namespace Admin.Invoices
 
                             decimal? theQuantityToUpdate = DecimalExtensions.GetNullableDecimal(theQuantity.Text);
                             decimal? thePriceToUpdate = DecimalExtensions.GetNullableDecimal(thePrice.Text);
-                            decimal? theVATToUpdate = DecimalExtensions.GetNullableDecimal(theVAT.Text);
+                            decimal? theVatToUpdate = DecimalExtensions.GetNullableDecimal(theVat.Text);
                             decimal? theServicesToUpdate = DecimalExtensions.GetNullableDecimal(theServices.Text);
                             decimal? thePenaltiesToUpdate = DecimalExtensions.GetNullableDecimal(thePenalties.Text);
                             decimal? theValueToUpdate = DecimalExtensions.GetNullableDecimal(theValue.Text);
 
-                            var nameSubStringIndex = theName.ID.IndexOf("tbInvoice") + 9;
-                            var valueSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory") + 20;
-                            var assCounterSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory");
+                            var nameSubStringIndex = theName.ID.IndexOf("tbInvoice", StringComparison.Ordinal) + 9;
+                            var valueSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory", StringComparison.Ordinal) + 20;
+                            var assCounterSubStringIndex = theValue.ID.IndexOf("tbinvoiceSubcategory", StringComparison.Ordinal);
 
                             if (int.TryParse(theValue.ID.Substring(0, assCounterSubStringIndex), out theAssCounterId))
                             {
@@ -393,7 +393,7 @@ namespace Admin.Invoices
                                     Id_Invoice = theInvoiceId,
                                     quantity = theQuantityToUpdate,
                                     PricePerUnit = thePriceToUpdate,
-                                    VAT = theVATToUpdate,
+                                    VAT = theVatToUpdate,
                                     service = theServicesToUpdate,
                                     penalties = thePenaltiesToUpdate,
                                     id_assCounter = theAssCounterIdValue
@@ -417,19 +417,18 @@ namespace Admin.Invoices
 
             foreach (var control in pnInvoiceValues.Controls)
             {
-                if (control is Panel)
+                var thePanelControl = control as Panel;
+                if (thePanelControl != null)
                 {
-                    var thePanelControl = control as Panel;
-                    if (thePanelControl != null && thePanelControl.Controls.Count == 3)
+                    if (thePanelControl.Controls.Count == 3)
                     {
                         Panel theCounterControl = thePanelControl.Controls[0] as Panel;
                         Panel theIndexOldControl = thePanelControl.Controls[1] as Panel;
                         Panel theIndexNewControl = thePanelControl.Controls[2] as Panel;
 
-                        if (theCounterControl != null && theCounterControl.Controls.Count == 1 && theCounterControl.Controls[0] is DropDownList &&
+                        if ((theCounterControl != null && theCounterControl.Controls.Count == 1 && theCounterControl.Controls[0] is DropDownList) &&
                             (theIndexOldControl == null || theIndexOldControl.Controls.Count == 1 && theIndexOldControl.Controls[0] is TextBox) &&
-                            (theIndexNewControl == null || theIndexNewControl.Controls.Count == 1 && theIndexNewControl.Controls[0] is TextBox)
-                            )
+                            (theIndexNewControl == null || theIndexNewControl.Controls.Count == 1 && theIndexNewControl.Controls[0] is TextBox))
                         {
                             TextBox theIndexOld = theIndexOldControl.Controls[0] as TextBox;
                             TextBox theIndexNew = theIndexNewControl.Controls[0] as TextBox;
@@ -471,11 +470,7 @@ namespace Admin.Invoices
 
                             if (indexInvoiceId.HasValue)
                             {
-                                var invoice = InvoicesManager.GetByIndexInvoiceId(indexInvoiceId.Value);
-                                if (invoice != null)
-                                {
-                                    InvoiceIndexesManager.Update(indexInvoiceId.Value, invoice.Id, indexOld, indexNew);
-                                }
+                                InvoiceIndexesManager.Update(indexInvoiceId.Value, indexOld, indexNew);
                             }
                         }
                     }
@@ -531,13 +526,13 @@ namespace Admin.Invoices
                 {
                     AssociationExpenses associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
 
-                    if (associationExpense == null && expenseId == (int)Expense.Diverse)
+                    if (associationExpense == null && expenseId == (int)Administratoro.BL.Constants.Expense.Diverse)
                     {
                         AssociationExpensesManager.Add(Association.Id, expenseId, month, year, ((int)ExpenseType.PerNrTenants).ToString(), false);
                         associationExpense = AssociationExpensesManager.GetMonthYearAssoiationExpense(Association.Id, expenseId, year, month);
                     }
 
-                    if (expenseId == (int)Expense.Diverse)
+                    if (expenseId == (int)Administratoro.BL.Constants.Expense.Diverse)
                     {
                         pnlInvoiceBody.Visible = false;
                         InitializeValueFieldAddExtraControlsForDiverse(associationExpense);
@@ -565,7 +560,7 @@ namespace Admin.Invoices
             DiverseInitializeValueFieldAddInvoices(new List<Administratoro.DAL.Invoices> { new Administratoro.DAL.Invoices() });
         }
 
-        private void InitializeInvoicesForWatherCold(List<Administratoro.DAL.InvoiceIndexes> invoicesIndexes, List<Administratoro.DAL.AssociationCounters> counters)
+        private void InitializeInvoicesForWatherCold(List<InvoiceIndexes> invoicesIndexes, List<AssociationCounters> counters)
         {
             foreach (var invoicesIndexe in invoicesIndexes)
             {
@@ -616,7 +611,7 @@ namespace Admin.Invoices
 
                 TextBox tbInsexOld = new TextBox
                 {
-                    Text = invoicesIndexe != null && invoicesIndexe.IndexOld.HasValue ? invoicesIndexe.IndexOld.Value.ToString() : string.Empty,
+                    Text = invoicesIndexe.IndexOld.HasValue ? invoicesIndexe.IndexOld.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
                     CssClass = "form-control",
                     ID = "tbInsexOld" + invoicesIndexe.Id,
                     AutoCompleteType = AutoCompleteType.Disabled
@@ -630,7 +625,7 @@ namespace Admin.Invoices
                 };
                 TextBox tbIndexNew = new TextBox
                 {
-                    Text = invoicesIndexe != null && invoicesIndexe.IndexNew.HasValue ? invoicesIndexe.IndexNew.Value.ToString() : string.Empty,
+                    Text = invoicesIndexe.IndexNew.HasValue ? invoicesIndexe.IndexNew.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
                     CssClass = "form-control",
                     ID = "tbIndexNew" + invoicesIndexe.Id,
                     AutoCompleteType = AutoCompleteType.Disabled
@@ -654,7 +649,7 @@ namespace Admin.Invoices
             {
                 var assCounters = AssociationCountersManager.GetAllByExpenseType(Association.Id, associationExpense.Id_Expense);
                 InitializeInvoiceCounterSplit(assCounters, isPostbackFromLoadEvent);
-                if (invoices.Count() == 0)
+                if (!invoices.Any())
                 {
                     InvoicesManager.AddDefault(associationExpense);
                 }
@@ -692,7 +687,8 @@ namespace Admin.Invoices
                     var assCounter = AssociationCountersManager.GetById(assCounterId);
                     if (assCounter != null)
                     {
-                        theInvoice = InvoicesManager.GetByAssociationExpenseIdAndCounter(theInvoice.Id_EstateExpense.Value, assCounter.Id);
+                        if (theInvoice.Id_EstateExpense != null)
+                            theInvoice = InvoicesManager.GetByAssociationExpenseIdAndCounter(theInvoice.Id_EstateExpense.Value, assCounter.Id);
                     }
                 }
 
@@ -707,19 +703,19 @@ namespace Admin.Invoices
                 var invoicesIndexes = InvoiceIndexesManager.Get(theInvoice.Id).ToList();
                 invoicesIndexes = InvoiceIndexesManager.ConfigureWatherCold(invoices, invoicesIndexes, counters);
 
-                if (invoicesIndexes.Count() > 0)
+                if (invoicesIndexes.Any())
                 {
                     // add Counters Index old-new
                     InitializeValueFieldAddColumnHeadersForIndexExpenses();
                     InitializeInvoicesForWatherCold(invoicesIndexes, counters);
                 }
 
-                if (expenseId == (int)Expense.ApaRece)
+                if (expenseId == (int)Administratoro.BL.Constants.Expense.ApaRece)
                 {
                     // add InvoicesSubcategories
                     InitializeSubInvoices(invoices);
                 }
-                else if (expenseId == (int)Expense.ApaCalda)
+                else if (expenseId == (int)Administratoro.BL.Constants.Expense.ApaCalda)
                 {
                     //InvoicesSubcategoriesManager.ConfigureWatherHot(invoices, counters);
                     // add InvoicesSubcategories
@@ -851,7 +847,7 @@ namespace Admin.Invoices
                     };
                     Label lb01 = new Label
                     {
-                        Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.InvoiceSubcategoryTypes.Value.ToString() : string.Empty,
+                        Text = invoiceSubcategory.InvoiceSubcategoryTypes != null ? invoiceSubcategory.InvoiceSubcategoryTypes.Value : string.Empty,
                         ID = invoiceSubcategory.Id + "tbInvoice" + invoice.Id
                     };
                     textPanel.Controls.Add(lb01);
@@ -864,7 +860,7 @@ namespace Admin.Invoices
 
                     TextBox tbquantity = new TextBox
                     {
-                        Text = invoiceSubcategory.quantity.HasValue ? invoiceSubcategory.quantity.Value.ToString() : string.Empty,
+                        Text = invoiceSubcategory.quantity.HasValue ? invoiceSubcategory.quantity.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
                         CssClass = "form-control",
                         AutoCompleteType = AutoCompleteType.Disabled
                     };
@@ -878,7 +874,7 @@ namespace Admin.Invoices
 
                     TextBox tbPrice = new TextBox
                     {
-                        Text = invoiceSubcategory.PricePerUnit.HasValue ? invoiceSubcategory.PricePerUnit.Value.ToString() : string.Empty,
+                        Text = invoiceSubcategory.PricePerUnit.HasValue ? invoiceSubcategory.PricePerUnit.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
                         CssClass = "form-control",
                         AutoCompleteType = AutoCompleteType.Disabled
                     };
@@ -955,10 +951,13 @@ namespace Admin.Invoices
             var descriptionName = string.Empty;
             if (theInvoice.AssociationExpenses == null)
             {
-                var ee = AssociationExpensesManager.GetById(theInvoice.Id_EstateExpense.Value);
-                descriptionName = ee.Expenses.Name + " " + ee.Year + " " + ee.Month;
+                if (theInvoice.Id_EstateExpense != null)
+                {
+                    var ee = AssociationExpensesManager.GetById(theInvoice.Id_EstateExpense.Value);
+                    descriptionName = ee.Expenses.Name + " " + ee.Year + " " + ee.Month;
+                }
             }
-            txtInvoiceValue.Text = theInvoice.Value.HasValue ? theInvoice.Value.Value.ToString() : string.Empty;
+            txtInvoiceValue.Text = theInvoice.Value.HasValue ? theInvoice.Value.Value.ToString(CultureInfo.InvariantCulture) : string.Empty;
             txtInvoiceDescription.Text = !string.IsNullOrEmpty(theInvoice.Description) ? theInvoice.Description : descriptionName;
             txtInvoiceDate.Text = theInvoice.issueDate.HasValue ? theInvoice.issueDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : string.Empty;
             txtInvoiceNumber.Text = theInvoice.issueNumber;
@@ -1092,7 +1091,7 @@ namespace Admin.Invoices
                 TextBox tbValue = new TextBox
                 {
                     CssClass = "form-control",
-                    Text = invoice.Value.HasValue ? invoice.Value.Value.ToString() : string.Empty,
+                    Text = invoice.Value.HasValue ? invoice.Value.Value.ToString(CultureInfo.InvariantCulture) : string.Empty,
                     ID = invoice.Id != 0 ? invoice.Id + "tbInvoiceId" : "tbInvoiceId",
                     AutoCompleteType = AutoCompleteType.Disabled
                 };

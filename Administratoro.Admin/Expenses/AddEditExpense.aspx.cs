@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using Administratoro.BL.Managers;
 using Administratoro.DAL;
@@ -10,7 +7,6 @@ using Administratoro.BL.Constants;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.Drawing;
 
 namespace Admin.Expenses
 {
@@ -18,10 +14,10 @@ namespace Admin.Expenses
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            this.InitializeStairCases();
-            var id_exes = Request.QueryString["id_exes"];
+            InitializeStairCases();
+            var idExes = Request.QueryString["id_exes"];
             int idExpenseEstate;
-            if (int.TryParse(id_exes, out idExpenseEstate))
+            if (int.TryParse(idExes, out idExpenseEstate))
             {
                 AssociationExpenses ee = AssociationExpensesManager.GetById(idExpenseEstate);
                 if (ee != null)
@@ -43,7 +39,7 @@ namespace Admin.Expenses
 
                         if (ViewState["dtPerIndex"] == null)
                         {
-                            this.InitializeGridViewExpensesPerIndex(dt, ee.Id);
+                            InitializeGridViewExpensesPerIndex(dt, ee.Id);
                         }
                         else
                         {
@@ -81,18 +77,17 @@ namespace Admin.Expenses
 
         private void InitializeGridViewExpensesPerIndex(DataTable dt, int esexId)
         {
-            var estate = Session[SessionConstants.SelectedAssociation] as Administratoro.DAL.Associations;
             AssociationExpenses ee = AssociationExpensesManager.GetById(esexId);
 
             int stairCase;
-            List<Apartments> apartments;
+            List<Administratoro.DAL.Apartments> apartments;
             if (Association.HasStaircase && !string.IsNullOrEmpty(drpStairCases.SelectedValue) && int.TryParse(drpStairCases.SelectedValue, out stairCase))
             {
-                apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId, stairCase);
+                apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(Association.Id, esexId, stairCase);
             }
             else
             {
-                apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(estate.Id, esexId);
+                apartments = ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(Association.Id, esexId);
             }
 
 
@@ -112,7 +107,7 @@ namespace Admin.Expenses
                     Inner join Apartments A
                     ON AE.Id_Tenant = A.Id
                     where Id_EstateExpense = " + esexId + " and Id_Tenant = " + apartment.Id +
-                                               " and A.Id_Estate = " + estate.Id;
+                                               " and A.Id_Estate = " + Association.Id;
 
                 SqlConnection cnn = new SqlConnection("data source=HOME\\SQLEXPRESS;initial catalog=Administratoro;integrated security=True;MultipleActiveResultSets=True;");
                 SqlCommand cmd = new SqlCommand(query, cnn);
@@ -181,7 +176,7 @@ namespace Admin.Expenses
                 }
             }
 
-            this.InitializeGridViewExpensesPerIndex(new DataTable(), idExpenseEstate);
+            InitializeGridViewExpensesPerIndex(new DataTable(), idExpenseEstate);
             gvExpensesPerIndex.EditIndex = -1;
             gvExpensesPerIndex.DataBind();
         }
@@ -196,11 +191,11 @@ namespace Admin.Expenses
         {
             if (true)
             {
-                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare", "Consum" };
+                gvExpensesPerIndex.DataKeyNames = new[] { "Id", "Apartament", "Valoare", "Consum" };
             }
             else
             {
-                gvExpensesPerIndex.DataKeyNames = new string[] { "Id", "Apartament", "Valoare", "Index vechi", "Consum" };
+                gvExpensesPerIndex.DataKeyNames = new[] { "Id", "Apartament", "Valoare", "Index vechi", "Consum" };
             }
 
             e.Row.Cells[1].Visible = false;
@@ -208,11 +203,11 @@ namespace Admin.Expenses
 
         protected void drpStairCases_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var id_exes = Request.QueryString["id_exes"];
+            var idExes = Request.QueryString["id_exes"];
             int idExpenseEstate;
-            if (int.TryParse(id_exes, out idExpenseEstate))
+            if (int.TryParse(idExes, out idExpenseEstate))
             {
-                this.InitializeGridViewExpensesPerIndex(new DataTable(), idExpenseEstate);
+                InitializeGridViewExpensesPerIndex(new DataTable(), idExpenseEstate);
             }
         }
 

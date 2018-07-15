@@ -9,7 +9,6 @@ namespace Admin.Config
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Web.UI;
     using System.Web.UI.WebControls;
 
     public partial class NewMonthOpening : BasePage
@@ -21,10 +20,10 @@ namespace Admin.Config
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var defaultEE = AssociationExpensesManager.GetFromLastestOpenedMonth(Association.Id);
+            var defaultEe = AssociationExpensesManager.GetFromLastestOpenedMonth(Association.Id);
             if (!Page.IsPostBack)
             {
-                InitializeYearsAndMonths(defaultEE);
+                InitializeYearsAndMonths(defaultEe);
             }
             InitializeExpenses();
         }
@@ -34,21 +33,21 @@ namespace Admin.Config
             var availableYearMonths = AssociationExpensesManager.GetAllMonthsAndYearsAvailableByAssociationId(Association.Id);
             drpOpeningMonth.Items.Clear();
 
-            drpOpeningMonth.Items.Add(new ListItem { Value = "1", Text = "Ianuarie", Selected = IsMonthSelected(1, month), Enabled = isMonthEnabled(1, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "2", Text = "Februarie", Selected = IsMonthSelected(2, month), Enabled = isMonthEnabled(2, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "3", Text = "Martie", Selected = IsMonthSelected(3, month), Enabled = isMonthEnabled(3, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "4", Text = "Aprilie", Selected = IsMonthSelected(4, month), Enabled = isMonthEnabled(4, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "5", Text = "Mai", Selected = IsMonthSelected(5, month), Enabled = isMonthEnabled(5, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "6", Text = "Iunie", Selected = IsMonthSelected(6, month), Enabled = isMonthEnabled(6, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "7", Text = "Iulie", Selected = IsMonthSelected(7, month), Enabled = isMonthEnabled(7, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "8", Text = "August", Selected = IsMonthSelected(8, month), Enabled = isMonthEnabled(8, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "9", Text = "Septembrie", Selected = IsMonthSelected(9, month), Enabled = isMonthEnabled(9, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "10", Text = "Octombrie", Selected = IsMonthSelected(10, month), Enabled = isMonthEnabled(10, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "11", Text = "Noiembrie", Selected = IsMonthSelected(11, month), Enabled = isMonthEnabled(11, availableYearMonths) });
-            drpOpeningMonth.Items.Add(new ListItem { Value = "12", Text = "Decembrie", Selected = IsMonthSelected(12, month), Enabled = isMonthEnabled(12, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "1", Text = "Ianuarie", Selected = IsMonthSelected(1, month), Enabled = IsMonthEnabled(1, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "2", Text = "Februarie", Selected = IsMonthSelected(2, month), Enabled = IsMonthEnabled(2, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "3", Text = "Martie", Selected = IsMonthSelected(3, month), Enabled = IsMonthEnabled(3, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "4", Text = "Aprilie", Selected = IsMonthSelected(4, month), Enabled = IsMonthEnabled(4, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "5", Text = "Mai", Selected = IsMonthSelected(5, month), Enabled = IsMonthEnabled(5, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "6", Text = "Iunie", Selected = IsMonthSelected(6, month), Enabled = IsMonthEnabled(6, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "7", Text = "Iulie", Selected = IsMonthSelected(7, month), Enabled = IsMonthEnabled(7, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "8", Text = "August", Selected = IsMonthSelected(8, month), Enabled = IsMonthEnabled(8, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "9", Text = "Septembrie", Selected = IsMonthSelected(9, month), Enabled = IsMonthEnabled(9, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "10", Text = "Octombrie", Selected = IsMonthSelected(10, month), Enabled = IsMonthEnabled(10, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "11", Text = "Noiembrie", Selected = IsMonthSelected(11, month), Enabled = IsMonthEnabled(11, availableYearMonths) });
+            drpOpeningMonth.Items.Add(new ListItem { Value = "12", Text = "Decembrie", Selected = IsMonthSelected(12, month), Enabled = IsMonthEnabled(12, availableYearMonths) });
         }
 
-        private bool isMonthEnabled(int month, List<YearMonth> availableYearMonths)
+        private bool IsMonthEnabled(int month, List<YearMonth> availableYearMonths)
         {
             bool result = false;
             int selectedYear = drpOpeningYear.SelectedValue.ToNullableInt().Value;
@@ -60,15 +59,15 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool IsMonthSelected(int monthNR, int lastMonth)
+        private static bool IsMonthSelected(int monthNr, int lastMonth)
         {
             bool result = false;
 
-            if (lastMonth == 12 && monthNR == 1)
+            if (lastMonth == 12 && monthNr == 1)
             {
                 result = true;
             }
-            else if (monthNR == lastMonth + 1)
+            else if (monthNr == lastMonth + 1)
             {
                 result = true;
             }
@@ -76,9 +75,9 @@ namespace Admin.Config
             return result;
         }
 
-        private void InitializeYearsAndMonths(IEnumerable<AssociationExpenses> defaultEE)
+        private void InitializeYearsAndMonths(IEnumerable<AssociationExpenses> defaultEe)
         {
-            var ee = defaultEE.LastOrDefault();
+            var ee = defaultEe.LastOrDefault();
             int year = 2010;
             int month = 0;
             if (ee != null)
@@ -120,15 +119,15 @@ namespace Admin.Config
                     int defaultYear = 2017;
                     int defaultMonth = 1;
 
-                    var defaultEE = AssociationExpensesManager.GetFromLastestOpenedMonth(estate.Id);
-                    if (defaultEE.Count() > 0)
+                    var defaultEe = AssociationExpensesManager.GetFromLastestOpenedMonth(estate.Id);
+                    if (defaultEe.Any())
                     {
-                        defaultYear = defaultEE.FirstOrDefault().Year;
-                        defaultMonth = defaultEE.FirstOrDefault().Month;
+                        defaultYear = defaultEe.FirstOrDefault().Year;
+                        defaultMonth = defaultEe.FirstOrDefault().Month;
                     }
                     var eeAlsoDisabled = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(estate.Id, defaultYear, defaultMonth);
 
-                    IEnumerable<Administratoro.DAL.Expenses> expenses = ExpensesManager.GetAllExpenses();
+                    IEnumerable<Expenses> expenses = ExpensesManager.GetAllExpenses();
                     var ee = AssociationExpensesManager.GetByMonthAndYearNotDisabled(estate.Id, defaultYear, defaultMonth);
 
                     TableRow defaultRow = new TableRow();
@@ -175,7 +174,7 @@ namespace Admin.Config
                         CheckBox esexExists = new CheckBox();
                         esexExists.AutoPostBack = false;
                         esexExists.ID = String.Format("expense{0}", expense.Id);
-                        esexExists.Checked = isExpenseSelected(expense, defaultEE);
+                        esexExists.Checked = IsExpenseSelected(expense, defaultEe);
                         expenseExists.Controls.Add(esexExists);
                         row.Cells.Add(expenseExists);
 
@@ -193,7 +192,7 @@ namespace Admin.Config
                         {
                             AssociationExpenses esex = eeAlsoDisabled.FirstOrDefault(s => s.Id_Expense == expense.Id);
 
-                            var selected1 = isDplExpenseTypesSelected(esex, ExpenseType.PerIndex, expense.LegalType);
+                            var selected1 = IsDplExpenseTypesSelected(esex, ExpenseType.PerIndex, expense.LegalType);
                             dp.Items.Add(new ListItem
                             {
                                 Value = ((int)ExpenseType.PerIndex).ToString(),
@@ -201,7 +200,7 @@ namespace Admin.Config
                                 Selected = selected1
                             });
 
-                            var selected2 = isDplExpenseTypesSelected(esex, ExpenseType.PerCotaIndiviza, expense.LegalType);
+                            var selected2 = IsDplExpenseTypesSelected(esex, ExpenseType.PerCotaIndiviza, expense.LegalType);
                             dp.Items.Add(new ListItem
                             {
                                 Value = ((int)ExpenseType.PerCotaIndiviza).ToString(),
@@ -209,7 +208,7 @@ namespace Admin.Config
                                 Selected = selected2
                             });
 
-                            var selected3 = isDplExpenseTypesSelected(esex, ExpenseType.PerNrTenants, expense.LegalType);
+                            var selected3 = IsDplExpenseTypesSelected(esex, ExpenseType.PerNrTenants, expense.LegalType);
                             dp.Items.Add(new ListItem
                             {
                                 Value = ((int)ExpenseType.PerNrTenants).ToString(),
@@ -217,7 +216,7 @@ namespace Admin.Config
                                 Selected = selected3
                             });
 
-                            var selected4 = isDplExpenseTypesSelected(esex, ExpenseType.PerApartament, expense.LegalType);
+                            var selected4 = IsDplExpenseTypesSelected(esex, ExpenseType.PerApartament, expense.LegalType);
                             dp.Items.Add(new ListItem
                             {
                                 Value = ((int)ExpenseType.PerApartament).ToString(),
@@ -243,7 +242,7 @@ namespace Admin.Config
                             TableCell tcStairCase = new TableCell();
                             CheckBox stairCaseSplit = new CheckBox();
                             stairCaseSplit.AutoPostBack = false;
-                            stairCaseSplit.Checked = isStairCaseSplitSelected(expense, ee, defaultYear, defaultMonth);
+                            stairCaseSplit.Checked = IsStairCaseSplitSelected(expense, ee, defaultYear, defaultMonth);
                             tcStairCase.Controls.Add(stairCaseSplit);
                             row.Cells.Add(tcStairCase);
                         }
@@ -254,21 +253,15 @@ namespace Admin.Config
             }
         }
 
-        private static bool isStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
+        private static bool IsStairCaseSplitSelected(Expenses expense, IEnumerable<AssociationExpenses> ee, int year, int month)
         {
-            bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year &&
-                !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value).Any())
-            {
-                result = true;
-            }
-
-            return result;
+            return ee.Any(e => e.Id_Expense == expense.Id && e.Month == month && e.Year == year &&
+                !e.WasDisabled && e.SplitPerStairCase.HasValue && e.SplitPerStairCase.Value);
         }
 
-        private static bool isDplExpenseTypesSelected(Administratoro.DAL.AssociationExpenses associationExpense, ExpenseType expenseType, int? expenseLegalType)
+        private static bool IsDplExpenseTypesSelected(Administratoro.DAL.AssociationExpenses associationExpense, ExpenseType expenseType, int? expenseLegalType)
         {
-            bool result = false;
+            var result = false;
 
             if (associationExpense != null)
             {
@@ -285,22 +278,16 @@ namespace Admin.Config
             return result;
         }
 
-        private static bool isExpenseSelected(Administratoro.DAL.Expenses expense, IEnumerable<AssociationExpenses> ee)
+        private static bool IsExpenseSelected(Expenses expense, IEnumerable<AssociationExpenses> ee)
         {
-            bool result = false;
-            if (ee.Where(e => e.Id_Expense == expense.Id).Any())
-            {
-                result = true;
-            }
-
-            return result;
+            return ee.Any(e => e.Id_Expense == expense.Id);
         }
 
         protected void btnOpening_Click(object sender, EventArgs e)
         {
             lblMessage.Attributes.Add("style", "");
-            int year = drpOpeningYear.SelectedValue.ToNullableInt().Value;
-            int month = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
+            var year = drpOpeningYear.SelectedValue.ToNullableInt().Value;
+            var month = drpOpeningMonth.SelectedValue.ToNullableInt().Value;
 
             var ee = AssociationExpensesManager.GetAllAssociationExpensesByMonthAndYearIncludingDisabled(Association.Id, year, month);
 
@@ -310,7 +297,7 @@ namespace Admin.Config
                 lblMessage.Attributes.Add("style", "color: red");
                 return;
             }
-            IEnumerable<AssociationExpenses> oldEE = AssociationExpensesManager.GetFromLastestOpenedMonth(Association.Id);
+            IEnumerable<AssociationExpenses> oldEe = AssociationExpensesManager.GetFromLastestOpenedMonth(Association.Id);
 
             foreach (TableRow row in tblMonthlyExpenses.Rows)
             {
@@ -340,7 +327,7 @@ namespace Admin.Config
                             {
                                 AssociationExpenses newEe = AssociationExpensesManager.Add(Association.Id, expenseId,
                                     month, year, drpExpenseType.SelectedValue, cbIsStairCaseSplitSelected);
-                                AssociationExpensesManager.UpdatePricePerUnitDefaultPreviousMonth(newEe, oldEE);
+                                AssociationExpensesManager.UpdatePricePerUnitDefaultPreviousMonth(newEe, oldEe);
                             }
                         }
                     }

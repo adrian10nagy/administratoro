@@ -1,9 +1,9 @@
 ﻿
 namespace Administratoro.BL.Managers
 {
-    using Administratoro.BL.Models;
-    using Administratoro.BL.Constants;
-    using Administratoro.DAL;
+    using Models;
+    using Constants;
+    using DAL;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -47,14 +47,14 @@ namespace Administratoro.BL.Managers
 
         public static IEnumerable<AssociationExpenses> GetFromLastestOpenedMonth(int associationId, bool shouldRefresh = false)
         {
-            if (GetContext(shouldRefresh).AssociationExpenses.Count() > 0)
+            if (GetContext(shouldRefresh).AssociationExpenses.Any())
             {
-                int? maxYear = GetContext(shouldRefresh).AssociationExpenses.Max(i => i.Year);
-                if (maxYear.HasValue)
+                int maxYear = GetContext(shouldRefresh).AssociationExpenses.Max(i => i.Year);
+                if (maxYear != 0)
                 {
                     List<AssociationExpenses> eeFromMaxYear = GetContext(shouldRefresh).AssociationExpenses.Where(c => c.Year == maxYear && c.Id_Estate == associationId).ToList();
 
-                    if (eeFromMaxYear != null && eeFromMaxYear.Count > 0)
+                    if (eeFromMaxYear.Count > 0)
                     {
                         int maxMonth = eeFromMaxYear.Max(i => i.Month);
 
@@ -144,7 +144,7 @@ namespace Administratoro.BL.Managers
 
             foreach (var expense in expenses)
             {
-                AssociationExpenses ee = null;
+                AssociationExpenses ee;
                 ee = new AssociationExpenses
                 {
                     Id_Expense = expense.Key,
@@ -184,13 +184,13 @@ namespace Administratoro.BL.Managers
 
         public static void UpdatePricePerUnit(int idAssociationExpense, decimal? newPricePerUnit, int? stairCase)
         {
-            UnitPricesManager.Update(stairCase, idAssociationExpense, newPricePerUnit);
+            UnitPricesManager.AddOrUpdate(stairCase, idAssociationExpense, newPricePerUnit);
             ApartmentExpensesManager.UpdateValueForPriceUpdate(idAssociationExpense, newPricePerUnit);
         }
 
         public static void UpdatePricePerUnit(int idAssociationExpense, List<InvoiceSubcategories> invoiceSubcategories)
         {
-            var associationExpense = AssociationExpensesManager.GetByIdNotSpecialtype(idAssociationExpense);
+            var associationExpense = GetByIdNotSpecialtype(idAssociationExpense);
 
             if (associationExpense != null)
             {
@@ -212,7 +212,7 @@ namespace Administratoro.BL.Managers
         {
             decimal? result = null;
             Invoices invoice = InvoicesManager.GetByAssociationExpenseForExpense(associationExpense, Expense.ApaRece);
-            var coldWAtherExpense = AssociationExpensesManager.GetAssociationExpense(associationExpense.Id_Estate, (int)Expense.ApaRece, associationExpense.Year, associationExpense.Month);
+            var coldWAtherExpense = GetAssociationExpense(associationExpense.Id_Estate, (int)Expense.ApaRece, associationExpense.Year, associationExpense.Month);
             if (invoice != null)
             {
                 foreach (var invoiceSubcategory in invoiceSubcategories.Where(i => i.Id_subCategType == (int)InvoiceSubcategoryType.PreparatApaCalda))
@@ -232,6 +232,7 @@ namespace Administratoro.BL.Managers
                                 {
                                     var newPricePerUnit = coldWatherUnitPrice + (invoiceSubcategory.Value.Value + invoiceSubcategory.VAT.Value) / difference;
                                     UpdatePricePerUnit(associationExpense.Id, newPricePerUnit, assCounterStairCase.Id_StairCase);
+                                    result = newPricePerUnit;
                                 }
                             }
                         }
@@ -280,15 +281,15 @@ namespace Administratoro.BL.Managers
                 .Select(s => new YearMonth { Year = s.Year, Month = s.Month }).Distinct().OrderBy(ee => ee.Year).ToList();
         }
 
-        public static void UpdatePricePerUnitDefaultPreviousMonth(AssociationExpenses newEE, IEnumerable<AssociationExpenses> oldEEs)
+        public static void UpdatePricePerUnitDefaultPreviousMonth(AssociationExpenses newEe, IEnumerable<AssociationExpenses> oldEEs)
         {
-            if (newEE != null)
+            if (newEe != null)
             {
-                AssociationExpenses oldEE = oldEEs.FirstOrDefault(ee => ee.Id_Expense == newEE.Id_Expense && !ee.Expenses.specialType.HasValue);
-                if (oldEE != null && oldEE.Id_ExpenseType == (int)ExpenseType.PerIndex)
+                AssociationExpenses oldEe = oldEEs.FirstOrDefault(ee => ee.Id_Expense == newEe.Id_Expense && !ee.Expenses.specialType.HasValue);
+                if (oldEe != null && oldEe.Id_ExpenseType == (int)ExpenseType.PerIndex)
                 {
                     //UpdatePricePerUnit(newEE.Id, oldEE.PricePerExpenseUnit);
-                    UpdateRedistributeMethod(newEE.Id, oldEE.RedistributeType);
+                    UpdateRedistributeMethod(newEe.Id, oldEe.RedistributeType);
                 }
             }
         }
@@ -328,7 +329,7 @@ namespace Administratoro.BL.Managers
 
         #region statusOfinvoiceFor Split -NoSplit
 
-        private static string StatusOfInvoicesForSplit(AssociationExpenses associationExpense, string result, string redistributeValue, string percentage)
+        private static string StatusOfInvoices(AssociationExpenses associationExpense, string result, string redistributeValue, string percentage)
         {
             if (associationExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
             {
@@ -395,68 +396,7 @@ namespace Administratoro.BL.Managers
         {
             return (string.IsNullOrEmpty(percentage) || percentage == "100");
         }
-
-        private static string StatusOfInvoicesForNoSplit(string result, string redistributeValue, string percentage, AssociationExpenses associationExpense)
-        {
-            if (associationExpense.ExpenseTypes.Id == (int)ExpenseType.PerIndex)
-            {
-                if (associationExpense != null && associationExpense.Invoices.All(i => i.Value.HasValue) && associationExpense.Invoices.Count > 0 && (string.IsNullOrEmpty(percentage) || percentage == "100") &&
-                    (associationExpense.RedistributeType.HasValue || string.IsNullOrEmpty(redistributeValue) || redistributeValue == "0,00"))
-                {
-                    result = "<i class='fa fa-check'></i> 100%";
-                }
-                else if (!associationExpense.RedistributeType.HasValue && associationExpense.Invoices.Any(i => !i.Value.HasValue) && percentage == "0")
-                {
-                    result = "Adaugă factura, cheltuielile! 0%";
-                }
-                else if ((string.IsNullOrEmpty(percentage) || percentage != "100"))
-                {
-                    result = "Cheltuieli neadăugate! 20%";
-                }
-                else if (associationExpense.Invoices.Any(i => !i.Value.HasValue) || associationExpense.Invoices.Count == 0)
-                {
-                    result = "Facturi neadăugate! 50%";
-                }
-                else if (!associationExpense.RedistributeType.HasValue)
-                {
-                    result = "Redistribuie cheltuiala! 80%";
-                }
-            }
-            else if (associationExpense.ExpenseTypes.Id == (int)ExpenseType.Individual)
-            {
-                if (associationExpense.ApartmentExpenses.Any(te => !te.Value.HasValue) || associationExpense.Associations.Apartments.Where(t => t.HasHeatHelp.HasValue).Count() != associationExpense.ApartmentExpenses.Count())
-                {
-                    result = "Cheltuieli neadăugate! 0%";
-                }
-                else
-                {
-                    result = "<i class='fa fa-check'></i> 100%";
-                }
-            }
-            else
-            {
-                if (associationExpense != null && associationExpense.Invoices.All(i => i.Value.HasValue) && associationExpense.Invoices.Count > 0)
-                {
-                    result = "<i class='fa fa-check'></i> 100%";
-                }
-                else if (associationExpense.Invoices.Any(i => !i.Value.HasValue) || associationExpense.Invoices.Count == 0)
-                {
-                    result = "Facturi neadăugate! 50%";
-                }
-                else if (!associationExpense.RedistributeType.HasValue)
-                {
-                    result = "Redistribuie cheltuiala! 80%";
-                }
-            }
-
-            return result;
-        }
-
-        public static ExpensesCompletedStatus StatusOfInvoicesForNoSplit2(string result, string redistributeValue, string percentage, AssociationExpenses associationExpense)
-        {
-            return ExpensesCompletedStatus.All;
-        }
-
+        
         public static string StatusOfInvoices(AssociationExpenses associationExpense, bool isExpensePerIndex)
         {
             string result = string.Empty;
@@ -470,7 +410,7 @@ namespace Administratoro.BL.Managers
 
             //if (estateExpense.SplitPerStairCase.HasValue && estateExpense.SplitPerStairCase.Value)
             //{
-            result = StatusOfInvoicesForSplit(associationExpense, result, redistributeValue, percentage);
+            result = StatusOfInvoices(associationExpense, result, redistributeValue, percentage);
             //}
             //else
             //{
@@ -482,7 +422,7 @@ namespace Administratoro.BL.Managers
 
         public static string GetPercentageAsString(AssociationExpenses associationExpense)
         {
-            string percentage = string.Empty;
+            string percentage;
 
             int allApartmentExpenses = associationExpense.ApartmentExpenses.Count();
 
@@ -500,7 +440,7 @@ namespace Administratoro.BL.Managers
 
         public static decimal GetPercentage(AssociationExpenses associationExpense)
         {
-            decimal percentage = 0.0m;
+            decimal percentage;
 
             int allApartmentExpenses = associationExpense.ApartmentExpenses.Count();
 
@@ -543,8 +483,8 @@ namespace Administratoro.BL.Managers
 
         public static void ConfigurePerIndex(Associations association, int year, int month)
         {
-            IEnumerable<Administratoro.DAL.Expenses> allExpenses = ExpensesManager.GetAllExpenses();
-            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(association.Id, year, month);
+            IEnumerable<Expenses> allExpenses = ExpensesManager.GetAllExpenses();
+            var associationExpenses = GetByMonthAndYearNotDisabled(association.Id, year, month);
 
             foreach (Expenses expense in allExpenses)
             {
@@ -561,9 +501,9 @@ namespace Administratoro.BL.Managers
 
         public static void OpenCloseMonth(int association, int year, int month, bool shouldClose = true)
         {
-            List<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
+            List<AssociationExpenses> allEe = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
                 ee.Year == year && ee.Month == month).ToList();
-            foreach (var associationExpense in allEE)
+            foreach (var associationExpense in allEe)
             {
                 associationExpense.IsClosed = shouldClose;
                 GetContext().Entry(associationExpense).CurrentValues.SetValues(associationExpense);
@@ -576,11 +516,11 @@ namespace Administratoro.BL.Managers
         {
             List<Expense> result = new List<Expense>();
 
-            IQueryable<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
+            IQueryable<AssociationExpenses> allEe = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
                 ee.Year == year && ee.Month == month);
-            foreach (var associationExpense in allEE)
+            foreach (var associationExpense in allEe)
             {
-                if (associationExpense.Invoices.Count() == 0 || associationExpense.Invoices.Any(i => !i.Value.HasValue))
+                if (!associationExpense.Invoices.Any() || associationExpense.Invoices.Any(i => !i.Value.HasValue))
                 {
                     result.Add((Expense)associationExpense.Id_Expense);
                     continue;
@@ -636,21 +576,21 @@ namespace Administratoro.BL.Managers
 
         public static bool IsMonthClosed(int association, int year, int month)
         {
-            List<AssociationExpenses> allEE = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
+            List<AssociationExpenses> allEe = GetContext(true).AssociationExpenses.Where(ee => ee.Id_Estate == association &&
                 ee.Year == year && ee.Month == month).ToList();
-            if (allEE.Count() == 0)
+            if (!allEe.Any())
             {
                 return false;
             }
 
-            return allEE.All(e => e.IsClosed.HasValue && e.IsClosed.Value);
+            return allEe.All(e => e.IsClosed.HasValue && e.IsClosed.Value);
         }
 
         public static IEnumerable<Apartments> GetApartmentsNrThatShouldRedistributeTo(int associationExpenseId)
         {
             IEnumerable<Apartments> result = new List<Apartments>();
 
-            var associationExpense = AssociationExpensesManager.GetById(associationExpenseId);
+            var associationExpense = GetById(associationExpenseId);
             if (associationExpense != null)
             {
                 result = associationExpense.ApartmentExpenses.Where(te => te.Apartments.AssociationCountersApartment.Any(ac => ac.AssociationCounters.Id_Expense == associationExpense.Id_Expense)).Select(te => te.Apartments).ToList();

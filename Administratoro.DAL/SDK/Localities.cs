@@ -1,9 +1,7 @@
 ﻿
 namespace Administratoro.DAL.SDK
 {
-    using DAL;
-    using DAL.Repositories;
-    using System.Collections;
+    using Repositories;
     using System.Collections.Generic;
 
     public class Localities

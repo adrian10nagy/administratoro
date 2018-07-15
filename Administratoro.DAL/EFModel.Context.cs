@@ -37,6 +37,8 @@ namespace Administratoro.DAL
         public virtual DbSet<AssociationExpensesRedistributionTypes> AssociationExpensesRedistributionTypes { get; set; }
         public virtual DbSet<AssociationExpensesUnitPrices> AssociationExpensesUnitPrices { get; set; }
         public virtual DbSet<Associations> Associations { get; set; }
+        public virtual DbSet<DocumentApartmentFlyers> DocumentApartmentFlyers { get; set; }
+        public virtual DbSet<DocumentAssociationMonthlyExpenses> DocumentAssociationMonthlyExpenses { get; set; }
         public virtual DbSet<ErrorLogs> ErrorLogs { get; set; }
         public virtual DbSet<Expenses> Expenses { get; set; }
         public virtual DbSet<ExpenseTypes> ExpenseTypes { get; set; }
