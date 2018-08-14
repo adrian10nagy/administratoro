@@ -34,6 +34,7 @@ namespace Administratoro.DAL
         public string FiscalCode { get; set; }
         public Nullable<decimal> CotaIndivizaAparments { get; set; }
         public Nullable<bool> HasRoundUpColumn { get; set; }
+        public Nullable<decimal> penaltyRate { get; set; }
     
         public virtual ICollection<Apartments> Apartments { get; set; }
         public virtual ICollection<AssociationCounters> AssociationCounters { get; set; }

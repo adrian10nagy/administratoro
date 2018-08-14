@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Monthly.aspx.cs" Inherits="Admin.Expenses.CurrentMonth" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Monthly.aspx.cs" Inherits="Admin.Reports.CurrentMonth" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainStyle" runat="server">
     <webopt:BundleReference runat="server" Path="~/Content/Expenses" />

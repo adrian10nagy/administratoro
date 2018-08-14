@@ -560,8 +560,8 @@ namespace Admin.Expenses
             }
             else
             {
-                bool shouldMonthClose = btnCloseMonth.CommandArgument == "0" ? false : true;
-                AssociationExpensesManager.OpenCloseMonth(Association.Id, year(), month(), shouldMonthClose);
+                var shouldMonthClose = btnCloseMonth.CommandArgument != "0";
+                AssociationExpensesManager.ConfigureOpenCloseMonth(Association.Id, year(), month(), shouldMonthClose);
                 Response.Redirect(Request.RawUrl);
             }
         }

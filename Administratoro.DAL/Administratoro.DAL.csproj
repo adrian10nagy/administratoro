@@ -55,6 +55,9 @@
     <Compile Include="Apartments.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ApartmentsDebt.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="AssociationCounters.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
@@ -74,6 +77,9 @@
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Associations.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DebtTypes.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DocumentApartmentFlyers.cs">
@@ -143,15 +149,20 @@
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistriesHome.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\Apartment.cs" />
     <Compile Include="Repositories\Document.cs" />
     <Compile Include="Repositories\Locality.cs" />
     <Compile Include="Repositories\Partner.cs" />
     <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="Repositories\RegistryHome.cs" />
     <Compile Include="SDK\Apartments.cs" />
     <Compile Include="SDK\Kit.cs" />
     <Compile Include="SDK\Localities.cs" />
     <Compile Include="SDK\Partners.cs" />
+    <Compile Include="SDK\RegistriesHome.cs" />
     <Compile Include="Settings\Configure.cs" />
     <Compile Include="Settings\SqlDatabase.cs" />
     <Compile Include="sp_helpdiagramdefinition_Result.cs">

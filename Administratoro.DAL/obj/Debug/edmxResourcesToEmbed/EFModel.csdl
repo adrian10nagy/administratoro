@@ -34,6 +34,7 @@
     <EntitySet Name="ApartmentExpenses" EntityType="AdministratoroModel.ApartmentExpenses" />
     <EntitySet Name="ApartmentPersons" EntityType="AdministratoroModel.ApartmentPersons" />
     <EntitySet Name="Apartments" EntityType="AdministratoroModel.Apartments" />
+    <EntitySet Name="ApartmentsDebt" EntityType="AdministratoroModel.ApartmentsDebt" />
     <EntitySet Name="AssociationCounters" EntityType="AdministratoroModel.AssociationCounters" />
     <EntitySet Name="AssociationCountersApartment" EntityType="AdministratoroModel.AssociationCountersApartment" />
     <EntitySet Name="AssociationCountersStairCase" EntityType="AdministratoroModel.AssociationCountersStairCase" />
@@ -41,6 +42,7 @@
     <EntitySet Name="AssociationExpensesRedistributionTypes" EntityType="AdministratoroModel.AssociationExpensesRedistributionTypes" />
     <EntitySet Name="AssociationExpensesUnitPrices" EntityType="AdministratoroModel.AssociationExpensesUnitPrices" />
     <EntitySet Name="Associations" EntityType="AdministratoroModel.Associations" />
+    <EntitySet Name="DebtTypes" EntityType="AdministratoroModel.DebtTypes" />
     <EntitySet Name="DocumentApartmentFlyers" EntityType="AdministratoroModel.DocumentApartmentFlyers" />
     <EntitySet Name="DocumentAssociationMonthlyExpenses" EntityType="AdministratoroModel.DocumentAssociationMonthlyExpenses" />
     <EntitySet Name="ErrorLogs" EntityType="AdministratoroModel.ErrorLogs" />
@@ -56,6 +58,7 @@
     <EntitySet Name="Partners" EntityType="AdministratoroModel.Partners" />
     <EntitySet Name="PartnerTypes" EntityType="AdministratoroModel.PartnerTypes" />
     <EntitySet Name="Persons" EntityType="AdministratoroModel.Persons" />
+    <EntitySet Name="RegistriesHome" EntityType="AdministratoroModel.RegistriesHome" />
     <EntitySet Name="StairCases" EntityType="AdministratoroModel.StairCases" />
     <EntitySet Name="sysdiagrams" EntityType="AdministratoroModel.sysdiagrams" />
     <AssociationSet Name="FK__TenantExp__Id_Es__0F624AF8" Association="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8">
@@ -74,6 +77,10 @@
       <End Role="Apartments" EntitySet="Apartments" />
       <End Role="ApartmentPersons" EntitySet="ApartmentPersons" />
     </AssociationSet>
+    <AssociationSet Name="FK__Apartment__Id_Ap__00750D23" Association="AdministratoroModel.FK__Apartment__Id_Ap__00750D23">
+      <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="ApartmentsDebt" EntitySet="ApartmentsDebt" />
+    </AssociationSet>
     <AssociationSet Name="FK__Apartment__Id_Ap__1B9317B3" Association="AdministratoroModel.FK__Apartment__Id_Ap__1B9317B3">
       <End Role="Apartments" EntitySet="Apartments" />
       <End Role="AssociationCountersApartment" EntitySet="AssociationCountersApartment" />
@@ -82,6 +89,10 @@
       <End Role="Apartments" EntitySet="Apartments" />
       <End Role="DocumentApartmentFlyers" EntitySet="DocumentApartmentFlyers" />
     </AssociationSet>
+    <AssociationSet Name="FK__Registrie__Id_ap__0EC32C7A" Association="AdministratoroModel.FK__Registrie__Id_ap__0EC32C7A">
+      <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="RegistriesHome" EntitySet="RegistriesHome" />
+    </AssociationSet>
     <AssociationSet Name="FK__Tenants__id_Esta__5DCAEF64" Association="AdministratoroModel.FK__Tenants__id_Esta__5DCAEF64">
       <End Role="Associations" EntitySet="Associations" />
       <End Role="Apartments" EntitySet="Apartments" />
@@ -89,6 +100,10 @@
     <AssociationSet Name="FK__Tenants__Id_Stai__51300E55" Association="AdministratoroModel.FK__Tenants__Id_Stai__51300E55">
       <End Role="StairCases" EntitySet="StairCases" />
       <End Role="Apartments" EntitySet="Apartments" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Apartment__Id_de__0169315C" Association="AdministratoroModel.FK__Apartment__Id_de__0169315C">
+      <End Role="DebtTypes" EntitySet="DebtTypes" />
+      <End Role="ApartmentsDebt" EntitySet="ApartmentsDebt" />
     </AssociationSet>
     <AssociationSet Name="FK__Apartment__Id_Co__1C873BEC" Association="AdministratoroModel.FK__Apartment__Id_Co__1C873BEC">
       <End Role="AssociationCounters" EntitySet="AssociationCounters" />
@@ -265,10 +280,27 @@
     <Property Name="HasHeatHelp" Type="Boolean" />
     <NavigationProperty Name="ApartmentExpenses" Relationship="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" FromRole="Apartments" ToRole="ApartmentExpenses" />
     <NavigationProperty Name="ApartmentPersons" Relationship="AdministratoroModel.FK__TenantPer__Id_Te__4CA06362" FromRole="Apartments" ToRole="ApartmentPersons" />
+    <NavigationProperty Name="ApartmentsDebt" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__00750D23" FromRole="Apartments" ToRole="ApartmentsDebt" />
     <NavigationProperty Name="AssociationCountersApartment" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__1B9317B3" FromRole="Apartments" ToRole="AssociationCountersApartment" />
     <NavigationProperty Name="DocumentApartmentFlyers" Relationship="AdministratoroModel.FK__DocumentA__Apart__5B438874" FromRole="Apartments" ToRole="DocumentApartmentFlyers" />
+    <NavigationProperty Name="RegistriesHome" Relationship="AdministratoroModel.FK__Registrie__Id_ap__0EC32C7A" FromRole="Apartments" ToRole="RegistriesHome" />
     <NavigationProperty Name="Associations" Relationship="AdministratoroModel.FK__Tenants__id_Esta__5DCAEF64" FromRole="Apartments" ToRole="Associations" />
     <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__Tenants__Id_Stai__51300E55" FromRole="Apartments" ToRole="StairCases" />
+  </EntityType>
+  <EntityType Name="ApartmentsDebt">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Value" Type="Decimal" Precision="30" Scale="4" />
+    <Property Name="Year" Type="Int32" Nullable="false" />
+    <Property Name="Month" Type="Int32" Nullable="false" />
+    <Property Name="IsPayed" Type="Boolean" Nullable="false" />
+    <Property Name="Id_Apartament" Type="Int32" Nullable="false" />
+    <Property Name="Id_debtType" Type="Int32" Nullable="false" />
+    <Property Name="RemainingToPay" Type="Decimal" Precision="30" Scale="4" />
+    <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__00750D23" FromRole="ApartmentsDebt" ToRole="Apartments" />
+    <NavigationProperty Name="DebtTypes" Relationship="AdministratoroModel.FK__Apartment__Id_de__0169315C" FromRole="ApartmentsDebt" ToRole="DebtTypes" />
   </EntityType>
   <EntityType Name="AssociationCounters">
     <Key>
@@ -366,6 +398,7 @@
     <Property Name="FiscalCode" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
     <Property Name="CotaIndivizaAparments" Type="Decimal" Precision="14" Scale="4" />
     <Property Name="HasRoundUpColumn" Type="Boolean" />
+    <Property Name="penaltyRate" Type="Decimal" Precision="7" Scale="4" />
     <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__Tenants__id_Esta__5DCAEF64" FromRole="Associations" ToRole="Apartments" />
     <NavigationProperty Name="AssociationCounters" Relationship="AdministratoroModel.FK__Counters__Id_Est__0B5CAFEA" FromRole="Associations" ToRole="AssociationCounters" />
     <NavigationProperty Name="AssociationExpenses" Relationship="AdministratoroModel.FK__EstateExt__Id_Es__76969D2E" FromRole="Associations" ToRole="AssociationExpenses" />
@@ -373,6 +406,14 @@
     <NavigationProperty Name="DocumentAssociationMonthlyExpenses" Relationship="AdministratoroModel.FK__DocumentA__Assoc__5E1FF51F" FromRole="Associations" ToRole="DocumentAssociationMonthlyExpenses" />
     <NavigationProperty Name="Partners" Relationship="AdministratoroModel.FK__Estates__Id_Part__5CD6CB2B" FromRole="Associations" ToRole="Partners" />
     <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__StairCase__Id_Es__4F47C5E3" FromRole="Associations" ToRole="StairCases" />
+  </EntityType>
+  <EntityType Name="DebtTypes">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="ApartmentsDebt" Relationship="AdministratoroModel.FK__Apartment__Id_de__0169315C" FromRole="DebtTypes" ToRole="ApartmentsDebt" />
   </EntityType>
   <EntityType Name="DocumentApartmentFlyers">
     <Key>
@@ -557,6 +598,20 @@
     <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="ApartmentPersons" Relationship="AdministratoroModel.FK__TenantPer__Id_Pe__4BAC3F29" FromRole="Persons" ToRole="ApartmentPersons" />
   </EntityType>
+  <EntityType Name="RegistriesHome">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="DocumentNr" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Explanations" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Income" Type="Decimal" Precision="30" Scale="4" />
+    <Property Name="Outcome" Type="Decimal" Precision="30" Scale="4" />
+    <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Id_apartment" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__Registrie__Id_ap__0EC32C7A" FromRole="RegistriesHome" ToRole="Apartments" />
+  </EntityType>
   <EntityType Name="StairCases">
     <Key>
       <PropertyRef Name="Id" />
@@ -628,6 +683,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__Apartment__Id_Ap__00750D23">
+    <End Type="AdministratoroModel.Apartments" Role="Apartments" Multiplicity="1" />
+    <End Type="AdministratoroModel.ApartmentsDebt" Role="ApartmentsDebt" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Apartments">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="ApartmentsDebt">
+        <PropertyRef Name="Id_Apartament" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__Apartment__Id_Ap__1B9317B3">
     <End Type="AdministratoroModel.Apartments" Role="Apartments" Multiplicity="1" />
     <End Type="AdministratoroModel.AssociationCountersApartment" Role="AssociationCountersApartment" Multiplicity="*" />
@@ -652,6 +719,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__Registrie__Id_ap__0EC32C7A">
+    <End Type="AdministratoroModel.Apartments" Role="Apartments" Multiplicity="1" />
+    <End Type="AdministratoroModel.RegistriesHome" Role="RegistriesHome" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Apartments">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="RegistriesHome">
+        <PropertyRef Name="Id_apartment" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__Tenants__id_Esta__5DCAEF64">
     <End Type="AdministratoroModel.Associations" Role="Associations" Multiplicity="1" />
     <End Type="AdministratoroModel.Apartments" Role="Apartments" Multiplicity="*" />
@@ -673,6 +752,18 @@
       </Principal>
       <Dependent Role="Apartments">
         <PropertyRef Name="Id_StairCase" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Apartment__Id_de__0169315C">
+    <End Type="AdministratoroModel.DebtTypes" Role="DebtTypes" Multiplicity="1" />
+    <End Type="AdministratoroModel.ApartmentsDebt" Role="ApartmentsDebt" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DebtTypes">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="ApartmentsDebt">
+        <PropertyRef Name="Id_debtType" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

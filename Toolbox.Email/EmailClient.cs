@@ -5,6 +5,7 @@ namespace Toolbox.Email
     using System.IO;
     using System.Net;
     using System.Net.Mail;
+    using System.Configuration;
 
     public static class EmailClient
     {
@@ -31,18 +32,21 @@ namespace Toolbox.Email
 
         private static MailMessage InitializeMail(string addressFrom, string addressTo, string mailSubject, string mailBody, string filePath)
         {
-            MailMessage mail = new MailMessage();
+            var mail = new MailMessage
+            {
+                From = new MailAddress(addressFrom),
+                Subject = mailSubject,
+                Body = mailBody,
+                IsBodyHtml = true
+            };
+
             mail.To.Add(new MailAddress(addressTo));
-            mail.From = new MailAddress(addressFrom);
-            mail.Subject = mailSubject;
-            mail.Body = mailBody;
-            mail.IsBodyHtml = true;
             if (File.Exists(filePath))
             {
                 mail.Attachments.Add(
                     new Attachment(filePath)
                     {
-
+                        
                     });
             }
             else
@@ -55,13 +59,16 @@ namespace Toolbox.Email
 
         private static SmtpClient InitializeClient()
         {
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("asociatie.online@gmail.com", "21decembrie");
+            SmtpClient client = new SmtpClient
+            {
+                Host = ConfigurationManager.AppSettings["EmailHost"],
+                Port = 587,
+                UseDefaultCredentials = false,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                EnableSsl = true,
+                Credentials = new NetworkCredential(ConfigurationManager.AppSettings["EmailAddress"], ConfigurationManager.AppSettings["EmailPassword"])
+            };
+
             return client;
         }
     }

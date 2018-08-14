@@ -40,8 +40,7 @@ namespace Administratoro.BL.Managers
 
         public static void UpdateStairs(Associations es, bool hasStairs)
         {
-            Associations associations;
-            associations = GetContext().Associations.FirstOrDefault(b => b.Id == es.Id);
+            Associations associations = GetContext().Associations.FirstOrDefault(b => b.Id == es.Id);
 
             if (associations != null)
             {
@@ -57,20 +56,18 @@ namespace Administratoro.BL.Managers
                 return;
             }
 
-            Associations associations;
-            associations = GetContext().Associations.FirstOrDefault(b => b.Id == association.Id);
+            Associations associations = GetContext().Associations.FirstOrDefault(b => b.Id == association.Id);
 
-            if (associations != null)
-            {
-                associations.Address = association.Address;
-                associations.BanckAccont = association.BanckAccont;
-                associations.CotaIndivizaAparments = association.CotaIndivizaAparments;
-                associations.FiscalCode = association.FiscalCode;
-                associations.HasStaircase = association.HasStaircase;
-                associations.Name = association.Name;
+            if (associations == null) return;
 
-                PerformUpdate(associations);
-            }
+            associations.Address = association.Address;
+            associations.BanckAccont = association.BanckAccont;
+            associations.CotaIndivizaAparments = association.CotaIndivizaAparments;
+            associations.FiscalCode = association.FiscalCode;
+            associations.HasStaircase = association.HasStaircase;
+            associations.Name = association.Name;
+
+            PerformUpdate(associations);
         }
 
         private static void PerformUpdate(Associations associations)
@@ -82,14 +79,22 @@ namespace Administratoro.BL.Managers
 
         public static void UpdateRoundUpColumn(Associations association, bool hasRoundCoulmn)
         {
-            Associations existingAssociation;
-            existingAssociation = GetContext().Associations.FirstOrDefault(b => b.Id == association.Id);
+            Associations existingAssociation = GetContext().Associations.FirstOrDefault(b => b.Id == association.Id);
 
-            if (existingAssociation != null)
-            {
-                existingAssociation.HasRoundUpColumn = hasRoundCoulmn;
-                PerformUpdate(existingAssociation);
-            }
+            if (existingAssociation == null) return;
+
+            existingAssociation.HasRoundUpColumn = hasRoundCoulmn;
+            PerformUpdate(existingAssociation);
+        }
+
+        public static void UpdatePenaltyRate(int associationId, decimal? penaltyRate)
+        {
+            Associations existingAssociation = GetContext().Associations.FirstOrDefault(b => b.Id == associationId);
+
+            if (existingAssociation == null) return;
+
+            existingAssociation.penaltyRate = penaltyRate;
+            PerformUpdate(existingAssociation);
         }
     }
 }

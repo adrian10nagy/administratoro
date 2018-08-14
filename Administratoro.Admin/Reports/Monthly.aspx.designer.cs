@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Admin.Expenses {
+namespace Admin.Reports {
     
     
     public partial class CurrentMonth {

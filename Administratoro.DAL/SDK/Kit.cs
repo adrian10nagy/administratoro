@@ -28,6 +28,7 @@ namespace Administratoro.DAL.SDK
         public ErrorLogs ErrorLogs { get { return new ErrorLogs(); } }
         public Partners Partners { get { return new Partners(); } }
         public Apartments Apartments { get { return new Apartments(); } }
+        public RegistriesHome RegistriesHome { get { return new RegistriesHome(); } }
         public Documents Documents { get { return new Documents(); } }
 
         public void Dispose()

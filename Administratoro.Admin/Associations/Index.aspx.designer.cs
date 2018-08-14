@@ -67,6 +67,24 @@ namespace Admin.Associations {
         protected global::System.Web.UI.WebControls.Button btnAssociationFiscalCode;
         
         /// <summary>
+        /// txtPenaltyRate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPenaltyRate;
+        
+        /// <summary>
+        /// btnPenaltyRate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnPenaltyRate;
+        
+        /// <summary>
         /// txtAssociationBanckAccount control.
         /// </summary>
         /// <remarks>

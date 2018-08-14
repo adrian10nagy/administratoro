@@ -17,6 +17,12 @@
     <asp:TextBox runat="server" ID="txtAssociationFiscalCode" Enabled="false"></asp:TextBox>
     <asp:Button runat="server" ID="btnAssociationFiscalCode" OnClick="btnAssociationFiscalCode_Click" Text="Modifică" />
     <br />
+    
+    <span class="associationsLabels">% Penelizarea pe zi de întârziere:</span>
+    <asp:TextBox runat="server" ID="txtPenaltyRate" Enabled="false"></asp:TextBox>
+    <asp:Button runat="server" ID="btnPenaltyRate" OnClick="btnPenaltyRate_OnClick" Text="Modifică" />
+    <br />
+
     <span class="associationsLabels">Cont bancar:</span>
     <asp:TextBox runat="server" ID="txtAssociationBanckAccount" Enabled="false"></asp:TextBox>
     <asp:Button runat="server" ID="btnAssociationBanckAccount" OnClick="btnAssociationBanckAccount_Click" Text="Modifică" />

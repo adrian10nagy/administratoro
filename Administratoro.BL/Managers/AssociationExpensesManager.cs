@@ -458,23 +458,23 @@ namespace Administratoro.BL.Managers
 
         private static string ExpensePercentageFilledInAsString(AssociationExpenses associationExpense, int apartmentsWithCounters)
         {
-            var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.IndexNew.HasValue);
-            var percentage = (((decimal)addedExpenses / (decimal)apartmentsWithCounters) * 100).ToString("0.##");
+            var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.Value.HasValue);
+            var percentage = ((addedExpenses / apartmentsWithCounters) * 100).ToString("0.##");
 
             return percentage;
         }
 
         private static decimal ExpensePercentageFilledIn(AssociationExpenses associationExpense, int apartmentsWithCounters)
         {
-            var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.IndexNew.HasValue);
-            var percentage = (((decimal)addedExpenses / (decimal)apartmentsWithCounters) * 100);
+            var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.Value.HasValue);
+            var percentage = ((addedExpenses / apartmentsWithCounters) * 100);
 
             return percentage;
         }
 
         public static string ExpensePercentageFilledInMessage(AssociationExpenses associationExpense)
         {
-            var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.IndexNew.HasValue);
+            var addedExpenses = associationExpense.ApartmentExpenses.Count(te => te.Value.HasValue);
 
             int apartmentsWithCountersOfThatExpense = associationExpense.ApartmentExpenses.Count();
 
@@ -498,6 +498,20 @@ namespace Administratoro.BL.Managers
         }
 
         #endregion
+
+        public static void ConfigureOpenCloseMonth(int associationId, int year, int month, bool shouldClose = true)
+        {
+            OpenCloseMonth(associationId, year, month, shouldClose);
+            if (shouldClose)
+            {
+                // add/edit
+                ApartmentDebtsManager.CalculateAndAddAll(associationId, year, month);
+            }
+            else
+            {
+                //remove
+            }
+        }
 
         public static void OpenCloseMonth(int association, int year, int month, bool shouldClose = true)
         {
@@ -616,6 +630,21 @@ namespace Administratoro.BL.Managers
             }
 
             return result;
+        }
+
+        public static void Remove(int Id)
+        {
+            var associationExpense = GetContext(true).AssociationExpenses.FirstOrDefault(i => i.Id == Id);
+
+            if (associationExpense == null || associationExpense.ApartmentExpenses.Count != 0 ||
+                associationExpense.Invoices.Count != 0 ||
+                associationExpense.AssociationExpensesUnitPrices.Count != 0)
+            {
+                return;
+            }
+
+            GetContext().AssociationExpenses.Remove(associationExpense);
+            GetContext().SaveChanges();
         }
     }
 }

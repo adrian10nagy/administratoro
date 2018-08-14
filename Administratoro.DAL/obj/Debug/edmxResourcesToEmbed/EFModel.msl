@@ -66,6 +66,20 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="ApartmentsDebt">
+      <EntityTypeMapping TypeName="AdministratoroModel.ApartmentsDebt">
+        <MappingFragment StoreEntitySet="ApartmentsDebt">
+          <ScalarProperty Name="RemainingToPay" ColumnName="RemainingToPay" />
+          <ScalarProperty Name="Id_debtType" ColumnName="Id_debtType" />
+          <ScalarProperty Name="Id_Apartament" ColumnName="Id_Apartament" />
+          <ScalarProperty Name="IsPayed" ColumnName="IsPayed" />
+          <ScalarProperty Name="Month" ColumnName="Month" />
+          <ScalarProperty Name="Year" ColumnName="Year" />
+          <ScalarProperty Name="Value" ColumnName="Value" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="AssociationCounters">
       <EntityTypeMapping TypeName="AdministratoroModel.AssociationCounters">
         <MappingFragment StoreEntitySet="AssociationCounters">
@@ -134,6 +148,7 @@
     <EntitySetMapping Name="Associations">
       <EntityTypeMapping TypeName="AdministratoroModel.Associations">
         <MappingFragment StoreEntitySet="Associations">
+          <ScalarProperty Name="penaltyRate" ColumnName="penaltyRate" />
           <ScalarProperty Name="HasRoundUpColumn" ColumnName="HasRoundUpColumn" />
           <ScalarProperty Name="CotaIndivizaAparments" ColumnName="CotaIndivizaAparments" />
           <ScalarProperty Name="FiscalCode" ColumnName="FiscalCode" />
@@ -142,6 +157,14 @@
           <ScalarProperty Name="Indiviza" ColumnName="Indiviza" />
           <ScalarProperty Name="Id_Partner" ColumnName="Id_Partner" />
           <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DebtTypes">
+      <EntityTypeMapping TypeName="AdministratoroModel.DebtTypes">
+        <MappingFragment StoreEntitySet="DebtTypes">
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>
@@ -309,6 +332,20 @@
           <ScalarProperty Name="Telephone" ColumnName="Telephone" />
           <ScalarProperty Name="Email" ColumnName="Email" />
           <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RegistriesHome">
+      <EntityTypeMapping TypeName="AdministratoroModel.RegistriesHome">
+        <MappingFragment StoreEntitySet="RegistriesHome">
+          <ScalarProperty Name="Id_apartment" ColumnName="Id_apartment" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Outcome" ColumnName="Outcome" />
+          <ScalarProperty Name="Income" ColumnName="Income" />
+          <ScalarProperty Name="Explanations" ColumnName="Explanations" />
+          <ScalarProperty Name="DocumentNr" ColumnName="DocumentNr" />
+          <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>
       </EntityTypeMapping>

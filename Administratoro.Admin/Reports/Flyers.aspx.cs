@@ -63,32 +63,7 @@ namespace Admin.Reports
 
         protected void btnEmail_Confirm_Click(object sender, EventArgs e)
         {
-            foreach (var apartment in Association.Apartments)
-            {
-                if (!string.IsNullOrEmpty(apartment.Email))
-                {
-                    var filePath = string.Format("C:\\Users\\Adrian\\Documents\\fluturasi\\p{0}.pdf", apartment.Number);
-
-                    string message = @"Buna ziua, <br> <br> 
-Vă  facem  cunoscut  că  s-au  afișat  listele  de  cheltuileli  aferente  lunii  mai  2018.<br> 
-Nota  de  plată  aferentă  apartamentului  dumneavoastră  este  anexata prezentului  mail.<br> 
-Vă  rugăm  să  efectuați  plata  în  contul  acociației  deschis  la  Banca  Transilvania  Cluj  cu  IBAN  RO13BTRLRONCRT0409298101  specificând  numărul  
-apartamentului  pentru  care  faceți  plata.  Pentru  încasari  în  numerar  vă  așteptăm  joi  19.07.2018  între  orele  19.30 - 21  la  etajul  tehnic.<br> <br> 
-Termenul  scadent  este  28.07.2018.<br> <br> 
-PS:<br> 
-<b>MIERCURI  11.07.2018, ORA   19.30</b>   SE  CONVOACĂ   <b>ADUNAREA  GENERALĂ</b>, CU  ORDINEA  DE  ZI:<br>
-1.RAPORT  DE  ACTIVITATE  COMITET  EXECUTIV <br>
-2.PROPUNERI  RECALCULARE  COSTURI  AGENT  TERMIC  PENTRU  SEZONUL  RECE  2017 – 2018  SAU  ASUMAREA  ACTIONARII  IN  JUDECATA  A  ASOCIATIEI  DE  PROPRIETARI  SI  INSUSIREA  SENTINTEI  JUDECATORESTI<br>
-3.ALTE  PROBLEME  ORGANIZATORICE  <br><br>
-
-<b>DACA  NU  SE  INTRUNESTE  CVORUMUL  DE  50% + 1  DINTRE  MEMBRII  ASOCIATIEI,  SEDINTA  SE  VA  RECONVOCA  PENTRU  DATA   DE  MIERCURI  11.07.2018  ORA  20.30  CAND  HOTARARILE  SE  VOR  LUA  CU  VOTUL  MAJORITATII  CELOR  PREZENTI.</b>
-<b>CHIRIASII  AU  OBLIGATIA  SA  ANUNTE  PROPRIETARII  DE  DATA  SI  ORA  ADUNARII  GENERALE.</b>                           
-<br><br>
-COMITET  EXECUTIV <br>03.07.2018";
-
-                    EmailsManager.SendEmail("asociatie.online@gmail.com", apartment.Email, "Fluturasi de cheltuieli pentru luna Mai 2018", message, filePath);
-                }
-            }
+            EmailsManager.SendMonthlyEmails(Association.Apartments, "August" , 2018);
 
             btnEmail_Confirm.Visible = false;
             lblMessage.Text = "Email-uri trimise cu success<br>";
@@ -107,13 +82,13 @@ COMITET  EXECUTIV <br>03.07.2018";
 
 
             var apartments = ApartmentsManager.Get(Association.Id);
+            Font boldFont = new Font(null, 12, Font.BOLD);
 
             //Create new PDF document
             Document document = new Document(PageSize.A4, 80f, 80f, 20f, 20f);
             using (Document doc = new Document())
             {
                 MemoryStream msPDFData = new MemoryStream();
-                PdfWriter writer = PdfWriter.GetInstance(doc, msPDFData);
                 doc.Open();
                 doc.Add(new Paragraph("I'm a pdf!"));
                 byte[] pdfData = msPDFData.ToArray();
@@ -129,18 +104,19 @@ COMITET  EXECUTIV <br>03.07.2018";
 
                 foreach (var apartment in apartments)
                 {
-                    PdfPTable tblHeader = new PdfPTable(2) {WidthPercentage = 100};
-                    tblHeader.AddCell(getCell("ASOCIAIA DE PROPRIETARI " + association.Name + ", CF " + association.FiscalCode, PdfPCell.ALIGN_LEFT));
-                    tblHeader.AddCell(getCell("CONTUL BANCAR " + association.BanckAccont, PdfPCell.ALIGN_RIGHT));
+                    decimal? sumToPay = 0;
+                    PdfPTable tblHeader = new PdfPTable(2) { WidthPercentage = 100 };
+                    tblHeader.AddCell(GetCell("ASOCIATIA DE PROPRIETARI " + association.Name + ", CF " + association.FiscalCode, PdfPCell.ALIGN_LEFT));
+                    tblHeader.AddCell(GetCell("CONTUL BANCAR " + association.BanckAccont, PdfPCell.ALIGN_RIGHT));
                     document.Add(tblHeader);
                     document.Add(new Phrase("\n"));
 
                     PdfPTable tbAp = new PdfPTable(4);
                     tbAp.WidthPercentage = 100;
-                    tbAp.AddCell(getCell("Ap.: " + apartment.Number, PdfPCell.ALIGN_CENTER));
-                    tbAp.AddCell(getCell("Nume: " + apartment.Name, PdfPCell.ALIGN_CENTER));
-                    tbAp.AddCell(getCell("Cota: " + (apartment.CotaIndiviza.HasValue ? apartment.CotaIndiviza.Value.ToString(CultureInfo.InvariantCulture) : string.Empty), PdfPCell.ALIGN_CENTER));
-                    tbAp.AddCell(getCell("Nr. Pers: " + apartment.Dependents, PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(GetCell("Ap.: " + apartment.Number, PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(GetCell("Nume: " + apartment.Name, PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(GetCell("Cota: " + (apartment.CotaIndiviza.HasValue ? apartment.CotaIndiviza.Value.ToString(CultureInfo.InvariantCulture) : string.Empty), PdfPCell.ALIGN_CENTER));
+                    tbAp.AddCell(GetCell("Nr. Pers: " + apartment.Dependents, PdfPCell.ALIGN_CENTER));
                     document.Add(tbAp);
 
                     document.Add(new Phrase("\n"));
@@ -160,24 +136,24 @@ COMITET  EXECUTIV <br>03.07.2018";
                                 var apExpenses = assocExpense.ApartmentExpenses.Where(w => w.Id_Tenant == apartment.Id).ToList();
                                 if (apExpenses.Any())
                                 {
-                                    PdfPTable table = AddIndexTable(apExpenses);
-                                    document.Add(table);
+                                    sumToPay = sumToPay + AddIndexTable(document, apExpenses, apartment, assocExpense.Id);
                                 }
                             }
                         }
                         else if (assocExpenses.FirstOrDefault().Id_ExpenseType == (int)ExpenseType.PerCotaIndiviza)
                         {
-                            PdfPTable table = AddCotaTable(assocExpenses.ToList(), apartment.Id);
-                            document.Add(table);
+                            sumToPay = sumToPay + AddCotaTable(document, assocExpenses.ToList(), apartment.Id);
                         }
                         else if (assocExpenses.FirstOrDefault().Id_ExpenseType == (int)ExpenseType.PerNrTenants)
                         {
-                            PdfPTable table = AddTenantsTable(assocExpenses.ToList(), apartment.Id);
-                            document.Add(table);
+                            sumToPay= sumToPay + AddTenantsTable(document, assocExpenses.ToList(), apartment.Id);
                         }
                         // add rows
                         // add subtotal
                     }
+
+                    document.Add(new Paragraph("TOTAL DE PLATA: " + sumToPay, boldFont));
+
 
                     document.NewPage();
 
@@ -195,12 +171,13 @@ COMITET  EXECUTIV <br>03.07.2018";
 
         }
 
-        public PdfPCell getCell(String text, int alignment)
+        public PdfPCell GetCell(String text, int alignment)
         {
-            PdfPCell cell = new PdfPCell(new Phrase(text));
-            cell.HorizontalAlignment = alignment;
-            cell.Border = 0; ;
-            return cell;
+            return new PdfPCell(new Phrase(text))
+            {
+                HorizontalAlignment = alignment,
+                Border = 0
+            };
         }
 
         private int GetYear()
@@ -235,9 +212,9 @@ COMITET  EXECUTIV <br>03.07.2018";
             throw new NotImplementedException();
         }
 
-        private static PdfPTable AddTenantsTable(List<AssociationExpenses> assocExpenses, int apartmentId)
+        private static decimal? AddTenantsTable(Document document, List<AssociationExpenses> assocExpenses, int apartmentId)
         {
-            Font font = new Font(null, 12, Font.BOLD); 
+            Font font = new Font(null, 12, Font.BOLD);
             PdfPTable table = new PdfPTable(2);
             table.TotalWidth = 450f;
             //fix the absolute width of the table
@@ -275,11 +252,12 @@ COMITET  EXECUTIV <br>03.07.2018";
             var tc = new Phrase("TOTAL", font);
             table.AddCell(tc);
             table.AddCell(ConvertToDecimalPrintable(sum));
+            document.Add(table);
 
-            return table;
+            return sum;
         }
 
-        private static PdfPTable AddCotaTable(List<AssociationExpenses> assocExpenses, int apartmentId)
+        private static decimal? AddCotaTable(Document document, List<AssociationExpenses> assocExpenses, int apartmentId)
         {
             PdfPTable table = new PdfPTable(2);
             table.TotalWidth = 450f;
@@ -317,11 +295,13 @@ COMITET  EXECUTIV <br>03.07.2018";
 
             table.AddCell("TOTAL");
             table.AddCell(ConvertToDecimalPrintable(sum));
+           
+            document.Add(table);
 
-            return table;
+            return sum;
         }
 
-        private static PdfPTable AddIndexTable(List<ApartmentExpenses> apExpenses)
+        private static decimal? AddIndexTable(Document document, List<ApartmentExpenses> apExpenses, Administratoro.DAL.Apartments apartment, int assExpenseId)
         {
             PdfPTable table = new PdfPTable(6);
             table.TotalWidth = 450f;
@@ -347,15 +327,24 @@ COMITET  EXECUTIV <br>03.07.2018";
 
             foreach (var apExpense in apExpenses)
             {
-                table.AddCell("");
+                decimal? subValue = null;
+                table.AddCell(apExpense.CounterOrder.HasValue ? "Contor " + apExpense.CounterOrder.Value : string.Empty);
                 table.AddCell(ConvertToDecimalPrintable(apExpense.IndexOld, 1));
                 table.AddCell(ConvertToDecimalPrintable(apExpense.IndexNew, 1));
                 table.AddCell(ConvertToDecimalPrintable((apExpense.IndexNew - apExpense.IndexOld), 1));
-                table.AddCell(string.Empty);
-                //table.AddCell(ConvertToDecimalPrintable(apExpense.AssociationExpenses.PricePerExpenseUnit, 4));
-                //var subValue = ((apExpense.IndexNew - apExpense.IndexOld) * apExpense.AssociationExpenses.PricePerExpenseUnit);
-                //table.AddCell(ConvertToDecimalPrintable(subValue, 4));
-                table.AddCell(string.Empty);
+
+                var pricePerUnit = UnitPricesManager.Get(apExpense.AssociationExpenses.Id, apExpense.Apartments.Id_StairCase);
+                if (pricePerUnit != null)
+                {
+                    table.AddCell(ConvertToDecimalPrintable(pricePerUnit.PricePerExpenseUnit, 4));
+                    subValue = ((apExpense.IndexNew - apExpense.IndexOld) * pricePerUnit.PricePerExpenseUnit);
+                    table.AddCell(ConvertToDecimalPrintable(subValue, 4));
+                }
+                else
+                {
+                    table.AddCell(string.Empty);
+                    table.AddCell(string.Empty);
+                }
 
                 if (apExpense.IndexOld.HasValue)
                 {
@@ -372,10 +361,26 @@ COMITET  EXECUTIV <br>03.07.2018";
                     sumConsum = sumConsum.HasValue ? (sumConsum + (apExpense.IndexNew - apExpense.IndexOld)) : (apExpense.IndexNew - apExpense.IndexOld);
                 }
 
-                //if (subValue.HasValue)
-                //{
-                //    sumValue = sumValue.HasValue ? (sumValue + subValue) : subValue;
-                //}
+                if (subValue.HasValue)
+                {
+                    sumValue = sumValue.HasValue ? (sumValue + subValue) : subValue;
+                }
+            }
+
+            var apartmentExpenseRedistributionValue = RedistributionManager.CalculateRedistributeValueForStairCase(
+                assExpenseId, apartment, apExpenses);
+
+            if(apartmentExpenseRedistributionValue.HasValue)
+            {
+
+                table.AddCell("Diferenta");
+                table.AddCell(string.Empty);
+                table.AddCell(string.Empty);
+                table.AddCell(string.Empty);
+                table.AddCell(string.Empty);
+                table.AddCell(ConvertToDecimalPrintable(apartmentExpenseRedistributionValue));
+                
+                sumValue = sumValue + apartmentExpenseRedistributionValue;
             }
 
             table.AddCell("TOTAL");
@@ -385,7 +390,9 @@ COMITET  EXECUTIV <br>03.07.2018";
             table.AddCell("");
             table.AddCell(ConvertToDecimalPrintable(sumValue));
 
-            return table;
+            document.Add(table);
+
+            return sumValue;
         }
 
         private static string ConvertToDecimalPrintable(decimal? theValue, int places = 2)

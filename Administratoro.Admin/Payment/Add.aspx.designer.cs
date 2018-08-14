@@ -13,6 +13,24 @@ namespace Admin.Payment {
     public partial class Add {
         
         /// <summary>
+        /// txtAddedDate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtAddedDate;
+        
+        /// <summary>
+        /// tbNr control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbNr;
+        
+        /// <summary>
         /// drpApartaments control.
         /// </summary>
         /// <remarks>
@@ -20,6 +38,15 @@ namespace Admin.Payment {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList drpApartaments;
+        
+        /// <summary>
+        /// upMain control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel upMain;
         
         /// <summary>
         /// pnlWhatToPay control.
@@ -40,13 +67,67 @@ namespace Admin.Payment {
         protected global::System.Web.UI.WebControls.CheckBoxList chbWhatToPay;
         
         /// <summary>
-        /// tbWhatToPayExtra control.
+        /// tbSumOfChecked control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tbWhatToPayExtra;
+        protected global::System.Web.UI.WebControls.TextBox tbSumOfChecked;
+        
+        /// <summary>
+        /// tbTotalToPay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbTotalToPay;
+        
+        /// <summary>
+        /// tbExplanations control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbExplanations;
+        
+        /// <summary>
+        /// lblValidationMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblValidationMessage;
+        
+        /// <summary>
+        /// pnlSendEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlSendEmail;
+        
+        /// <summary>
+        /// chbsendEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chbsendEmail;
+        
+        /// <summary>
+        /// drpWhatTpPayPartially control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList drpWhatTpPayPartially;
         
         /// <summary>
         /// btnCancel control.
@@ -56,6 +137,15 @@ namespace Admin.Payment {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCancel;
+        
+        /// <summary>
+        /// btnConfirm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConfirm;
         
         /// <summary>
         /// btnSave control.

@@ -171,98 +171,103 @@ namespace Admin.Invoices
         {
             foreach (var control in pnlInvoiceDiverseValues.Controls)
             {
-                if (control is Panel)
+                var innerControls = control as Panel;
+                if (innerControls != null && innerControls.Controls.Count == 6)
                 {
-                    var innerControls = control as Panel;
-                    if (innerControls != null && innerControls.Controls.Count == 6)
+                    var theDateControl = innerControls.Controls[4] as Panel;
+                    var theNumberControl = innerControls.Controls[5] as Panel;
+                    var theRedistributionControl = innerControls.Controls[3] as Panel;
+                    var thestairCaseControl = innerControls.Controls[2] as Panel;
+                    var theDescriptionControl = innerControls.Controls[1] as Panel;
+                    var theInvoiceValuecontrol = innerControls.Controls[0] as Panel;
+                    if (theDescriptionControl != null && theDescriptionControl.Controls.Count == 1 && theDescriptionControl.Controls[0] is TextBox &&
+                        theInvoiceValuecontrol != null && theInvoiceValuecontrol.Controls.Count == 1 && theInvoiceValuecontrol.Controls[0] is TextBox &&
+                        thestairCaseControl != null && thestairCaseControl.Controls.Count == 1 && thestairCaseControl.Controls[0] is DropDownList &&
+                        theRedistributionControl != null && theRedistributionControl.Controls.Count == 1 && theRedistributionControl.Controls[0] is DropDownList &&
+                        theDateControl != null && theDateControl.Controls.Count == 1 && theDateControl.Controls[0] is TextBox &&
+                        theNumberControl != null && theNumberControl.Controls.Count == 1 && theNumberControl.Controls[0] is TextBox)
                     {
-                        var theDateControl = innerControls.Controls[4] as Panel;
-                        var theNumberControl = innerControls.Controls[5] as Panel;
-                        var theRedistributionControl = innerControls.Controls[3] as Panel;
-                        var thestairCaseControl = innerControls.Controls[2] as Panel;
-                        var theDescriptionControl = innerControls.Controls[1] as Panel;
-                        var theInvoiceValuecontrol = innerControls.Controls[0] as Panel;
-                        if (theDescriptionControl != null && theDescriptionControl.Controls.Count == 1 && theDescriptionControl.Controls[0] is TextBox &&
-                            theInvoiceValuecontrol != null && theInvoiceValuecontrol.Controls.Count == 1 && theInvoiceValuecontrol.Controls[0] is TextBox &&
-                            thestairCaseControl != null && thestairCaseControl.Controls.Count == 1 && thestairCaseControl.Controls[0] is DropDownList &&
-                            theRedistributionControl != null && theRedistributionControl.Controls.Count == 1 && theRedistributionControl.Controls[0] is DropDownList &&
-                            theDateControl != null && theDateControl.Controls.Count == 1 && theDateControl.Controls[0] is TextBox &&
-                            theNumberControl != null && theNumberControl.Controls.Count == 1 && theNumberControl.Controls[0] is TextBox)
+                        var theDescription = theDescriptionControl.Controls[0] as TextBox;
+                        var theInvoiceValue = theInvoiceValuecontrol.Controls[0] as TextBox;
+                        var thestairCase = thestairCaseControl.Controls[0] as DropDownList;
+                        var theRedistribution = theRedistributionControl.Controls[0] as DropDownList;
+                        var theNumber = theNumberControl.Controls[0] as TextBox;
+                        var theDate = theDateControl.Controls[0] as TextBox;
+
+                        // get invoice
+                        int? invoiceId = null;
+                        int invoiceIdValue;
+                        if (int.TryParse(theInvoiceValue.ID.Replace("tbInvoiceId", string.Empty), out invoiceIdValue))
                         {
-                            var theDescription = theDescriptionControl.Controls[0] as TextBox;
-                            var theInvoiceValue = theInvoiceValuecontrol.Controls[0] as TextBox;
-                            var thestairCase = thestairCaseControl.Controls[0] as DropDownList;
-                            var theRedistribution = theRedistributionControl.Controls[0] as DropDownList;
-                            var theNumber = theNumberControl.Controls[0] as TextBox;
-                            var theDate = theDateControl.Controls[0] as TextBox;
+                            invoiceId = invoiceIdValue;
+                        }
 
-                            // get invoice
-                            int? invoiceId = null;
-                            int invoiceIdValue;
-                            if (int.TryParse(theInvoiceValue.ID.Replace("tbInvoiceId", string.Empty), out invoiceIdValue))
+                        // get value
+                        decimal? theValue = null;
+                        decimal tempValue;
+                        var valueAltered = theInvoiceValue.Text.Replace(".", ",");
+                        if (decimal.TryParse(valueAltered, out tempValue))
+                        {
+                            theValue = Math.Round(tempValue, ConfigConstants.InvoicePrecision);
+                        }
+
+                        // get stairCase
+                        int? stairCaseId = null;
+                        int stairCaseIdValue;
+                        if (int.TryParse(thestairCase.SelectedValue, out stairCaseIdValue))
+                        {
+                            stairCaseId = stairCaseIdValue;
+                        }
+
+                        // get redistribution
+                        int? redistributionId = null;
+                        int redistributionIdValue;
+                        if (int.TryParse(theRedistribution.SelectedValue, out redistributionIdValue))
+                        {
+                            redistributionId = redistributionIdValue;
+                        }
+
+                        // get issue date
+                        DateTime? theDateId = null;
+                        DateTime theDateIdValue;
+                        if (DateTime.TryParse(theDate.Text, out theDateIdValue))
+                        {
+                            theDateId = theDateIdValue;
+                        }
+
+                        if (invoiceId.HasValue)
+                        {
+                            var invoice = InvoicesManager.GetDiverseById(invoiceId.Value);
+
+                            if (invoice == null)
                             {
-                                invoiceId = invoiceIdValue;
+                                return;
                             }
 
-                            // get value
-                            decimal? theValue = null;
-                            decimal tempValue;
-                            var valueAltered = theInvoiceValue.Text.Replace(".", ",");
-                            if (decimal.TryParse(valueAltered, out tempValue))
+                            if (theValue.HasValue)
                             {
-                                theValue = Math.Round(tempValue, ConfigConstants.InvoicePrecision);
+                                InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId, theNumber.Text, theDateId);
                             }
-
-                            // get stairCase
-                            int? stairCaseId = null;
-                            int stairCaseIdValue;
-                            if (int.TryParse(thestairCase.SelectedValue, out stairCaseIdValue))
+                            else
                             {
-                                stairCaseId = stairCaseIdValue;
-                            }
-
-                            // get redistribution
-                            int? redistributionId = null;
-                            int redistributionIdValue;
-                            if (int.TryParse(theRedistribution.SelectedValue, out redistributionIdValue))
-                            {
-                                redistributionId = redistributionIdValue;
-                            }
-
-                            // get issue date
-                            DateTime? theDateId = null;
-                            DateTime theDateIdValue;
-                            if (DateTime.TryParse(theDate.Text, out theDateIdValue))
-                            {
-                                theDateId = theDateIdValue;
-                            }
-
-                            if (invoiceId.HasValue)
-                            {
-                                if (theValue.HasValue)
+                                InvoicesManager.Remove(invoiceId.Value);
+                                var ae = AssociationExpensesManager.GetById(invoice.Id_EstateExpense.Value);
+                                if(ae.Invoices.Count == 0)
                                 {
-                                    var invoice = InvoicesManager.GetDiverseById(invoiceId.Value);
-                                    if (invoice != null)
-                                    {
-                                        InvoicesManager.Update(invoice, theValue, stairCaseId, theDescription.Text, redistributionId, theNumber.Text, theDateId);
-                                    }
-                                }
-                                else
-                                {
-                                    InvoicesManager.Remove(invoiceId.Value);
+                                    AssociationExpensesManager.Remove(invoice.Id_EstateExpense.Value);
                                 }
                             }
-                            else if (theValue.HasValue)
+                        }
+                        else if (theValue.HasValue)
+                        {
+                            var ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
+                            if (ee == null)
                             {
-                                var ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
-                                if (ee == null)
-                                {
-                                    AssociationExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerNrTenants).ToString(), false);
-                                    ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
-                                }
-
-                                InvoicesManager.AddDiverse(ee, theValue, theDescription.Text, stairCaseId, redistributionId, theNumber.Text, theDateId);
+                                AssociationExpensesManager.Add(associationId, expenseId, month, year, ((int)ExpenseType.PerNrTenants).ToString(), false);
+                                ee = AssociationExpensesManager.GetMonthYearAssoiationExpense(associationId, expenseId, year, month);
                             }
+
+                            InvoicesManager.AddDiverse(ee, theValue, theDescription.Text, stairCaseId, redistributionId, theNumber.Text, theDateId);
                         }
                     }
                 }

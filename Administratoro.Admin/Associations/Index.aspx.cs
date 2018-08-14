@@ -31,6 +31,7 @@ namespace Admin.Associations
             txtAssociationAddress.Text = assoc.Address;
             txtAssociationFiscalCode.Text = assoc.FiscalCode;
             txtAssociationBanckAccount.Text = assoc.BanckAccont;
+            txtPenaltyRate.Text = assoc.penaltyRate.HasValue ? (assoc.penaltyRate.Value * 100).ToString(new CultureInfo("ro-RO")) : string.Empty;
             drpAssociationEqualIndiviza.SelectedValue = (assoc.CotaIndivizaAparments.HasValue) ? "1" : "0";
             if (assoc.CotaIndivizaAparments.HasValue)
             {
@@ -359,13 +360,13 @@ namespace Admin.Associations
                     List<AssociationCountersStairCase> associationCounterStariCases = GetStairCases(stairCases);
                     if (associationCounters != null)
                     {
-                        var newCounter = new AssociationCounters
+                        var theCounter = new AssociationCounters
                         {
                             Value = counterValue.Text,
                             AssociationCountersStairCase = associationCounterStariCases,
                             Id = counterId
                         };
-                        AssociationCountersManager.Update(newCounter);
+                        AssociationCountersManager.Update(theCounter);
                     }
 
                     gvStaircases.EditIndex = -1;
@@ -374,8 +375,8 @@ namespace Admin.Associations
                     var addedAssociation = AssociationsManager.GetById(Association.Id);
 
                     Session[SessionConstants.SelectedAssociation] = addedAssociation;
-                    var Associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
-                    Session[SessionConstants.AllAssociations] = Associations;
+                    var associations = AssociationsManager.GetAllAssociationsByPartner(Association.Id_Partner);
+                    Session[SessionConstants.AllAssociations] = associations;
                     Response.Redirect(Request.RawUrl);
                 }
             }
@@ -588,6 +589,28 @@ namespace Admin.Associations
             Association.HasRoundUpColumn = rbHasRoundup.SelectedIndex == 1;
             Session[SessionConstants.SelectedAssociation] = Association;
             Response.Redirect(Request.RawUrl);
+        }
+
+        protected void btnPenaltyRate_OnClick(object sender, EventArgs e)
+        {
+            if (txtPenaltyRate.Enabled)
+            {
+                decimal penaltyRate;
+                if (decimal.TryParse(txtPenaltyRate.Text, out penaltyRate))
+                {
+                    penaltyRate = penaltyRate * 0.01m;
+                    AssociationsManager.UpdatePenaltyRate(Association.Id, penaltyRate);
+                    Response.Redirect(Request.RawUrl);
+                }
+                else
+                {
+                    txtPenaltyRate.Attributes.Add("style", "border-color:red");
+                }
+            }
+            else
+            {
+                txtPenaltyRate.Enabled = true;
+            }
         }
     }
 }

@@ -1,0 +1,120 @@
+﻿
+@{
+   Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>LogIn</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+@{
+    ViewBag.Title = "Logare";
+}
+
+<link href="/Content/animate.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/custom.css" rel="stylesheet" type="text/css" />
+
+<div class="container">
+    <a class="hiddenanchor" id="signup"></a>
+    <a class="hiddenanchor" id="signin"></a>
+
+    <div class="login_wrapper">
+        <form>
+            <div class="animate form login_form row">
+                <section class="login_content">
+                    <div class="formDiv">
+                        <h1>Intră în cont</h1>
+                        <div id="loginFormDivLoginMessage"></div>
+                        <div>
+                            <input type="text" name="loginUserId" class="form-control has-feedback-left" id="loginUserId" placeholder="Utilizator" autocomplete="off" />
+                        </div>
+                        <div>
+                            <input type="password" name="loginUserPassword" class="form-control has-feedback-left" id="loginUserPassword" placeholder="Parolă" />
+                        </div>
+                        <div>
+                            <input type="submit" onclick="login('/Home/Index'); return false;" name="btnUserLogin" value="Intră în cont" id="btnUserLogin" class="btn btn-default submit">
+                            <a class="reset_pass" href="#">Am uitat parola</a>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="separator">
+                            <p class="change_link">
+                                Nou pe site?
+                                <a href="#signup" class="to_register">Crează-ți cont </a>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </form>
+        <div id="register" class="animate form registration_form">
+            <section class="login_content">
+                <div class="formDiv">
+                    <h1>Creează-ți cont</h1>
+                    <div id="loginFormDivCreateMessage"></div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="txtUserName"> Nume</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" name="txtUserName" id="txtUserName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="txtUserSurame"> Prenume</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" name="txtUserSurame" id="txtUserSurame" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="registerUserEmail"> Email</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="email" name="registerUserEmail" id="registerUserEmail" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="registerUserPassword"> Parola</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="password" name="registerUserPassword" id="registerUserPassword" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="registerUserPasswordVerify"> Reintrodu parola</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="password" name="registerUserPasswordVerify" id="registerUserPasswordVerify" class="form-control" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div>
+                        <input type="button" name="btnUserRegister" value="Crează cont" id="btnUserRegister" class="btn btn-default submit">
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <div class="separator">
+                        <p class="change_link">
+                            Ai cont?
+                            <a href="#signin" class="to_register">Intră în cont</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/account")
+</body>
+</html>

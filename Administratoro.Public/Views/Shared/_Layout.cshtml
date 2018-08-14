@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+<body>
+
+    <!--wrapper start-->
+    <div class="wrapper" id="wrapper">
+        <!-- Preloader -->
+        <div id="preloader">
+            <div id="status"></div>
+        </div>
+        <!--Header start -->
+        <header>
+            <!--Language start -->
+            <div class="container">
+                <div class="row relative">
+                    <ul class="language">
+                        <li>
+                            <a href="#" data-toggle="dropdown">Română</a><i class="fa fa-caret-down"></i>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" class="english">English</a></li>
+                                <li><a href="#" class="hungarian">Hungarian</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--/Language end -->
+            <!--menu start-->
+            <div class="menu">
+                <div class="navbar-wrapper">
+                    <div class="container">
+                        <!-- Navbar start -->
+                        <div class="navwrapper">
+                            <div class="navbar navbar-inverse navbar-static-top">
+                                <div class="container">
+                                    <div class="logo">
+                                        <a href="/Home"><span class="img-circle">b</span>iblioteca Tășnad</a><span rel="tooltip" title="platformă aflată sub teste"> BETA </span><br />
+                                        <span id="subLogo" rel="tooltip" title="[biblioSofia]- program de gestionare online a bibliotecilor">un produs biblioSofia </span>
+                                    </div>
+                                    <nav class="navArea">
+                                        <div class="navbar-header">
+                                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                                        </div>
+                                        <div class="navbar-collapse collapse">
+                                            <ul class="nav navbar-nav" id="navigation">
+                                                <li>@Html.ActionLink("Acasă", "Index", "Home", null, null)</li>
+                                                <li>@Html.ActionLink("Contact", "Contact", "Home", null, null)</li>
+                                                @if (Session["userId"] != null && Session["userId"] != "0")
+                                                {
+                                                    <li><a href="~/Account/LogOff"><i class="fa fa-sign-out pull-right"></i>Delogare</a></li>
+                                                }
+                                                else
+                                                {
+                                                    <li>@Html.ActionLink("Intră în cont", "LogIn", "Account", null, null)</li>
+                                                }
+                                            </ul>
+                                        </div>
+
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Navbar end -->
+                    </div>
+                </div>
+            </div>
+            <!--menu end-->
+        </header>
+        <div class="container body-content">
+            @RenderBody()
+        </div>
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="pull-left">
+                        <p>&copy; @DateTime.Now.Year Administratorul Online. Toate drepturile rezervate</p>
+                    </div>
+                    <div class="pull-right"><a class="gototop smooth" href="#wrapper">Go To Top<i class="fa fa-chevron-up"></i></a></div>
+                </div>
+            </div>
+        </footer>
+        <!--Footer end -->
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

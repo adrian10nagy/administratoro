@@ -30,6 +30,7 @@ namespace Administratoro.DAL
         public virtual DbSet<ApartmentExpenses> ApartmentExpenses { get; set; }
         public virtual DbSet<ApartmentPersons> ApartmentPersons { get; set; }
         public virtual DbSet<Apartments> Apartments { get; set; }
+        public virtual DbSet<ApartmentsDebt> ApartmentsDebt { get; set; }
         public virtual DbSet<AssociationCounters> AssociationCounters { get; set; }
         public virtual DbSet<AssociationCountersApartment> AssociationCountersApartment { get; set; }
         public virtual DbSet<AssociationCountersStairCase> AssociationCountersStairCase { get; set; }
@@ -37,6 +38,7 @@ namespace Administratoro.DAL
         public virtual DbSet<AssociationExpensesRedistributionTypes> AssociationExpensesRedistributionTypes { get; set; }
         public virtual DbSet<AssociationExpensesUnitPrices> AssociationExpensesUnitPrices { get; set; }
         public virtual DbSet<Associations> Associations { get; set; }
+        public virtual DbSet<DebtTypes> DebtTypes { get; set; }
         public virtual DbSet<DocumentApartmentFlyers> DocumentApartmentFlyers { get; set; }
         public virtual DbSet<DocumentAssociationMonthlyExpenses> DocumentAssociationMonthlyExpenses { get; set; }
         public virtual DbSet<ErrorLogs> ErrorLogs { get; set; }
@@ -52,6 +54,7 @@ namespace Administratoro.DAL
         public virtual DbSet<Partners> Partners { get; set; }
         public virtual DbSet<PartnerTypes> PartnerTypes { get; set; }
         public virtual DbSet<Persons> Persons { get; set; }
+        public virtual DbSet<RegistriesHome> RegistriesHome { get; set; }
         public virtual DbSet<StairCases> StairCases { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
     

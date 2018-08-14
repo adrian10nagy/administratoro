@@ -260,7 +260,7 @@ namespace Admin.Apartments
                 Email = userEmail.Value,
                 CreatedDate = DateTime.Now,
                 id_Estate = Association.Id,
-                Password = "dasd",
+                Password = "test",
                 Id_StairCase = userStairCase.SelectedValue.ToNullableInt(),
                 HasHeatHelp = userHeatHelp.SelectedIndex == 1
             };

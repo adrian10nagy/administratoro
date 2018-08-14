@@ -1,4 +1,6 @@
 ﻿
+using System.Security.Cryptography;
+
 namespace Administratoro.BL.Managers
 {
     using DAL;
@@ -106,7 +108,17 @@ namespace Administratoro.BL.Managers
 
         public static Apartments GetById(int id)
         {
-            return Administratoro.DAL.SDK.Kit.Instance.Apartments.Get(id);
+            return DAL.SDK.Kit.Instance.Apartments.Get(id);
+        }
+
+        public static Apartments GetByIdAndPassword(int id, string password)
+        {
+            if (id.ToString().StartsWith("100"))
+            {
+                id = id % 100;
+            }
+
+            return GetContext(true).Apartments.FirstOrDefault(a => a.Id == id && a.Password == password);
         }
 
         public static IEnumerable<Apartments> GetForIndividual(int associationId, int associationExpenseId)
@@ -126,6 +138,11 @@ namespace Administratoro.BL.Managers
             }
 
             return result;
+        }
+
+        internal static IEnumerable<Apartments> GetByAssociationId(int associationId)
+        {
+            return GetContext(true).Apartments.Where(a => a.id_Estate == associationId);
         }
     }
 }

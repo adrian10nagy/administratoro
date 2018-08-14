@@ -101,3 +101,5 @@ C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\AspNet.ScriptManager.jQuery.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.MSAjax.dll
 C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Microsoft.ScriptManager.WebForms.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Toolbox.DocumentGenerator.dll
+C:\DATA\Repositories\AdministratoRO\Adminro\administratoro\Administratoro.Admin\bin\Toolbox.DocumentGenerator.pdb
