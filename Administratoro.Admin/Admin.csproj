@@ -168,6 +168,7 @@
     <Content Include="Invoices\List.aspx" />
     <Content Include="Payment\Add.aspx" />
     <Content Include="Reports\Flyers.aspx" />
+    <Content Include="Reports\HouseRegistry.aspx" />
     <Content Include="Reports\Index.aspx" />
     <Content Include="Reports\Monthly.aspx" />
     <Content Include="Expenses\Dashboard.aspx" />
@@ -413,6 +414,13 @@
     <Compile Include="Reports\Flyers.aspx.designer.cs">
       <DependentUpon>Flyers.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Reports\HouseRegistry.aspx.cs">
+      <DependentUpon>HouseRegistry.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\HouseRegistry.aspx.designer.cs">
+      <DependentUpon>HouseRegistry.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Reports\Index.aspx.cs">
       <DependentUpon>Index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -517,7 +525,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>57974</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:57975/</IISUrl>
+          <IISUrl>http://localhost:57976/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

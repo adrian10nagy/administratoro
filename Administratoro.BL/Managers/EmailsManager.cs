@@ -33,7 +33,7 @@ Va  informam  ca  incepand  cu  13.08.2018  ora  10.00  firma  ISTA  va  incepe 
 Pentru orice informație/cerere vă rugăm adresați-vă administratorului la adresa <b>octombrie6@yahoo.com<b><br><br>
 COMITET  EXECUTIV <br>14.08.2018";
 
-                        SendEmail("asociatie.online@gmail.com", apartment.Email,
+                        SendEmail("asociatie.online@gmail.com", email,
                             "Fluturasi de cheltuieli pentru luna " + luna +" "+ + year, message, filePath);
                     }
                 }
