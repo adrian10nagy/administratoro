@@ -167,6 +167,7 @@
     <Content Include="Invoices\Add.aspx" />
     <Content Include="Invoices\List.aspx" />
     <Content Include="Payment\Add.aspx" />
+    <Content Include="Reports\ApartmentRegistry.aspx" />
     <Content Include="Reports\Flyers.aspx" />
     <Content Include="Reports\HouseRegistry.aspx" />
     <Content Include="Reports\Index.aspx" />
@@ -406,6 +407,13 @@
     </Compile>
     <Compile Include="Payment\Add.aspx.designer.cs">
       <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\ApartmentRegistry.aspx.cs">
+      <DependentUpon>ApartmentRegistry.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\ApartmentRegistry.aspx.designer.cs">
+      <DependentUpon>ApartmentRegistry.aspx</DependentUpon>
     </Compile>
     <Compile Include="Reports\Flyers.aspx.cs">
       <DependentUpon>Flyers.aspx</DependentUpon>

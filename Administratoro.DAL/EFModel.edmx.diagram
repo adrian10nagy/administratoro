@@ -4,37 +4,38 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="b028c4556d724cdba4d863c853e92018" Name="Diagram1" ZoomLevel="93">
-        <EntityTypeShape EntityType="AdministratoroModel.ApartmentExpenses" Width="1.5" PointX="7.5" PointY="12.125" />
-        <EntityTypeShape EntityType="AdministratoroModel.ApartmentPersons" Width="1.5" PointX="7.5" PointY="4.5" />
-        <EntityTypeShape EntityType="AdministratoroModel.Apartments" Width="1.5" PointX="5.25" PointY="6" />
-        <EntityTypeShape EntityType="AdministratoroModel.ApartmentsDebt" Width="1.5" PointX="10.5" PointY="7" />
-        <EntityTypeShape EntityType="AdministratoroModel.AssociationCounters" Width="1.5" PointX="8.25" PointY="16.375" />
-        <EntityTypeShape EntityType="AdministratoroModel.AssociationCountersApartment" Width="1.5" PointX="13.5" PointY="19" />
-        <EntityTypeShape EntityType="AdministratoroModel.AssociationCountersStairCase" Width="1.5" PointX="10.5" PointY="20" />
-        <EntityTypeShape EntityType="AdministratoroModel.AssociationExpenses" Width="1.5" PointX="5.25" PointY="13.125" />
-        <EntityTypeShape EntityType="AdministratoroModel.AssociationExpensesRedistributionTypes" Width="1.5" PointX="3" PointY="12" />
-        <EntityTypeShape EntityType="AdministratoroModel.AssociationExpensesUnitPrices" Width="1.5" PointX="13.5" PointY="15.375" />
-        <EntityTypeShape EntityType="AdministratoroModel.Associations" Width="1.5" PointX="3" PointY="20.5" />
-        <EntityTypeShape EntityType="AdministratoroModel.DebtTypes" Width="1.5" PointX="8.25" PointY="1.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.DocumentApartmentFlyers" Width="1.5" PointX="13.5" PointY="11.125" />
-        <EntityTypeShape EntityType="AdministratoroModel.DocumentAssociationMonthlyExpenses" Width="1.5" PointX="5.25" PointY="24.625" />
+      <Diagram DiagramId="b028c4556d724cdba4d863c853e92018" Name="Diagram1" ZoomLevel="20">
+        <EntityTypeShape EntityType="AdministratoroModel.ApartmentExpenses" Width="1.5" PointX="15" PointY="29.375" />
+        <EntityTypeShape EntityType="AdministratoroModel.ApartmentPersons" Width="1.5" PointX="12" PointY="43.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.Apartments" Width="1.5" PointX="9.75" PointY="36" />
+        <EntityTypeShape EntityType="AdministratoroModel.ApartmentsDebt" Width="1.5" PointX="15" PointY="40.125" />
+        <EntityTypeShape EntityType="AdministratoroModel.AssociationCounters" Width="1.5" PointX="10.5" PointY="29.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.AssociationCountersApartment" Width="1.5" PointX="12.75" PointY="31.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.AssociationCountersStairCase" Width="1.5" PointX="12.75" PointY="40" />
+        <EntityTypeShape EntityType="AdministratoroModel.AssociationExpenses" Width="1.5" PointX="7.5" PointY="26" />
+        <EntityTypeShape EntityType="AdministratoroModel.AssociationExpensesRedistributionTypes" Width="1.5" PointX="5.25" PointY="35.125" />
+        <EntityTypeShape EntityType="AdministratoroModel.AssociationExpensesUnitPrices" Width="1.5" PointX="12.75" PointY="28.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.Associations" Width="1.5" PointX="5.25" PointY="29" />
+        <EntityTypeShape EntityType="AdministratoroModel.DebtTypes" Width="1.5" PointX="12.75" PointY="46.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.DocumentApartmentFlyers" Width="1.5" PointX="18" PointY="33.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.DocumentAssociationMonthlyExpenses" Width="1.5" PointX="7.5" PointY="49.125" />
         <EntityTypeShape EntityType="AdministratoroModel.ErrorLogs" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.Expenses" Width="1.5" PointX="3" PointY="16.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.ExpenseTypes" Width="1.5" PointX="0.75" PointY="11.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.Functionalities" Width="1.5" PointX="5.75" PointY="28" />
-        <EntityTypeShape EntityType="AdministratoroModel.InvoiceIndexes" Width="1.5" PointX="15.75" PointY="15.875" />
-        <EntityTypeShape EntityType="AdministratoroModel.Invoices" Width="1.5" PointX="10.5" PointY="14.5" />
-        <EntityTypeShape EntityType="AdministratoroModel.InvoiceSubcategories" Width="1.5" PointX="15.75" PointY="19" />
-        <EntityTypeShape EntityType="AdministratoroModel.InvoiceSubcategoryTypes" Width="1.5" PointX="5.25" PointY="21.125" />
-        <EntityTypeShape EntityType="AdministratoroModel.Localities" Width="1.5" PointX="1.5" PointY="28.125" />
-        <EntityTypeShape EntityType="AdministratoroModel.PartnerRights" Width="1.5" PointX="8" PointY="21.75" />
-        <EntityTypeShape EntityType="AdministratoroModel.Partners" Width="1.5" PointX="0.75" PointY="20.875" />
-        <EntityTypeShape EntityType="AdministratoroModel.PartnerTypes" Width="1.5" PointX="1.5" PointY="25.875" />
-        <EntityTypeShape EntityType="AdministratoroModel.Persons" Width="1.5" PointX="5.25" PointY="2.125" />
-        <EntityTypeShape EntityType="AdministratoroModel.RegistriesHome" Width="1.5" PointX="7.5" PointY="7.875" />
-        <EntityTypeShape EntityType="AdministratoroModel.StairCases" Width="1.5" PointX="3" PointY="7.25" />
-        <EntityTypeShape EntityType="AdministratoroModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="3.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.Expenses" Width="1.5" PointX="5.25" PointY="19.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.ExpenseTypes" Width="1.5" PointX="3" PointY="20.25" />
+        <EntityTypeShape EntityType="AdministratoroModel.Functionalities" Width="1.5" PointX="3" PointY="23.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.InvoiceIndexes" Width="1.5" PointX="15" PointY="33.25" />
+        <EntityTypeShape EntityType="AdministratoroModel.Invoices" Width="1.5" PointX="12.75" PointY="35.25" />
+        <EntityTypeShape EntityType="AdministratoroModel.InvoiceSubcategories" Width="1.5" PointX="18" PointY="28.625" />
+        <EntityTypeShape EntityType="AdministratoroModel.InvoiceSubcategoryTypes" Width="1.5" PointX="15.75" PointY="26.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.Localities" Width="1.5" PointX="0.75" PointY="27.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.PartnerRights" Width="1.5" PointX="5.25" PointY="25.625" />
+        <EntityTypeShape EntityType="AdministratoroModel.Partners" Width="1.5" PointX="3" PointY="26.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.PartnerTypes" Width="1.5" PointX="0.75" PointY="24.875" />
+        <EntityTypeShape EntityType="AdministratoroModel.Persons" Width="1.5" PointX="9.75" PointY="43.375" />
+        <EntityTypeShape EntityType="AdministratoroModel.RegistriesHome" Width="1.5" PointX="15" PointY="36.5" />
+        <EntityTypeShape EntityType="AdministratoroModel.RegistriesHomeDaily" Width="1.5" PointX="7.5" PointY="32.375" />
+        <EntityTypeShape EntityType="AdministratoroModel.StairCases" Width="1.5" PointX="7.5" PointY="45.75" />
+        <EntityTypeShape EntityType="AdministratoroModel.sysdiagrams" Width="1.5" PointX="2.75" PointY="0.75" />
         <AssociationConnector Association="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8" />
         <AssociationConnector Association="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" />
         <AssociationConnector Association="AdministratoroModel.FK__TenantPer__Id_Pe__4BAC3F29" />
@@ -65,6 +66,7 @@
         <AssociationConnector Association="AdministratoroModel.FK__DocumentA__Assoc__5A4F643B" />
         <AssociationConnector Association="AdministratoroModel.FK__DocumentA__Assoc__5E1FF51F" />
         <AssociationConnector Association="AdministratoroModel.FK__Estates__Id_Part__5CD6CB2B" />
+        <AssociationConnector Association="AdministratoroModel.FK__Registrie__Id_as__269AB60B" />
         <AssociationConnector Association="AdministratoroModel.FK__StairCase__Id_Es__4F47C5E3" />
         <AssociationConnector Association="AdministratoroModel.FK__Expenses__LegalT__52E34C9D" />
         <AssociationConnector Association="AdministratoroModel.FK__InvoiceSu__Id_Ex__038683F8" />
@@ -76,6 +78,7 @@
         <AssociationConnector Association="AdministratoroModel.FK__UserSet__Id_Loca__29572725" />
         <AssociationConnector Association="AdministratoroModel.FK__UserRight__Id_us__5535A963" />
         <AssociationConnector Association="AdministratoroModel.FK__UserSet__Id_User__2A4B4B5E" />
+        <AssociationConnector Association="AdministratoroModel.FK__Registrie__Id_Re__278EDA44" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -68,6 +68,7 @@
     <Compile Include="Managers\DocumentsManager.cs" />
     <Compile Include="Managers\EmailsManager.cs" />
     <Compile Include="Managers\ExpensesManager.cs" />
+    <Compile Include="Managers\FilesManager.cs" />
     <Compile Include="Managers\InvoiceIndexesManager.cs" />
     <Compile Include="Managers\InvoicesManager.cs" />
     <Compile Include="Managers\InvoicesSubcategoriesManager.cs" />
@@ -75,7 +76,9 @@
     <Compile Include="Managers\PartnersManager.cs" />
     <Compile Include="Managers\RecalculationManager.cs" />
     <Compile Include="Managers\RedistributionManager.cs" />
-    <Compile Include="Managers\RegistriesHome.cs" />
+    <Compile Include="Managers\RegistriesHomeDailyManager.cs" />
+    <Compile Include="Managers\RegistriesHomeManager.cs" />
+    <Compile Include="Managers\ReportingManager.cs" />
     <Compile Include="Managers\StairCasesManager.cs" />
     <Compile Include="Managers\ApartmentExpensesManager.cs" />
     <Compile Include="Managers\ApartmentsManager.cs" />

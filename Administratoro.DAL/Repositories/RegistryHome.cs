@@ -8,21 +8,20 @@ namespace Administratoro.DAL.Repositories
 
     public interface IRegistryHomeRepository
     {
-        List<RegistriesHome> GetByAssAndDate(int associationId, DateTime date);
+        List<RegistriesHome> GetByRegHomeDaily(int regHomeDailyId);
     }
 
     public partial class Repository : IRegistryHomeRepository
     {
-        public List<RegistriesHome> GetByAssAndDate(int associationId, DateTime date)
+        public List<RegistriesHome> GetByRegHomeDaily(int regHomeDailyId)
         {
             var registriesHome = new List<RegistriesHome>();
 
             _dbRead.Execute(
-                "RegistriesHomeGetByAssAndDate",
+                "RegistriesHomeGetByDailyId",
                 new[]
                 {
-                    new SqlParameter("@associationId", associationId),
-                    new SqlParameter("@TransactionDate", date),
+                    new SqlParameter("@regHomeDailyId", regHomeDailyId),
                 },
                 r => registriesHome.Add(new RegistriesHome()
                 {
@@ -32,8 +31,7 @@ namespace Administratoro.DAL.Repositories
                     DocumentNr = Read<string>(r, "DocumentNr"),
                     Income = Read<decimal?>(r, "Income"),
                     Outcome = Read<decimal?>(r, "Outcome"),
-                    Id_apartment = Read<int>(r, "Id_apartment"),
-                    TransactionDate = Read<DateTime>(r, "TransactionDate"),
+                    Id_apartment = Read<int>(r, "Id_apartment")
                 }));
 
             return registriesHome;

@@ -40,6 +40,7 @@ namespace Administratoro.Public.Controllers
 
             Session["userId"] = user.Id;
             Session["userName"] = user.Name;
+            Session["assId"] = user.id_Estate;
 
             return Json(new { response = JSONResponse.Success });
         }

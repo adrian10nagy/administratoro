@@ -34,7 +34,7 @@ namespace Administratoro.BL.Managers
         {
             return GetContext(true).AssociationExpenses.Where(
                 ee => ee.Id_Estate == associationId && ee.Year == year && ee.Month == month &&
-                !ee.WasDisabled && !ee.Expenses.specialType.HasValue && ee.Expenses.Id != 25);
+                !ee.WasDisabled && !ee.Expenses.specialType.HasValue && ee.Expenses.Id != (int)Expense.AjutorÎncălzire);
         }
 
         public static IEnumerable<AssociationExpenses> GetByMonthAndYearwithDiverse(int associationId, int year, int month)
@@ -43,6 +43,14 @@ namespace Administratoro.BL.Managers
                 ee => ee.Id_Estate == associationId &&
                 ee.Year == year && ee.Month == month &&
                 !ee.WasDisabled);
+        }
+
+        public static IEnumerable<AssociationExpenses> GetByMonthAndYearWithoutDiverse(int associationId, int year, int month)
+        {
+            return GetContext(true).AssociationExpenses.Where(
+                ee => ee.Id_Estate == associationId &&
+                ee.Year == year && ee.Month == month &&
+                !ee.WasDisabled && ee.Id_Expense != (int)Expense.Diverse);
         }
 
         public static IEnumerable<AssociationExpenses> GetFromLastestOpenedMonth(int associationId, bool shouldRefresh = false)
@@ -164,12 +172,11 @@ namespace Administratoro.BL.Managers
 
         public static void MarkAssociationExpensesDisableProperty(AssociationExpenses ee, bool isDisabled, bool? isStairCaseSplit)
         {
-            if (ee != null)
-            {
-                ee.WasDisabled = isDisabled;
-                ee.SplitPerStairCase = isStairCaseSplit;
-                GetContext().SaveChanges();
-            }
+            if (ee == null){return;}
+
+            ee.WasDisabled = isDisabled;
+            ee.SplitPerStairCase = isStairCaseSplit;
+            GetContext().SaveChanges();
         }
 
         public static void UpdateAssociationExpenseType(AssociationExpenses ee, ExpenseType selectedExpenseType)

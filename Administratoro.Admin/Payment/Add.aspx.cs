@@ -89,73 +89,22 @@ namespace Admin.Payment
                 return;
             }
 
-            // add homeregistry
-            RegistriesHome.Add(new Administratoro.DAL.RegistriesHome
-            {
-                Id_apartment = apartmentId,
-                Income = totalToPay,
-                DocumentNr = tbNr.Text,
-                Outcome = null,
-                TransactionDate = DateTime.Now,
-                CreatedDate = DateTime.Now,
-                Explanations = tbExplanations.Text,
-            });
-
-            List<Tuple<int, int, int, decimal, decimal?>> apDebts = new List<Tuple<int, int, int, decimal, decimal?>>();
-            // mark ApartmentDebts as payed„
-            if (sumOfChecked == totalToPay)
-            {
-                GetAllCheckedApDebts(apDebts);
-            }
-            else if (sumOfChecked < totalToPay)
-            {
-                GetAllCheckedApDebts(apDebts);
-                apDebts.Add(new Tuple<int, int, int, decimal, decimal?>(
-                    DateTime.Now.Year,
-                    DateTime.Now.Month,
-                    (int)DebtType.AdvancePay,
-                    totalToPay - sumOfChecked,
-                    null));
-                // plata in avans
-            }
-            else if (sumOfChecked > totalToPay)
-            {
-                // partially pay
-                GetAllCheckedApDebts(apDebts);
-                var items = drpWhatTpPayPartially.SelectedValue.Split('!');
-                int year;
-                int month;
-                int type;
-                decimal value;
-                if (items.Length == 4 && decimal.TryParse(items[3], out value) && int.TryParse(items[0], out year) &&
-                    int.TryParse(items[1], out month) && int.TryParse(items[2], out type))
-                {
-                    apDebts.Add(new Tuple<int, int, int, decimal, decimal?>(year, month, type, value, sumOfChecked - totalToPay));
-                }
-            }
-
-            ApartmentDebtsManager.Pay(apartmentId, apDebts);
-
-            lblValidationMessage.Text = "Plată salvată cu succes!";
-        }
-
-        private void GetAllCheckedApDebts(List<Tuple<int, int, int, decimal, decimal?>> apDebts)
-        {
+            List<string> whatToPay = new List<string>();
             foreach (ListItem item in chbWhatToPay.Items)
             {
-                if (!item.Selected) continue;
-
-                var items = item.Value.Split('!');
-                int year;
-                int month;
-                int type;
-                decimal value;
-                if (items.Length == 4 && decimal.TryParse(items[3], out value) && int.TryParse(items[0], out year) &&
-                    int.TryParse(items[1], out month) && int.TryParse(items[2], out type))
-                {
-                    apDebts.Add(new Tuple<int, int, int, decimal, decimal?>(year, month, type, value, null));
-                }
+                if (!item.Selected) { continue; }
+                whatToPay.Add(item.Value);
             }
+
+            DateTime date;
+            if (DateTime.TryParse(txtAddedDate.Text, out date))
+            {
+                RegistriesHomeManager.RegisterPay(sumOfChecked, totalToPay, apartmentId, whatToPay,
+                    tbNr.Text, tbExplanations.Text, drpWhatTpPayPartially.SelectedValue, Association.Id, date);
+
+                lblValidationMessage.Text = "Plată salvată cu succes!";
+            }
+
         }
 
         private void InitializeWhatCanPay()
@@ -166,7 +115,7 @@ namespace Admin.Payment
                 return;
             }
 
-            var apartmentDebts = ApartmentDebtsManager.Get(apartmentId, false);
+            var apartmentDebts = ApartmentDebtsManager.GetUnpayed(apartmentId, false);
 
             pnlWhatToPay.Visible = true;
             chbWhatToPay.Visible = true;

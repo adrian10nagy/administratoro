@@ -14,6 +14,7 @@ namespace Administratoro.BL.Managers
     {
         private static AdministratoroEntities _administratoroEntities;
 
+        #region Get
         private static AdministratoroEntities GetContext(bool shouldRefresh = false)
         {
             if (_administratoroEntities == null || shouldRefresh)
@@ -70,6 +71,70 @@ namespace Administratoro.BL.Managers
                 .Where(ae => ae.Id_EstateExpense == associationExpenseId && apps.Contains(ae.Apartments.Id))
                 .Sum(s => s.IndexNew - s.IndexOld);
         }
+
+        private static decimal? GetExpenseFromRaportListOnOrder(Expense expense, ExpenseReport raportList)
+        {
+            decimal? result = null;
+
+            switch (expense)
+            {
+                case Expense.Administrator:
+                    result = raportList.Administrator.HasValue ? raportList.Administrator : null;
+                    break;
+                case Expense.ApaCalda:
+                    result = raportList.WatherWarm.HasValue ? raportList.WatherWarm : null;
+                    break;
+                case Expense.ApaRece:
+                    result = raportList.WatherCold.HasValue ? raportList.WatherCold : null;
+                    break;
+                case Expense.Cenzor:
+                    result = raportList.Censor.HasValue ? raportList.Censor : null;
+                    break;
+                case Expense.EnergieElectrica:
+                    result = raportList.Electricity.HasValue ? raportList.Electricity : null;
+                    break;
+                case Expense.Fochist:
+                    result = raportList.Fireman.HasValue ? raportList.Fireman : null;
+                    break;
+                case Expense.Gaz:
+                    result = raportList.Gas.HasValue ? raportList.Gas : null;
+                    break;
+                case Expense.IncalzireRat:
+                    result = raportList.HeatRat.HasValue ? raportList.HeatRat : null;
+                    break;
+                case Expense.IntretinereInstalatii:
+                    result = raportList.Utilities.HasValue ? raportList.Utilities : null;
+                    break;
+                case Expense.Lift:
+                    result = raportList.Elevator.HasValue ? raportList.Elevator : null;
+                    break;
+                case Expense.PersonalServiciu:
+                    result = raportList.Cleaning.HasValue ? raportList.Cleaning : null;
+                    break;
+                case Expense.Presedinte:
+                    result = raportList.President.HasValue ? raportList.President : null;
+                    break;
+                case Expense.Salubritate:
+                    result = raportList.Trash.HasValue ? raportList.Trash : null;
+                    break;
+                case Expense.Diverse:
+                    result = raportList.Diverse.HasValue ? raportList.Diverse : null;
+                    break;
+                case Expense.AjutorÎncălzire:
+                    result = raportList.HeatHelp.HasValue ? raportList.HeatHelp : null;
+                    break;
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<ApartmentExpenses> GetPerMonthYear(int year, int month, int apartmentId)
+        {
+            return GetContext(true).ApartmentExpenses.Where(ae => ae.Id_Tenant == apartmentId &&
+                ae.AssociationExpenses.Month == month && ae.AssociationExpenses.Year == year);
+        }
+
+        #endregion
 
         internal static void RemoveApartmentExpense(int apartmentid, int estateExpenseId, int counterOrder)
         {
@@ -131,27 +196,28 @@ namespace Administratoro.BL.Managers
             if (apartments == null) allApartments = ApartmentsManager.Get(ee.Id_Estate);
 
             foreach (var apartment in allApartments)
-                if (apartment != null)
-                {
-                    var tte = GetByExpenseEstateIdAndApartmentId(idExpenseEstate, apartment.Id);
-                    if (tte != null)
-                    {
-                        tte.Value = valuePerApartment.HasValue ? valuePerApartment * apartment.Dependents : null;
-                        GetContext().Entry(tte).CurrentValues.SetValues(tte);
-                    }
-                    else
-                    {
-                        var te = new ApartmentExpenses
-                        {
-                            Value = valuePerApartment.HasValue ? valuePerApartment * apartment.Dependents : null,
-                            Id_Tenant = apartment.Id,
-                            Id_EstateExpense = ee.Id
-                        };
-                        GetContext().ApartmentExpenses.Add(te);
-                    }
+            {
+                if (apartment == null) { return; }
 
-                    GetContext().SaveChanges();
+                var tte = GetByExpenseEstateIdAndApartmentId(idExpenseEstate, apartment.Id);
+                if (tte != null)
+                {
+                    tte.Value = valuePerApartment.HasValue ? valuePerApartment * apartment.Dependents : null;
+                    GetContext().Entry(tte).CurrentValues.SetValues(tte);
                 }
+                else
+                {
+                    var te = new ApartmentExpenses
+                    {
+                        Value = valuePerApartment.HasValue ? valuePerApartment * apartment.Dependents : null,
+                        Id_Tenant = apartment.Id,
+                        Id_EstateExpense = ee.Id
+                    };
+                    GetContext().ApartmentExpenses.Add(te);
+                }
+
+                GetContext().SaveChanges();
+            }
         }
 
         internal static void AddPerApartmentsExpenses(int idExpenseEstate, decimal? valuePerApartment,
@@ -386,10 +452,12 @@ namespace Administratoro.BL.Managers
                     AddCotaIndivizaApartmentExpenses(apartments, associationExpense, value);
                 }
                 else if (associationExpense.Id_ExpenseType == (int)ExpenseType.PerNrTenants)
-                {
-                    var apartments =
-                        ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(associationExpense.Id_Estate,
-                            associationExpense.Id, stairCase);
+                { 
+                    //var apartments =
+                    //    ApartmentsManager.GetAllThatAreRegisteredWithSpecificCounters(associationExpense.Id_Estate,
+                    //        associationExpense.Id, stairCase);
+                    var apartments = ApartmentsManager.Get(associationExpense.Id_Estate);
+
 
                     UpdateApartmentExpensePerTenants(associationExpense, value, apartments);
                 }
@@ -901,62 +969,6 @@ namespace Administratoro.BL.Managers
             rowTotal.Add(string.Empty);
 
             dt.Rows.Add(rowTotal.ToArray());
-        }
-
-        private static decimal? GetExpenseFromRaportListOnOrder(Expense expense, ExpenseReport raportList)
-        {
-            decimal? result = null;
-
-            switch (expense)
-            {
-                case Expense.Administrator:
-                    result = raportList.Administrator.HasValue ? raportList.Administrator : null;
-                    break;
-                case Expense.ApaCalda:
-                    result = raportList.WatherWarm.HasValue ? raportList.WatherWarm : null;
-                    break;
-                case Expense.ApaRece:
-                    result = raportList.WatherCold.HasValue ? raportList.WatherCold : null;
-                    break;
-                case Expense.Cenzor:
-                    result = raportList.Censor.HasValue ? raportList.Censor : null;
-                    break;
-                case Expense.EnergieElectrica:
-                    result = raportList.Electricity.HasValue ? raportList.Electricity : null;
-                    break;
-                case Expense.Fochist:
-                    result = raportList.Fireman.HasValue ? raportList.Fireman : null;
-                    break;
-                case Expense.Gaz:
-                    result = raportList.Gas.HasValue ? raportList.Gas : null;
-                    break;
-                case Expense.IncalzireRat:
-                    result = raportList.HeatRat.HasValue ? raportList.HeatRat : null;
-                    break;
-                case Expense.IntretinereInstalatii:
-                    result = raportList.Utilities.HasValue ? raportList.Utilities : null;
-                    break;
-                case Expense.Lift:
-                    result = raportList.Elevator.HasValue ? raportList.Elevator : null;
-                    break;
-                case Expense.PersonalServiciu:
-                    result = raportList.Cleaning.HasValue ? raportList.Cleaning : null;
-                    break;
-                case Expense.Presedinte:
-                    result = raportList.President.HasValue ? raportList.President : null;
-                    break;
-                case Expense.Salubritate:
-                    result = raportList.Trash.HasValue ? raportList.Trash : null;
-                    break;
-                case Expense.Diverse:
-                    result = raportList.Diverse.HasValue ? raportList.Diverse : null;
-                    break;
-                case Expense.AjutorÎncălzire:
-                    result = raportList.HeatHelp.HasValue ? raportList.HeatHelp : null;
-                    break;
-            }
-
-            return result;
         }
 
         public static void ConfigureIndividual(AssociationExpenses ae, Apartments apartment)

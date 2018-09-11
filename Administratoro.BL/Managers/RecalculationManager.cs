@@ -10,7 +10,7 @@ namespace Administratoro.BL.Managers
     {
         public static void RecalculateMonthlyExpenses(int associationId, int year, int month)
         {
-            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearNotDisabled(associationId, year, month);
+            var associationExpenses = AssociationExpensesManager.GetByMonthAndYearWithoutDiverse(associationId, year, month);
 
             foreach (var associationExpense in associationExpenses)
             {

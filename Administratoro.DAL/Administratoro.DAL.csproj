@@ -58,6 +58,18 @@
     <Compile Include="ApartmentsDebt.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ApartmentsGetAllEnabledForHeatHelp_Result.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ApartmentsGetByAssStairCase_Result.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ApartmentsGetByAss_Result.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ApartmentsGetById_Result.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="AssociationCounters.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
@@ -145,6 +157,9 @@
     <Compile Include="PartnerTypes.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartnetGetByEmailPassword_Result.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Persons.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
@@ -152,10 +167,14 @@
     <Compile Include="RegistriesHome.cs">
       <DependentUpon>EFModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RegistriesHomeDaily.cs">
+      <DependentUpon>EFModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\Apartment.cs" />
     <Compile Include="Repositories\Document.cs" />
     <Compile Include="Repositories\Locality.cs" />
     <Compile Include="Repositories\Partner.cs" />
+    <Compile Include="Repositories\RegistryHomeDaily.cs" />
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\RegistryHome.cs" />
     <Compile Include="SDK\Apartments.cs" />
@@ -163,6 +182,7 @@
     <Compile Include="SDK\Localities.cs" />
     <Compile Include="SDK\Partners.cs" />
     <Compile Include="SDK\RegistriesHome.cs" />
+    <Compile Include="SDK\RegistriesHomeDaily.cs" />
     <Compile Include="Settings\Configure.cs" />
     <Compile Include="Settings\SqlDatabase.cs" />
     <Compile Include="sp_helpdiagramdefinition_Result.cs">

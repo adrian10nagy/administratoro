@@ -1,0 +1,25 @@
+﻿@model Administratoro.Public.Models.MonthlyExpenseDetails
+
+@{
+    ViewBag.Title = "Detalii";
+}
+@using System.Globalization;
+
+
+<h2>Detaliile lunii @CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Model.Month) @Model.Year</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ExpensesTotal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ExpensesTotal)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Descarcă lista cu cheltuieli", "DownloadPDF", new { path = Model.FilePath}) 
+</p>

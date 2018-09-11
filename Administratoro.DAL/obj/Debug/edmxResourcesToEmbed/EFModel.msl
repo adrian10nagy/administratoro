@@ -25,6 +25,102 @@
     </FunctionImportMapping>
     <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="AdministratoroModel.Store.sp_renamediagram" />
     <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="AdministratoroModel.Store.sp_upgraddiagrams" />
+    <FunctionImportMapping FunctionImportName="ApartmentsGetAllEnabledForHeatHelp" FunctionName="AdministratoroModel.Store.ApartmentsGetAllEnabledForHeatHelp">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="AdministratoroModel.ApartmentsGetAllEnabledForHeatHelp_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ExtraInfo" ColumnName="ExtraInfo" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Dependents" ColumnName="Dependents" />
+          <ScalarProperty Name="id_Estate" ColumnName="id_Estate" />
+          <ScalarProperty Name="CotaIndiviza" ColumnName="CotaIndiviza" />
+          <ScalarProperty Name="Number" ColumnName="Number" />
+          <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
+          <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="ApartmentsGetByAss" FunctionName="AdministratoroModel.Store.ApartmentsGetByAss">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="AdministratoroModel.ApartmentsGetByAss_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ExtraInfo" ColumnName="ExtraInfo" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Dependents" ColumnName="Dependents" />
+          <ScalarProperty Name="id_Estate" ColumnName="id_Estate" />
+          <ScalarProperty Name="CotaIndiviza" ColumnName="CotaIndiviza" />
+          <ScalarProperty Name="Number" ColumnName="Number" />
+          <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
+          <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="ApartmentsGetByAssStairCase" FunctionName="AdministratoroModel.Store.ApartmentsGetByAssStairCase">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="AdministratoroModel.ApartmentsGetByAssStairCase_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ExtraInfo" ColumnName="ExtraInfo" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Dependents" ColumnName="Dependents" />
+          <ScalarProperty Name="id_Estate" ColumnName="id_Estate" />
+          <ScalarProperty Name="CotaIndiviza" ColumnName="CotaIndiviza" />
+          <ScalarProperty Name="Number" ColumnName="Number" />
+          <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
+          <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="ApartmentsGetById" FunctionName="AdministratoroModel.Store.ApartmentsGetById">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="AdministratoroModel.ApartmentsGetById_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ExtraInfo" ColumnName="ExtraInfo" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Dependents" ColumnName="Dependents" />
+          <ScalarProperty Name="id_Estate" ColumnName="id_Estate" />
+          <ScalarProperty Name="CotaIndiviza" ColumnName="CotaIndiviza" />
+          <ScalarProperty Name="Number" ColumnName="Number" />
+          <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
+          <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="ApartmentsGetDependentsNr" FunctionName="AdministratoroModel.Store.ApartmentsGetDependentsNr" />
+    <FunctionImportMapping FunctionImportName="ApartmentsGetDependentsNrForStairCase" FunctionName="AdministratoroModel.Store.ApartmentsGetDependentsNrForStairCase" />
+    <FunctionImportMapping FunctionImportName="ApartmentsGetSumOfIndiviza" FunctionName="AdministratoroModel.Store.ApartmentsGetSumOfIndiviza" />
+    <FunctionImportMapping FunctionImportName="DocumentApartmentFlyersAdd" FunctionName="AdministratoroModel.Store.DocumentApartmentFlyersAdd" />
+    <FunctionImportMapping FunctionImportName="PartnetGetByEmailPassword" FunctionName="AdministratoroModel.Store.PartnetGetByEmailPassword">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="AdministratoroModel.PartnetGetByEmailPassword_Result">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Telephone" ColumnName="Telephone" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Id_Locality" ColumnName="Id_Locality" />
+          <ScalarProperty Name="Id_PartnerType" ColumnName="Id_PartnerType" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="SeenTutorial" ColumnName="SeenTutorial" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
     <EntitySetMapping Name="ApartmentExpenses">
       <EntityTypeMapping TypeName="AdministratoroModel.ApartmentExpenses">
         <MappingFragment StoreEntitySet="ApartmentExpenses">
@@ -50,6 +146,8 @@
     <EntitySetMapping Name="Apartments">
       <EntityTypeMapping TypeName="AdministratoroModel.Apartments">
         <MappingFragment StoreEntitySet="Apartments">
+          <ScalarProperty Name="FondReparatii" ColumnName="FondReparatii" />
+          <ScalarProperty Name="FondRulment" ColumnName="FondRulment" />
           <ScalarProperty Name="HasHeatHelp" ColumnName="HasHeatHelp" />
           <ScalarProperty Name="Id_StairCase" ColumnName="Id_StairCase" />
           <ScalarProperty Name="Number" ColumnName="Number" />
@@ -69,6 +167,7 @@
     <EntitySetMapping Name="ApartmentsDebt">
       <EntityTypeMapping TypeName="AdministratoroModel.ApartmentsDebt">
         <MappingFragment StoreEntitySet="ApartmentsDebt">
+          <ScalarProperty Name="created" ColumnName="created" />
           <ScalarProperty Name="RemainingToPay" ColumnName="RemainingToPay" />
           <ScalarProperty Name="Id_debtType" ColumnName="Id_debtType" />
           <ScalarProperty Name="Id_Apartament" ColumnName="Id_Apartament" />
@@ -339,12 +438,23 @@
     <EntitySetMapping Name="RegistriesHome">
       <EntityTypeMapping TypeName="AdministratoroModel.RegistriesHome">
         <MappingFragment StoreEntitySet="RegistriesHome">
+          <ScalarProperty Name="Id_RegHomeDaily" ColumnName="Id_RegHomeDaily" />
           <ScalarProperty Name="Id_apartment" ColumnName="Id_apartment" />
           <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
           <ScalarProperty Name="Outcome" ColumnName="Outcome" />
           <ScalarProperty Name="Income" ColumnName="Income" />
           <ScalarProperty Name="Explanations" ColumnName="Explanations" />
           <ScalarProperty Name="DocumentNr" ColumnName="DocumentNr" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RegistriesHomeDaily">
+      <EntityTypeMapping TypeName="AdministratoroModel.RegistriesHomeDaily">
+        <MappingFragment StoreEntitySet="RegistriesHomeDaily">
+          <ScalarProperty Name="Id_association" ColumnName="Id_association" />
+          <ScalarProperty Name="ClosingAmount" ColumnName="ClosingAmount" />
+          <ScalarProperty Name="OpeningAmount" ColumnName="OpeningAmount" />
           <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>

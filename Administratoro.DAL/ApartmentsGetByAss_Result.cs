@@ -10,20 +10,21 @@
 namespace Administratoro.DAL
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class RegistriesHome
+    public partial class ApartmentsGetByAss_Result
     {
         public int Id { get; set; }
-        public string DocumentNr { get; set; }
-        public string Explanations { get; set; }
-        public Nullable<decimal> Income { get; set; }
-        public Nullable<decimal> Outcome { get; set; }
+        public string ExtraInfo { get; set; }
+        public string Email { get; set; }
+        public string Telephone { get; set; }
         public System.DateTime CreatedDate { get; set; }
-        public int Id_apartment { get; set; }
-        public Nullable<int> Id_RegHomeDaily { get; set; }
-    
-        public virtual Apartments Apartments { get; set; }
-        public virtual RegistriesHomeDaily RegistriesHomeDaily { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+        public int Dependents { get; set; }
+        public int id_Estate { get; set; }
+        public Nullable<decimal> CotaIndiviza { get; set; }
+        public int Number { get; set; }
+        public Nullable<int> Id_StairCase { get; set; }
+        public Nullable<bool> HasHeatHelp { get; set; }
     }
 }

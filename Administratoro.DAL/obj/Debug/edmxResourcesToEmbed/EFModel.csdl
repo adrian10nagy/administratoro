@@ -31,6 +31,45 @@
       <Parameter Name="new_diagramname" Mode="In" Type="String" />
     </FunctionImport>
     <FunctionImport Name="sp_upgraddiagrams" />
+    <FunctionImport Name="ApartmentsGetAllEnabledForHeatHelp" ReturnType="Collection(AdministratoroModel.ApartmentsGetAllEnabledForHeatHelp_Result)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ApartmentsGetByAss" ReturnType="Collection(AdministratoroModel.ApartmentsGetByAss_Result)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ApartmentsGetByAssStairCase" ReturnType="Collection(AdministratoroModel.ApartmentsGetByAssStairCase_Result)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+      <Parameter Name="stairCaseId" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ApartmentsGetById" ReturnType="Collection(AdministratoroModel.ApartmentsGetById_Result)">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ApartmentsGetDependentsNr" ReturnType="Collection(Int32)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ApartmentsGetDependentsNrForStairCase" ReturnType="Collection(Int32)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+      <Parameter Name="stairCase" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ApartmentsGetSumOfIndiviza" ReturnType="Collection(Decimal)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="DocumentApartmentFlyersAdd" ReturnType="Collection(Int32)">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+      <Parameter Name="apartmentId" Mode="In" Type="Int32" />
+      <Parameter Name="year" Mode="In" Type="Int32" />
+      <Parameter Name="month" Mode="In" Type="Int32" />
+      <Parameter Name="fileToPut" Mode="In" Type="String" />
+      <Parameter Name="fileType" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="PartnetGetByEmailPassword" ReturnType="Collection(AdministratoroModel.PartnetGetByEmailPassword_Result)">
+      <Parameter Name="email" Mode="In" Type="String" />
+      <Parameter Name="password" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="RegistriesHomeGetByAssAndDate">
+      <Parameter Name="associationId" Mode="In" Type="Int32" />
+      <Parameter Name="TransactionDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
     <EntitySet Name="ApartmentExpenses" EntityType="AdministratoroModel.ApartmentExpenses" />
     <EntitySet Name="ApartmentPersons" EntityType="AdministratoroModel.ApartmentPersons" />
     <EntitySet Name="Apartments" EntityType="AdministratoroModel.Apartments" />
@@ -59,6 +98,7 @@
     <EntitySet Name="PartnerTypes" EntityType="AdministratoroModel.PartnerTypes" />
     <EntitySet Name="Persons" EntityType="AdministratoroModel.Persons" />
     <EntitySet Name="RegistriesHome" EntityType="AdministratoroModel.RegistriesHome" />
+    <EntitySet Name="RegistriesHomeDaily" EntityType="AdministratoroModel.RegistriesHomeDaily" />
     <EntitySet Name="StairCases" EntityType="AdministratoroModel.StairCases" />
     <EntitySet Name="sysdiagrams" EntityType="AdministratoroModel.sysdiagrams" />
     <AssociationSet Name="FK__TenantExp__Id_Es__0F624AF8" Association="AdministratoroModel.FK__TenantExp__Id_Es__0F624AF8">
@@ -181,6 +221,10 @@
       <End Role="Partners" EntitySet="Partners" />
       <End Role="Associations" EntitySet="Associations" />
     </AssociationSet>
+    <AssociationSet Name="FK__Registrie__Id_as__269AB60B" Association="AdministratoroModel.FK__Registrie__Id_as__269AB60B">
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="RegistriesHomeDaily" EntitySet="RegistriesHomeDaily" />
+    </AssociationSet>
     <AssociationSet Name="FK__StairCase__Id_Es__4F47C5E3" Association="AdministratoroModel.FK__StairCase__Id_Es__4F47C5E3">
       <End Role="Associations" EntitySet="Associations" />
       <End Role="StairCases" EntitySet="StairCases" />
@@ -225,6 +269,10 @@
       <End Role="PartnerTypes" EntitySet="PartnerTypes" />
       <End Role="Partners" EntitySet="Partners" />
     </AssociationSet>
+    <AssociationSet Name="FK__Registrie__Id_Re__278EDA44" Association="AdministratoroModel.FK__Registrie__Id_Re__278EDA44">
+      <End Role="RegistriesHomeDaily" EntitySet="RegistriesHomeDaily" />
+      <End Role="RegistriesHome" EntitySet="RegistriesHome" />
+    </AssociationSet>
   </EntityContainer>
   <ComplexType Name="sp_helpdiagramdefinition_Result">
     <Property Type="Int32" Name="version" Nullable="true" />
@@ -236,6 +284,78 @@
     <Property Type="Int32" Name="ID" Nullable="false" />
     <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
     <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="ApartmentsGetAllEnabledForHeatHelp_Result">
+    <Property Type="Int32" Name="Id" Nullable="false" />
+    <Property Type="String" Name="ExtraInfo" Nullable="true" />
+    <Property Type="String" Name="Email" Nullable="true" />
+    <Property Type="String" Name="Telephone" Nullable="true" />
+    <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+    <Property Type="String" Name="Password" Nullable="true" />
+    <Property Type="String" Name="Name" Nullable="false" />
+    <Property Type="Int32" Name="Dependents" Nullable="false" />
+    <Property Type="Int32" Name="id_Estate" Nullable="false" />
+    <Property Type="Decimal" Name="CotaIndiviza" Nullable="true" Precision="14" Scale="4" />
+    <Property Type="Int32" Name="Number" Nullable="false" />
+    <Property Type="Int32" Name="Id_StairCase" Nullable="true" />
+    <Property Type="Boolean" Name="HasHeatHelp" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="ApartmentsGetByAss_Result">
+    <Property Type="Int32" Name="Id" Nullable="false" />
+    <Property Type="String" Name="ExtraInfo" Nullable="true" />
+    <Property Type="String" Name="Email" Nullable="true" />
+    <Property Type="String" Name="Telephone" Nullable="true" />
+    <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+    <Property Type="String" Name="Password" Nullable="true" />
+    <Property Type="String" Name="Name" Nullable="false" />
+    <Property Type="Int32" Name="Dependents" Nullable="false" />
+    <Property Type="Int32" Name="id_Estate" Nullable="false" />
+    <Property Type="Decimal" Name="CotaIndiviza" Nullable="true" Precision="14" Scale="4" />
+    <Property Type="Int32" Name="Number" Nullable="false" />
+    <Property Type="Int32" Name="Id_StairCase" Nullable="true" />
+    <Property Type="Boolean" Name="HasHeatHelp" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="ApartmentsGetByAssStairCase_Result">
+    <Property Type="Int32" Name="Id" Nullable="false" />
+    <Property Type="String" Name="ExtraInfo" Nullable="true" />
+    <Property Type="String" Name="Email" Nullable="true" />
+    <Property Type="String" Name="Telephone" Nullable="true" />
+    <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+    <Property Type="String" Name="Password" Nullable="true" />
+    <Property Type="String" Name="Name" Nullable="false" />
+    <Property Type="Int32" Name="Dependents" Nullable="false" />
+    <Property Type="Int32" Name="id_Estate" Nullable="false" />
+    <Property Type="Decimal" Name="CotaIndiviza" Nullable="true" Precision="14" Scale="4" />
+    <Property Type="Int32" Name="Number" Nullable="false" />
+    <Property Type="Int32" Name="Id_StairCase" Nullable="true" />
+    <Property Type="Boolean" Name="HasHeatHelp" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="ApartmentsGetById_Result">
+    <Property Type="Int32" Name="Id" Nullable="false" />
+    <Property Type="String" Name="ExtraInfo" Nullable="true" />
+    <Property Type="String" Name="Email" Nullable="true" />
+    <Property Type="String" Name="Telephone" Nullable="true" />
+    <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+    <Property Type="String" Name="Password" Nullable="true" />
+    <Property Type="String" Name="Name" Nullable="false" />
+    <Property Type="Int32" Name="Dependents" Nullable="false" />
+    <Property Type="Int32" Name="id_Estate" Nullable="false" />
+    <Property Type="Decimal" Name="CotaIndiviza" Nullable="true" Precision="14" Scale="4" />
+    <Property Type="Int32" Name="Number" Nullable="false" />
+    <Property Type="Int32" Name="Id_StairCase" Nullable="true" />
+    <Property Type="Boolean" Name="HasHeatHelp" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="PartnetGetByEmailPassword_Result">
+    <Property Type="Int32" Name="Id" Nullable="false" />
+    <Property Type="String" Name="Address" Nullable="false" />
+    <Property Type="String" Name="Email" Nullable="false" />
+    <Property Type="String" Name="Telephone" Nullable="false" />
+    <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+    <Property Type="String" Name="Password" Nullable="false" />
+    <Property Type="Int32" Name="Id_Locality" Nullable="false" />
+    <Property Type="Int32" Name="Id_PartnerType" Nullable="false" />
+    <Property Type="String" Name="Name" Nullable="false" />
+    <Property Type="Boolean" Name="SeenTutorial" Nullable="true" />
   </ComplexType>
   <EntityType Name="ApartmentExpenses">
     <Key>
@@ -278,6 +398,8 @@
     <Property Name="Number" Type="Int32" Nullable="false" />
     <Property Name="Id_StairCase" Type="Int32" />
     <Property Name="HasHeatHelp" Type="Boolean" />
+    <Property Name="FondRulment" Type="Decimal" Precision="30" Scale="4" />
+    <Property Name="FondReparatii" Type="Decimal" Precision="30" Scale="4" />
     <NavigationProperty Name="ApartmentExpenses" Relationship="AdministratoroModel.FK__TenantExp__Id_Te__0E6E26BF" FromRole="Apartments" ToRole="ApartmentExpenses" />
     <NavigationProperty Name="ApartmentPersons" Relationship="AdministratoroModel.FK__TenantPer__Id_Te__4CA06362" FromRole="Apartments" ToRole="ApartmentPersons" />
     <NavigationProperty Name="ApartmentsDebt" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__00750D23" FromRole="Apartments" ToRole="ApartmentsDebt" />
@@ -299,6 +421,7 @@
     <Property Name="Id_Apartament" Type="Int32" Nullable="false" />
     <Property Name="Id_debtType" Type="Int32" Nullable="false" />
     <Property Name="RemainingToPay" Type="Decimal" Precision="30" Scale="4" />
+    <Property Name="created" Type="DateTime" Precision="3" />
     <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__Apartment__Id_Ap__00750D23" FromRole="ApartmentsDebt" ToRole="Apartments" />
     <NavigationProperty Name="DebtTypes" Relationship="AdministratoroModel.FK__Apartment__Id_de__0169315C" FromRole="ApartmentsDebt" ToRole="DebtTypes" />
   </EntityType>
@@ -405,6 +528,7 @@
     <NavigationProperty Name="DocumentApartmentFlyers" Relationship="AdministratoroModel.FK__DocumentA__Assoc__5A4F643B" FromRole="Associations" ToRole="DocumentApartmentFlyers" />
     <NavigationProperty Name="DocumentAssociationMonthlyExpenses" Relationship="AdministratoroModel.FK__DocumentA__Assoc__5E1FF51F" FromRole="Associations" ToRole="DocumentAssociationMonthlyExpenses" />
     <NavigationProperty Name="Partners" Relationship="AdministratoroModel.FK__Estates__Id_Part__5CD6CB2B" FromRole="Associations" ToRole="Partners" />
+    <NavigationProperty Name="RegistriesHomeDaily" Relationship="AdministratoroModel.FK__Registrie__Id_as__269AB60B" FromRole="Associations" ToRole="RegistriesHomeDaily" />
     <NavigationProperty Name="StairCases" Relationship="AdministratoroModel.FK__StairCase__Id_Es__4F47C5E3" FromRole="Associations" ToRole="StairCases" />
   </EntityType>
   <EntityType Name="DebtTypes">
@@ -603,14 +727,27 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="0" />
     <Property Name="DocumentNr" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
     <Property Name="Explanations" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
     <Property Name="Income" Type="Decimal" Precision="30" Scale="4" />
     <Property Name="Outcome" Type="Decimal" Precision="30" Scale="4" />
     <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
     <Property Name="Id_apartment" Type="Int32" Nullable="false" />
+    <Property Name="Id_RegHomeDaily" Type="Int32" />
     <NavigationProperty Name="Apartments" Relationship="AdministratoroModel.FK__Registrie__Id_ap__0EC32C7A" FromRole="RegistriesHome" ToRole="Apartments" />
+    <NavigationProperty Name="RegistriesHomeDaily" Relationship="AdministratoroModel.FK__Registrie__Id_Re__278EDA44" FromRole="RegistriesHome" ToRole="RegistriesHomeDaily" />
+  </EntityType>
+  <EntityType Name="RegistriesHomeDaily">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="OpeningAmount" Type="Decimal" Nullable="false" Precision="30" Scale="4" />
+    <Property Name="ClosingAmount" Type="Decimal" Nullable="false" Precision="30" Scale="4" />
+    <Property Name="Id_association" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Associations" Relationship="AdministratoroModel.FK__Registrie__Id_as__269AB60B" FromRole="RegistriesHomeDaily" ToRole="Associations" />
+    <NavigationProperty Name="RegistriesHome" Relationship="AdministratoroModel.FK__Registrie__Id_Re__278EDA44" FromRole="RegistriesHomeDaily" ToRole="RegistriesHome" />
   </EntityType>
   <EntityType Name="StairCases">
     <Key>
@@ -995,6 +1132,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__Registrie__Id_as__269AB60B">
+    <End Type="AdministratoroModel.Associations" Role="Associations" Multiplicity="1" />
+    <End Type="AdministratoroModel.RegistriesHomeDaily" Role="RegistriesHomeDaily" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Associations">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="RegistriesHomeDaily">
+        <PropertyRef Name="Id_association" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__StairCase__Id_Es__4F47C5E3">
     <End Type="AdministratoroModel.Associations" Role="Associations" Multiplicity="1" />
     <End Type="AdministratoroModel.StairCases" Role="StairCases" Multiplicity="*" />
@@ -1124,6 +1273,18 @@
       </Principal>
       <Dependent Role="Partners">
         <PropertyRef Name="Id_PartnerType" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Registrie__Id_Re__278EDA44">
+    <End Type="AdministratoroModel.RegistriesHomeDaily" Role="RegistriesHomeDaily" Multiplicity="0..1" />
+    <End Type="AdministratoroModel.RegistriesHome" Role="RegistriesHome" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RegistriesHomeDaily">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="RegistriesHome">
+        <PropertyRef Name="Id_RegHomeDaily" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

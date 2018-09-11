@@ -76,6 +76,22 @@
                 </div>
             </div>
 
+            <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Fond de rulment</label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <input type="text" class="form-control  has-feedback-left" id="txtfondRulment" runat="server" autocomplete="off">
+                    <span class="fa fa-phone form-control-feedback left" aria-hidden="true"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">Fond de reparații</label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <input type="text" class="form-control  has-feedback-left" id="txtFondRepairs" runat="server" autocomplete="off">
+                    <span class="fa fa-phone form-control-feedback left" aria-hidden="true"></span>
+                </div>
+            </div>
+
             <div class="item form-group col-md-12">
               <b> <span>Primește ajutor de încălzire:</span></b>
                 <asp:RadioButtonList ID="userHeatHelp" runat="server"

@@ -37,6 +37,8 @@ namespace Administratoro.DAL
         public int Number { get; set; }
         public Nullable<int> Id_StairCase { get; set; }
         public Nullable<bool> HasHeatHelp { get; set; }
+        public Nullable<decimal> FondRulment { get; set; }
+        public Nullable<decimal> FondReparatii { get; set; }
     
         public virtual ICollection<ApartmentExpenses> ApartmentExpenses { get; set; }
         public virtual ICollection<ApartmentPersons> ApartmentPersons { get; set; }

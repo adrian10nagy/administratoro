@@ -78,6 +78,9 @@ namespace Admin
                 sb.Append("- Suma cotelor de indiviză a apartamentelor este de <b>" + sumApartmentIndiviza.ToString() + "</b>. Trebuie sa fie <b>100 (100%)</b>  <a href='Associations/Index.aspx'>Modifică</a><br />");
             }
 
+            sb.Append("- Numărul apartamentelor:" + Association.Apartments.Count + " <br />");
+            sb.Append("- Numărul locatarilor:" + Association.Apartments.Sum(a => a.Dependents) + " <br />");
+
             if (string.IsNullOrEmpty(sb.ToString()))
             {
                 sb.Append("- nici o notă/atenționare");

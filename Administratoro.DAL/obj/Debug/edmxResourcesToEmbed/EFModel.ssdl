@@ -37,6 +37,8 @@
     <Property Name="Number" Type="int" Nullable="false" />
     <Property Name="Id_StairCase" Type="int" />
     <Property Name="HasHeatHelp" Type="bit" />
+    <Property Name="FondRulment" Type="decimal" Precision="30" Scale="4" />
+    <Property Name="FondReparatii" Type="decimal" Precision="30" Scale="4" />
   </EntityType>
   <EntityType Name="ApartmentsDebt">
     <Key>
@@ -50,6 +52,7 @@
     <Property Name="Id_Apartament" Type="int" Nullable="false" />
     <Property Name="Id_debtType" Type="int" Nullable="false" />
     <Property Name="RemainingToPay" Type="decimal" Precision="30" Scale="4" />
+    <Property Name="created" Type="datetime" />
   </EntityType>
   <EntityType Name="AssociationCounters">
     <Key>
@@ -289,13 +292,23 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="TransactionDate" Type="date" Nullable="false" />
     <Property Name="DocumentNr" Type="nvarchar" MaxLength="250" Nullable="false" />
     <Property Name="Explanations" Type="nvarchar" MaxLength="250" />
     <Property Name="Income" Type="decimal" Precision="30" Scale="4" />
     <Property Name="Outcome" Type="decimal" Precision="30" Scale="4" />
     <Property Name="CreatedDate" Type="datetime" Nullable="false" />
     <Property Name="Id_apartment" Type="int" Nullable="false" />
+    <Property Name="Id_RegHomeDaily" Type="int" />
+  </EntityType>
+  <EntityType Name="RegistriesHomeDaily">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TransactionDate" Type="date" Nullable="false" />
+    <Property Name="OpeningAmount" Type="decimal" Precision="30" Scale="4" Nullable="false" />
+    <Property Name="ClosingAmount" Type="decimal" Precision="30" Scale="4" Nullable="false" />
+    <Property Name="Id_association" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="StairCases">
     <Key>
@@ -676,6 +689,30 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__Registrie__Id_as__269AB60B">
+    <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
+    <End Role="RegistriesHomeDaily" Type="Self.RegistriesHomeDaily" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Associations">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="RegistriesHomeDaily">
+        <PropertyRef Name="Id_association" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__Registrie__Id_Re__278EDA44">
+    <End Role="RegistriesHomeDaily" Type="Self.RegistriesHomeDaily" Multiplicity="0..1" />
+    <End Role="RegistriesHome" Type="Self.RegistriesHome" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RegistriesHomeDaily">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="RegistriesHome">
+        <PropertyRef Name="Id_RegHomeDaily" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__StairCase__Id_Es__4F47C5E3">
     <End Role="Associations" Type="Self.Associations" Multiplicity="1" />
     <End Role="StairCases" Type="Self.StairCases" Multiplicity="*" />
@@ -808,7 +845,42 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Function Name="ApartmentsGetAllEnabledForHeatHelp" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+  </Function>
+  <Function Name="ApartmentsGetByAss" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+  </Function>
+  <Function Name="ApartmentsGetByAssStairCase" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+    <Parameter Name="stairCaseId" Type="int" Mode="In" />
+  </Function>
+  <Function Name="ApartmentsGetById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="ApartmentsGetDependentsNr" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+  </Function>
+  <Function Name="ApartmentsGetDependentsNrForStairCase" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+    <Parameter Name="stairCase" Type="int" Mode="In" />
+  </Function>
+  <Function Name="ApartmentsGetSumOfIndiviza" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+  </Function>
+  <Function Name="DocumentApartmentFlyersAdd" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="associationId" Type="int" Mode="In" />
+    <Parameter Name="apartmentId" Type="int" Mode="In" />
+    <Parameter Name="year" Type="int" Mode="In" />
+    <Parameter Name="month" Type="int" Mode="In" />
+    <Parameter Name="fileToPut" Type="varchar(max)" Mode="In" />
+    <Parameter Name="fileType" Type="varchar(max)" Mode="In" />
+  </Function>
   <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
+  <Function Name="PartnetGetByEmailPassword" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="email" Type="nvarchar(max)" Mode="In" />
+    <Parameter Name="password" Type="nvarchar(max)" Mode="In" />
+  </Function>
   <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
     <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
     <Parameter Name="owner_id" Type="int" Mode="In" />
@@ -868,6 +940,7 @@
     <EntitySet Name="PartnerTypes" EntityType="Self.PartnerTypes" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="RegistriesHome" EntityType="Self.RegistriesHome" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="RegistriesHomeDaily" EntityType="Self.RegistriesHomeDaily" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="StairCases" EntityType="Self.StairCases" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
     <AssociationSet Name="FK__Apartment__Id_Ap__00750D23" Association="Self.FK__Apartment__Id_Ap__00750D23">
@@ -988,6 +1061,14 @@
     </AssociationSet>
     <AssociationSet Name="FK__Registrie__Id_ap__0EC32C7A" Association="Self.FK__Registrie__Id_ap__0EC32C7A">
       <End Role="Apartments" EntitySet="Apartments" />
+      <End Role="RegistriesHome" EntitySet="RegistriesHome" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Registrie__Id_as__269AB60B" Association="Self.FK__Registrie__Id_as__269AB60B">
+      <End Role="Associations" EntitySet="Associations" />
+      <End Role="RegistriesHomeDaily" EntitySet="RegistriesHomeDaily" />
+    </AssociationSet>
+    <AssociationSet Name="FK__Registrie__Id_Re__278EDA44" Association="Self.FK__Registrie__Id_Re__278EDA44">
+      <End Role="RegistriesHomeDaily" EntitySet="RegistriesHomeDaily" />
       <End Role="RegistriesHome" EntitySet="RegistriesHome" />
     </AssociationSet>
     <AssociationSet Name="FK__StairCase__Id_Es__4F47C5E3" Association="Self.FK__StairCase__Id_Es__4F47C5E3">

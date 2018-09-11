@@ -126,7 +126,7 @@ namespace Administratoro.DAL.Repositories
 
         public Apartments Get(int id)
         {
-            var apartment = new Apartments();
+            Apartments apartment = null;
 
             _dbRead.Execute(
                 "ApartmentsGetById",
@@ -148,7 +148,9 @@ namespace Administratoro.DAL.Repositories
                     ExtraInfo = Read<string>(r, "ExtraInfo"),
                     Dependents = Read<int>(r, "Dependents"),
                     CreatedDate = Read<DateTime>(r, "CreatedDate"),
-                    CotaIndiviza = Read<decimal?>(r, "CotaIndiviza")
+                    CotaIndiviza = Read<decimal?>(r, "CotaIndiviza"),
+                    FondRulment = Read<decimal?>(r, "FondRulment"),
+                    FondReparatii = Read<decimal?>(r, "FondReparatii")
                 });
 
             return apartment;

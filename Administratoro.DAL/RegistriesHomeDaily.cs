@@ -12,19 +12,20 @@ namespace Administratoro.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class ApartmentsDebt
+    public partial class RegistriesHomeDaily
     {
-        public int Id { get; set; }
-        public Nullable<decimal> Value { get; set; }
-        public int Year { get; set; }
-        public int Month { get; set; }
-        public bool IsPayed { get; set; }
-        public int Id_Apartament { get; set; }
-        public int Id_debtType { get; set; }
-        public Nullable<decimal> RemainingToPay { get; set; }
-        public Nullable<System.DateTime> created { get; set; }
+        public RegistriesHomeDaily()
+        {
+            this.RegistriesHome = new HashSet<RegistriesHome>();
+        }
     
-        public virtual Apartments Apartments { get; set; }
-        public virtual DebtTypes DebtTypes { get; set; }
+        public int Id { get; set; }
+        public System.DateTime TransactionDate { get; set; }
+        public decimal OpeningAmount { get; set; }
+        public decimal ClosingAmount { get; set; }
+        public int Id_association { get; set; }
+    
+        public virtual Associations Associations { get; set; }
+        public virtual ICollection<RegistriesHome> RegistriesHome { get; set; }
     }
 }

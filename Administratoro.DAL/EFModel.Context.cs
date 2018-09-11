@@ -55,6 +55,7 @@ namespace Administratoro.DAL
         public virtual DbSet<PartnerTypes> PartnerTypes { get; set; }
         public virtual DbSet<Persons> Persons { get; set; }
         public virtual DbSet<RegistriesHome> RegistriesHome { get; set; }
+        public virtual DbSet<RegistriesHomeDaily> RegistriesHomeDaily { get; set; }
         public virtual DbSet<StairCases> StairCases { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
     
@@ -159,6 +160,132 @@ namespace Administratoro.DAL
         public virtual int sp_upgraddiagrams()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
+        }
+    
+        public virtual ObjectResult<ApartmentsGetAllEnabledForHeatHelp_Result> ApartmentsGetAllEnabledForHeatHelp(Nullable<int> associationId)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ApartmentsGetAllEnabledForHeatHelp_Result>("ApartmentsGetAllEnabledForHeatHelp", associationIdParameter);
+        }
+    
+        public virtual ObjectResult<ApartmentsGetByAss_Result> ApartmentsGetByAss(Nullable<int> associationId)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ApartmentsGetByAss_Result>("ApartmentsGetByAss", associationIdParameter);
+        }
+    
+        public virtual ObjectResult<ApartmentsGetByAssStairCase_Result> ApartmentsGetByAssStairCase(Nullable<int> associationId, Nullable<int> stairCaseId)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            var stairCaseIdParameter = stairCaseId.HasValue ?
+                new ObjectParameter("stairCaseId", stairCaseId) :
+                new ObjectParameter("stairCaseId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ApartmentsGetByAssStairCase_Result>("ApartmentsGetByAssStairCase", associationIdParameter, stairCaseIdParameter);
+        }
+    
+        public virtual ObjectResult<ApartmentsGetById_Result> ApartmentsGetById(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ApartmentsGetById_Result>("ApartmentsGetById", idParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> ApartmentsGetDependentsNr(Nullable<int> associationId)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ApartmentsGetDependentsNr", associationIdParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> ApartmentsGetDependentsNrForStairCase(Nullable<int> associationId, Nullable<int> stairCase)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            var stairCaseParameter = stairCase.HasValue ?
+                new ObjectParameter("stairCase", stairCase) :
+                new ObjectParameter("stairCase", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("ApartmentsGetDependentsNrForStairCase", associationIdParameter, stairCaseParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<decimal>> ApartmentsGetSumOfIndiviza(Nullable<int> associationId)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<decimal>>("ApartmentsGetSumOfIndiviza", associationIdParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> DocumentApartmentFlyersAdd(Nullable<int> associationId, Nullable<int> apartmentId, Nullable<int> year, Nullable<int> month, string fileToPut, string fileType)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            var apartmentIdParameter = apartmentId.HasValue ?
+                new ObjectParameter("apartmentId", apartmentId) :
+                new ObjectParameter("apartmentId", typeof(int));
+    
+            var yearParameter = year.HasValue ?
+                new ObjectParameter("year", year) :
+                new ObjectParameter("year", typeof(int));
+    
+            var monthParameter = month.HasValue ?
+                new ObjectParameter("month", month) :
+                new ObjectParameter("month", typeof(int));
+    
+            var fileToPutParameter = fileToPut != null ?
+                new ObjectParameter("fileToPut", fileToPut) :
+                new ObjectParameter("fileToPut", typeof(string));
+    
+            var fileTypeParameter = fileType != null ?
+                new ObjectParameter("fileType", fileType) :
+                new ObjectParameter("fileType", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("DocumentApartmentFlyersAdd", associationIdParameter, apartmentIdParameter, yearParameter, monthParameter, fileToPutParameter, fileTypeParameter);
+        }
+    
+        public virtual ObjectResult<PartnetGetByEmailPassword_Result> PartnetGetByEmailPassword(string email, string password)
+        {
+            var emailParameter = email != null ?
+                new ObjectParameter("email", email) :
+                new ObjectParameter("email", typeof(string));
+    
+            var passwordParameter = password != null ?
+                new ObjectParameter("password", password) :
+                new ObjectParameter("password", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PartnetGetByEmailPassword_Result>("PartnetGetByEmailPassword", emailParameter, passwordParameter);
+        }
+    
+        public virtual int RegistriesHomeGetByAssAndDate(Nullable<int> associationId, Nullable<System.DateTime> transactionDate)
+        {
+            var associationIdParameter = associationId.HasValue ?
+                new ObjectParameter("associationId", associationId) :
+                new ObjectParameter("associationId", typeof(int));
+    
+            var transactionDateParameter = transactionDate.HasValue ?
+                new ObjectParameter("TransactionDate", transactionDate) :
+                new ObjectParameter("TransactionDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RegistriesHomeGetByAssAndDate", associationIdParameter, transactionDateParameter);
         }
     }
 }

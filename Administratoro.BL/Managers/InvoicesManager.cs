@@ -62,7 +62,7 @@ namespace Administratoro.BL.Managers
                 if (invoice.Id_EstateExpense.HasValue)
                 {
                     var ee = AssociationExpensesManager.GetById(invoice.Id_EstateExpense.Value);
-                    if (ee != null)
+                    if (ee != null && ee.Id_Expense != (int)Expense.Diverse)
                     {
                         ApartmentExpensesManager.UpdateApartmentExpenses(ee, value, stairCaseId, result.id_assCounter);
                     }

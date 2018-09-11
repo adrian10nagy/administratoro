@@ -239,10 +239,7 @@ namespace Admin.Invoices
                         {
                             var invoice = InvoicesManager.GetDiverseById(invoiceId.Value);
 
-                            if (invoice == null)
-                            {
-                                return;
-                            }
+                            if (invoice == null){return;}
 
                             if (theValue.HasValue)
                             {

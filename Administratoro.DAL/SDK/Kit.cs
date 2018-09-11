@@ -29,6 +29,7 @@ namespace Administratoro.DAL.SDK
         public Partners Partners { get { return new Partners(); } }
         public Apartments Apartments { get { return new Apartments(); } }
         public RegistriesHome RegistriesHome { get { return new RegistriesHome(); } }
+        public RegistriesHomeDaily RegistriesHomeDaily { get { return new RegistriesHomeDaily(); } }
         public Documents Documents { get { return new Documents(); } }
 
         public void Dispose()

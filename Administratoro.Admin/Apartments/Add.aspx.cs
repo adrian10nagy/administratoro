@@ -55,6 +55,8 @@ namespace Admin.Apartments
                             lblUserId.Text = Request["apartmentid"];
                             userStairCase.SelectedValue = (apartment.Id_StairCase != null) ? apartment.Id_StairCase.ToString() : null;
                             userHeatHelp.SelectedValue = (apartment.HasHeatHelp.HasValue && apartment.HasHeatHelp.Value ? "1" : "0");
+                            txtfondRulment.Value = (apartment.FondRulment.HasValue ? apartment.FondRulment.Value.ToString() : "0");
+                            txtFondRepairs.Value = (apartment.FondReparatii.HasValue ? apartment.FondReparatii.Value.ToString() : "0");
                         }
                         else
                         {
@@ -79,7 +81,8 @@ namespace Admin.Apartments
         {
             estateCounters.Visible = false;
 
-            if (association.HasStaircase)
+            //if (association.HasStaircase)
+                if (true)
             {
                 Administratoro.DAL.Apartments apartment = null;
                 if (apartmentId.HasValue)
@@ -262,7 +265,9 @@ namespace Admin.Apartments
                 id_Estate = Association.Id,
                 Password = "test",
                 Id_StairCase = userStairCase.SelectedValue.ToNullableInt(),
-                HasHeatHelp = userHeatHelp.SelectedIndex == 1
+                HasHeatHelp = userHeatHelp.SelectedIndex == 1,
+                FondReparatii = txtFondRepairs.Value.ToNullableDecimal(),
+                FondRulment = txtfondRulment.Value.ToNullableDecimal()
             };
 
             if (!string.IsNullOrEmpty(lblUserId.Text) && lblUserId.Text.ToNullableInt() != 0)

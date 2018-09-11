@@ -20,7 +20,7 @@ namespace Admin.Reports
             DateTime date;
             if (DateTime.TryParse(txtDate.Text, out date))
             {
-                var registryRaport = RegistriesHome.GenerateDailyReport(Association.Id, date);
+                var registryRaport = ReportingManager.GenerateDailyReport(Association.Id, date);
                 var myName = Server.UrlEncode("JurnalDeCasa" + "_" + date.ToShortDateString() + ".pdf");
                 Response.Clear();
                 Response.Buffer = true;

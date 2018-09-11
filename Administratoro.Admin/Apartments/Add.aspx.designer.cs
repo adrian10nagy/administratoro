@@ -103,6 +103,24 @@ namespace Admin.Apartments {
         protected global::System.Web.UI.HtmlControls.HtmlInputText userPhone;
         
         /// <summary>
+        /// txtfondRulment control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText txtfondRulment;
+        
+        /// <summary>
+        /// txtFondRepairs control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputText txtFondRepairs;
+        
+        /// <summary>
         /// userHeatHelp control.
         /// </summary>
         /// <remarks>

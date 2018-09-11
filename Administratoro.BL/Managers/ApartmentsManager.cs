@@ -24,7 +24,7 @@ namespace Administratoro.BL.Managers
 
         public static void Update(Apartments apartment)
         {
-            var result = GetContext().Apartments.SingleOrDefault(b => b.Id == apartment.Id);
+            var result = GetContext().Apartments.FirstOrDefault(b => b.Id == apartment.Id);
 
             if (result != null)
             {
@@ -35,7 +35,38 @@ namespace Administratoro.BL.Managers
                 result.Name = apartment.Name;
                 result.Password = apartment.Password;
                 result.CotaIndiviza = apartment.CotaIndiviza;
+                result.FondReparatii = apartment.FondReparatii;
+                result.FondRulment = apartment.FondRulment;
                 GetContext().Entry(result).CurrentValues.SetValues(apartment);
+
+                GetContext().SaveChanges();
+            }
+        }
+
+        public static void UpdateFonds(int apartamentId, DebtType debtType, decimal amount)
+        {
+            var result = GetContext().Apartments.FirstOrDefault(b => b.Id == apartamentId);
+
+            if (result != null)
+            {
+                if (debtType == DebtType.RulmentFond)
+                {
+                    if(result.FondRulment == null)
+                    {
+                        result.FondRulment = 0m;
+                    }
+                    result.FondRulment = result.FondRulment + amount;
+                }
+                else if (debtType == DebtType.Repairfond)
+                {
+                    if (result.FondReparatii == null)
+                    {
+                        result.FondReparatii = 0m;
+                    }
+                    result.FondReparatii = result.FondReparatii + amount;
+                }
+
+                GetContext().Entry(result).CurrentValues.SetValues(result);
 
                 GetContext().SaveChanges();
             }
@@ -115,7 +146,7 @@ namespace Administratoro.BL.Managers
         {
             if (id.ToString().StartsWith("100"))
             {
-                id = id % 100;
+                id = int.Parse(id.ToString().Substring(2, id.ToString().Length - 2));
             }
 
             return GetContext(true).Apartments.FirstOrDefault(a => a.Id == id && a.Password == password);

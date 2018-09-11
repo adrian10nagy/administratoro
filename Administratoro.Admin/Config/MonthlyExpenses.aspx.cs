@@ -306,15 +306,16 @@ namespace Admin.Config
                                         {
                                             ee = AssociationExpensesManager.GetAssociationExpense(estate.Id, expenseId, _year, _month);
                                         }
+                                        if (ee == null) { continue; }
 
-                                        if (ee != null && (ExpenseType)ee.ExpenseTypes.Id != selectedExpenseType)
+                                        if ((ExpenseType)ee.ExpenseTypes.Id != selectedExpenseType)
                                         {
                                             AssociationExpensesManager.UpdateAssociationExpenseType(ee, selectedExpenseType);
                                         }
 
-                                        if (ee != null && (!ee.SplitPerStairCase.HasValue || ee.SplitPerStairCase.Value != cbExpensePerStaircase))
+                                        if (!ee.SplitPerStairCase.HasValue || ee.SplitPerStairCase.Value != cbExpensePerStaircase)
                                         {
-                                            AssociationExpensesManager.MarkAssociationExpensesDisableProperty(ee, false, cbExpensePerStaircase);
+                                            AssociationExpensesManager.MarkAssociationExpensesDisableProperty(ee, !cbExpenseSelect.Checked, cbExpensePerStaircase);
                                         }
                                     }
                                 }

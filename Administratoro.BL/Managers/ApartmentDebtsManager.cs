@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Administratoro.BL.Constants;
+using Administratoro.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Administratoro.DAL;
-using Administratoro.BL.Constants;
 
 namespace Administratoro.BL.Managers
 {
@@ -29,9 +29,9 @@ namespace Administratoro.BL.Managers
                                                                        a.Id_debtType == (int)debtType);
         }
 
-        public static IEnumerable<ApartmentsDebt> Get(int apartmentId, bool isPayed)
+        public static IEnumerable<ApartmentsDebt> GetUnpayed(int apartmentId, bool isPayed)
         {
-            return GetContext(true).ApartmentsDebt.Where(a => a.Id_Apartament == apartmentId && a.IsPayed == isPayed);
+            return GetContext(true).ApartmentsDebt.Where(a => a.Id_Apartament == apartmentId && a.IsPayed == isPayed && a.Id_debtType != (int)DebtType.AdvancePay);
         }
 
         internal static void CalculateAndAddAll(int associationId, int year, int month)
@@ -136,6 +136,11 @@ namespace Administratoro.BL.Managers
                     Add(apartmentId, tuple.Item3, tuple.Item1, tuple.Item2, tuple.Item4);
                 }
 
+                if (tuple.Item3 == (int)DebtType.Repairfond || tuple.Item3 == (int)DebtType.RulmentFond)
+                {
+                    ApartmentsManager.UpdateFonds(apartmentId, (DebtType)tuple.Item3, tuple.Item4);
+                }
+                
                 var apDebt = Get(apartmentId, tuple.Item1, tuple.Item2, (DebtType)tuple.Item3);
                 if (apDebt == null) continue;
 
@@ -157,5 +162,11 @@ namespace Administratoro.BL.Managers
             }
         }
 
+
+        internal static IEnumerable<ApartmentsDebt> GetAllPaidOfType(int apartmentId, DebtType debtType)
+        {
+            return GetContext(true).ApartmentsDebt.Where(ad => ad.Id_debtType == (int)debtType &&
+                            ad.Id_Apartament == apartmentId && ad.IsPayed);
+        }
     }
 }

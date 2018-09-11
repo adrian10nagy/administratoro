@@ -14,10 +14,9 @@ namespace Administratoro.DAL.SDK
             _repository = new Repository();
         }
 
-        public List<DAL.RegistriesHome> GetByAssandDate(int associationId, DateTime date)
+        public List<DAL.RegistriesHome> GetByRegHomeDaily(int regHomeDailyId)
         {
-            return _repository.GetByAssAndDate(associationId, date);
+            return _repository.GetByRegHomeDaily(regHomeDailyId);
         }
-
     }
 }
