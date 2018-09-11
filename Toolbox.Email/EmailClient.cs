@@ -24,7 +24,7 @@ namespace Toolbox.Email
             }
             catch (Exception e)
             {
-                //log error
+                //todo log error
             }
 
             return wasSend;
