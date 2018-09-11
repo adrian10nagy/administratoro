@@ -2,10 +2,10 @@
 namespace Toolbox.Email
 {
     using System;
+    using System.Configuration;
     using System.IO;
     using System.Net;
     using System.Net.Mail;
-    using System.Configuration;
 
     public static class EmailClient
     {
