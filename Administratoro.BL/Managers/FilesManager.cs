@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Administratoro.BL.Managers
 {
     public static class FilesManager
@@ -14,7 +9,7 @@ namespace Administratoro.BL.Managers
             string result = null;
 
             var apartment = ApartmentsManager.GetById(apartmentId);
-            if(apartmentId!= null)
+            if(apartment != null)
             {
                 result = string.Format(filePath, apartmentId, year, month, apartment.Number);
             }

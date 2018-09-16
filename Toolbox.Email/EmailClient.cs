@@ -11,7 +11,7 @@ namespace Toolbox.Email
     {
         public static bool Send(string addressFrom, string addressTo, string mailSubject, string mailBody, string filePath)
         {
-            bool wasSend = false;
+            var wasSend = false;
 
             try
             {

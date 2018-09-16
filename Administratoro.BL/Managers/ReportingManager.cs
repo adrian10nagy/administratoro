@@ -75,16 +75,17 @@ namespace Administratoro.BL.Managers
 
             var debts = ApartmentDebtsManager.GetAllPaidOfType(apartmentId, debtType);
 
-            if(debtType == DebtType.RulmentFond && apartament.FondRulment.HasValue)
+            if (debtType == DebtType.RulmentFond && apartament.FondRulment.HasValue)
             {
-                sb.Append(string.Format(stringFormatH2, apartament.FondRulment));
+                sb.Append(string.Format(stringFormatH1, "Fisa fond de rulment "));
+                sb.Append(string.Format(stringFormatH2, "Suma disponibila in fondul de rulment: " + apartament.FondRulment));
             }
             else if (debtType == DebtType.Repairfond && apartament.FondReparatii.HasValue)
             {
-                sb.Append(string.Format(stringFormatH2, apartament.FondReparatii));
+                sb.Append(string.Format(stringFormatH1, "Fisa fond de reparații "));
+                sb.Append(string.Format(stringFormatH2, "Suma disponibila in fondul de reparatii: " + apartament.FondReparatii));
             }
 
-            sb.Append(string.Format(stringFormatH1, "Fișă fond de reparații "));
             sb.Append("<br><br>");
             sb.Append("<table border='1'>");
             sb.Append("<tr>");
