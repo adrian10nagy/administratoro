@@ -20,7 +20,7 @@ namespace Toolbox.Email
 
                 client.Send(mail);
 
-                wasSend = true;
+                wasSend = true; ;
             }
             catch (Exception e)
             {
