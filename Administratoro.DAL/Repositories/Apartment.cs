@@ -88,7 +88,9 @@ namespace Administratoro.DAL.Repositories
                     ExtraInfo = Read<string>(r, "ExtraInfo"),
                     Dependents = Read<int>(r, "Dependents"),
                     CreatedDate = Read<DateTime>(r, "CreatedDate"),
-                    CotaIndiviza = Read<decimal?>(r, "CotaIndiviza")
+                    CotaIndiviza = Read<decimal?>(r, "CotaIndiviza"),
+                    FondReparatii = Read<decimal?>(r, "FondReparatii"),
+                    FondRulment = Read<decimal?>(r, "FondRulment")
                 }));
 
             return apartments;
@@ -118,7 +120,9 @@ namespace Administratoro.DAL.Repositories
                     ExtraInfo = Read<string>(r, "ExtraInfo"),
                     Dependents = Read<int>(r, "Dependents"),
                     CreatedDate = Read<DateTime>(r, "CreatedDate"),
-                    CotaIndiviza = Read<decimal?>(r, "CotaIndiviza")
+                    CotaIndiviza = Read<decimal?>(r, "CotaIndiviza"),
+                    FondReparatii = Read<decimal?>(r, "FondReparatii"),
+                    FondRulment = Read<decimal?>(r, "FondRulment")
                 }));
 
             return apartments;

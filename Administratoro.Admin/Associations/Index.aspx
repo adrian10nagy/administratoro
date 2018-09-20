@@ -119,7 +119,22 @@
         </div>
     </asp:Panel>
     <asp:Button runat="server" ID="btnAssociationCountersNew" Text="Adaugă contor" OnClick="btnAssociationCountersNew_Click" CssClass="col-md-2 col-xs-2 col-xs-offset-3" />
+    <br /><br />
 
+    <div class="row">
+        <div class="col-md-6 col-xd-12">
+           <span class="associationsLabels">Fond reparații:</span>
+            <asp:TextBox runat="server" ID="tbFondReparatii" Enabled="false"></asp:TextBox>
+            <%--<asp:Button runat="server" ID="Button1" OnClick="btnAssociationFiscalCode_Click" Text="Modifică" />--%>
+            <br />
+        </div>
+        <div class="col-md-6 col-xd-12">
+           <span class="associationsLabels">Fond rulment:</span>
+            <asp:TextBox runat="server" ID="tbFondRulment" Enabled="false"></asp:TextBox>
+            <%--<asp:Button runat="server" ID="Button1" OnClick="btnAssociationFiscalCode_Click" Text="Modifică" />--%>
+            <br />
+        </div>
+    </div>
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="MainScript" runat="server">
 </asp:Content>

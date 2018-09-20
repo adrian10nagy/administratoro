@@ -40,6 +40,11 @@ namespace Admin.Associations
                 txtAssociationCotaIndivizaApartments.Visible = true;
             }
 
+            //todo refactor, use SP
+            var apartments = ApartmentsManager.Get(assoc.Id);
+            tbFondReparatii.Text = apartments.Sum(a => a.FondReparatii).ToString();
+            tbFondRulment.Text = apartments.Sum(a => a.FondRulment).ToString();
+
             InitializeStairs();
         }
 
